@@ -1,0 +1,131 @@
+site_name: Prompt Engineering Library
+site_description: >-
+  Agentic-AI prompts for software project delivery, specialising in financial
+  trading systems, Go backend development, and AWS cloud infrastructure.
+site_author: Terence
+site_url: https://shing1211.github.io/prompt-engineering/
+repo_url: https://github.com/shing1211/prompt-engineering
+repo_name: shing1211/prompt-engineering
+edit_uri: edit/main/prompts/
+copyright: Copyright &copy; 2026 Terence
+
+docs_dir: prompts
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/shing1211/prompt-engineering
+      name: Source on GitHub
+    - icon: fontawesome/brands/github
+      link: https://github.com/shing1211/prompt-engineering/discussions
+      name: Discussions
+
+# MkDocs populates page.meta from each file's YAML frontmatter, which is how
+# the tags plugin below discovers tags without a custom hook.
+plugins:
+  - search
+  - tags
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Orchestration and Planning:
+      - Orchestrate: orchestrate.md
+      - Plan: plan.md
+  - Financial Domain:
+      - Broker Integration: broker-integration.md
+      - Broker Certification: broker-certification.md
+      - Broker SDKs:
+          - Longbridge: broker-longbridge.md
+          - Tiger Trade: broker-tiger.md
+          - Webull: broker-webull.md
+          - IBKR Client Portal: broker-ibkr.md
+          - Futu OpenD: broker-futu.md
+          - Hua Sing Tong vbroker: broker-vbroker.md
+          - Generic HMAC Broker: broker-google.md
+      - Market Data Pipeline: market-data-pipeline.md
+      - Real-Time Analytics: realtime-analytics.md
+      - Trading Bot: trading-bot.md
+      - Trading Risk: trading-risk.md
+      - Quant Backtesting: quant-backtesting.md
+      - Portfolio Accounting: portfolio-accounting.md
+      - Compliance and Regulatory: compliance-regulatory.md
+  - SDK Development:
+      - SDK Build: sdk-build.md
+      - SDK Documentation: sdk-docs.md
+  - Architecture and Engineering:
+      - Architecture: architecture.md
+      - API Design: api-design.md
+      - Database Design: database-design.md
+      - Code Review: code-review.md
+      - Testing: testing.md
+      - Security: security.md
+      - Performance: performance.md
+      - DevOps: devops.md
+      - Migration: migration.md
+      - Observability and SRE: observability-sre.md
+      - Incident Response: incident-response.md
+  - API Protocols:
+      - GraphQL: graphql-development.md
+      - gRPC: grpc-development.md
+  - Application:
+      - Frontend: frontend-dev.md
+      - LLM Integration: llm-integration.md
+      - Event-Driven Architecture: event-driven-architecture.md
+      - Data Engineering: data-engineering.md
+  - Documentation:
+      - Financial Platform Documentation: financial-docs.md
+  - Tags: tags.md

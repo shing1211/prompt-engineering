@@ -1,0 +1,228 @@
+---
+title: Prompt Library
+hide:
+  - navigation
+  - toc
+---
+
+# Prompt Library
+
+Agentic-AI prompts for software project delivery, built around **financial
+trading systems**, **Go backend development**, and **AWS cloud
+infrastructure**.
+
+Each prompt is a standalone system prompt with a declared mode
+(`build`, `plan`, `review`, `all`) and a tag set. Copy one into your agent's
+configuration, or read it first: the structure is deliberately consistent
+across the library, so knowing one prompt tells you how the others are
+organised.
+
+Browse the categories below, or jump to the [full tag index](tags.md).
+
+<!-- BEGIN GENERATED TABLES -->
+
+## Browse by Category
+
+### Orchestration and Planning
+
+Multi-phase sub-agent execution and project planning — 2 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`orchestrate.md`](orchestrate.md) — Orchestrator | build | Orchestrate multi-phase implementation using sub-agents with specialist roles (backend, frontend, data, devops, security, tester, docs, reviewer, release, architect, planner) |
+| [`plan.md`](plan.md) — Planning | plan | Plan project phases, code enhancements, bug fixes, and architecture improvements using sub-agent driven analysis |
+
+### Financial Domain — Trading and Broking
+
+Trading systems, market data, risk, quant, and compliance — 9 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`broker-certification.md`](broker-certification.md) — Broker Certification | build | Certify multi-broker trading integrations through sandbox testing, capability conformance, contract tests, paper trading, reconciliation, and production go-live controls |
+| [`broker-integration.md`](broker-integration.md) — Broker Integration | build | Build a unified multi-broker abstraction layer for Longbridge, Tiger Trade, Webull, IBKR Client Portal Web API, Futu OpenD, and Hua Sing Tong vbroker with HMAC auth, consolidated L2 market data, and AWS Secrets Manager integration |
+| [`compliance-regulatory.md`](compliance-regulatory.md) — Compliance and Regulatory | build | Design regulatory compliance and control systems for financial trading platforms covering best execution, surveillance, audit trails, retention, and multi-jurisdiction requirements |
+| [`market-data-pipeline.md`](market-data-pipeline.md) — Market Data Pipeline | build | Build real-time market data pipelines from 6 brokers (Longbridge, Tiger, Webull, IBKR, Futu, vbroker) into MSK, Redis, and S3 with consolidated L2 tape, corporate actions handling, and Athena analytics |
+| [`portfolio-accounting.md`](portfolio-accounting.md) — Portfolio Accounting | build | Build portfolio accounting and reconciliation systems for multi-broker trading platforms covering positions, PnL, corporate actions, FX, settlement, and multi-currency precision |
+| [`quant-backtesting.md`](quant-backtesting.md) — Quant Backtesting | build | Build quant backtesting frameworks in Python using backtrader/vectorbt, IBKR Client Portal Web API for historical data, alpha research with factor models (momentum, value, carry), walk-forward validation, and performance attribution |
+| [`realtime-analytics.md`](realtime-analytics.md) — Real-Time Analytics | build | Build real-time analytics for trading with L2 order book reconstruction, VPIN/order flow imbalance, volume profiling, tick feature engineering, arbitrage detection, and both Redis streaming and S3/Athena long-term storage |
+| [`trading-bot.md`](trading-bot.md) — Trading Bot | build | Build an event-driven trading bot in Go with state machine design, algorithmic execution strategies (TWAP/VWAP/Grid/Market-making), Kelly criterion position sizing, paper/live trading modes, and kill switch |
+| [`trading-risk.md`](trading-risk.md) — Trading Risk | build | Design real-time intraday risk management for trading bots with VaR/CVaR calculation, drawdown controls, margin call handling, Greeks monitoring, kill switch, and AWS CloudWatch dashboards |
+
+### Broker SDKs
+
+One prompt per broker, each a production Go SDK build — 7 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`broker-futu.md`](broker-futu.md) — Futu OpenD SDK | build | Build a production-grade Go SDK for Futu OpenD (proprietary binary protocol with L2 market data and trading services) with secure local connectivity, resilience, CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-google.md`](broker-google.md) — Generic HMAC Broker SDK | build | Build a production-grade Go SDK for a multi-asset financial broker API with HMAC auth, REST, WebSocket, and circuit breaker resilience patterns |
+| [`broker-ibkr.md`](broker-ibkr.md) — IBKR Client Portal SDK | build | Build a production-grade Go SDK for the Interactive Brokers Web API (Client Portal REST + WebSocket streaming) with resilient sessions, order safety, CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-longbridge.md`](broker-longbridge.md) — Longbridge SDK | build | Build a production-grade Go SDK for Longbridge OpenAPI (REST + WebSocket quotes and trading streams) with token security, multi-market trading, CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-tiger.md`](broker-tiger.md) — Tiger Trade SDK | build | Build a production-grade Go SDK for Tiger Trade OpenAPI (REST + WebSocket market data and trading events) with private-key authentication, order safety, CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-vbroker.md`](broker-vbroker.md) — Hua Sing Tong vbroker SDK | build | Build a production-grade Go SDK for Hua Sing Tong vbroker Open API (HMAC REST + WebSocket market data and trading events) with HK market support, order safety, CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-webull.md`](broker-webull.md) — Webull SDK | build | Build a production-grade Go SDK for Webull HK OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening |
+
+### SDK Development
+
+Reusable patterns for building and documenting SDKs — 2 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`sdk-build.md`](sdk-build.md) — SDK Build | build | Build an enterprise-grade Go SDK for a financial broker (Account, Market Data, Trading, Positions) with phases covering infrastructure, domain models, WebSocket streaming, observability, and rigorous testing |
+| [`sdk-docs.md`](sdk-docs.md) — SDK Documentation | build | Improve all Markdown documentation in an API SDK repository |
+
+### Architecture and Engineering
+
+Cross-cutting engineering practice — 11 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling |
+| [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency |
+| [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages |
+| [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases |
+| [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) |
+| [`incident-response.md`](incident-response.md) — Incident Response | all | Design incident response runbooks, on-call procedures, postmortem templates, and alerting strategies for production systems |
+| [`migration.md`](migration.md) — Migration | build | Migration guide for zero-downtime database migrations with Flyway/Liquibase, monolith to microservices refactoring, language upgrades, Infrastructure as Code with Terraform, and blue-green deployments on AWS |
+| [`observability-sre.md`](observability-sre.md) — Observability and SRE | build | Design observability and SRE practices for financial platforms with OpenTelemetry, SLOs, incident response, capacity planning, and production diagnostics |
+| [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend |
+| [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python |
+| [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates |
+
+### API Protocols
+
+GraphQL and gRPC specifics — 2 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`graphql-development.md`](graphql-development.md) — GraphQL Development | build | GraphQL development guide with Apollo Server 4, DataLoader for N+1 problem, Apollo Federation for microservices, graphql-ws subscriptions, schema registry, and performance optimization (persisted queries, APQ) |
+| [`grpc-development.md`](grpc-development.md) — gRPC Development | build | gRPC development guide with Protobuf v3, buf CLI for modern protobuf tooling, Go grpc-go, gRPC-gateway for REST-to-gRPC, Envoy proxy, Istio service mesh, and streaming RPC patterns |
+
+### Application Development
+
+Frontend, LLM, events, and data pipelines — 4 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`data-engineering.md`](data-engineering.md) — Data Engineering | build | Build data engineering pipelines with Apache Airflow/Prefect, Kafka/Flink streaming, Debezium CDC, dbt transformations, MSK/S3 data lake, Great Expectations data quality, and AWS Glue/Athena |
+| [`event-driven-architecture.md`](event-driven-architecture.md) — Event-Driven Architecture | build | Design event-driven financial systems with Kafka, schema evolution, CQRS, event sourcing, ordering, replay, deduplication, and resilient asynchronous workflows |
+| [`frontend-dev.md`](frontend-dev.md) — Frontend Development | build | Frontend development guide with React 18, Next.js 14 App Router, Zustand state management, shadcn/ui + Tailwind CSS, TanStack Query, Core Web Vitals, accessibility, and Vitest/Playwright testing |
+| [`llm-integration.md`](llm-integration.md) — LLM Integration | build | LLM integration guide with RAG architecture, vector databases (Pinecone/Milvus), prompt engineering, vLLM/Ollama local deployment, AI safety, RAG evaluation with RAGAS, and cloud API integration (OpenAI, Anthropic, Google Gemini) |
+
+### Documentation
+
+Documentation workflows — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`financial-docs.md`](financial-docs.md) — Financial Platform Documentation | build | Improve all Markdown documentation in a unified financial trading and portfolio management system |
+
+## Browse by Technology
+
+| Technology | Prompts |
+|---|---|
+| Go / Golang | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-integration](broker-integration.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [portfolio-accounting](portfolio-accounting.md), [realtime-analytics](realtime-analytics.md), [sdk-build](sdk-build.md), [security](security.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
+| Python | [data-engineering](data-engineering.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
+| TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
+| AWS | [broker-integration](broker-integration.md), [migration](migration.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
+| Kafka / MSK | [data-engineering](data-engineering.md), [event-driven-architecture](event-driven-architecture.md), [market-data-pipeline](market-data-pipeline.md) |
+| Redis | [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [realtime-analytics](realtime-analytics.md) |
+| PostgreSQL | [database-design](database-design.md), [migration](migration.md) |
+| React / Next.js | [frontend-dev](frontend-dev.md) |
+| GraphQL / Apollo | [api-design](api-design.md), [graphql-development](graphql-development.md) |
+| gRPC / Protobuf | [api-design](api-design.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md) |
+| Kubernetes | [devops](devops.md) |
+| Terraform | [devops](devops.md), [migration](migration.md) |
+| CI/CD | [broker-futu](broker-futu.md), [broker-ibkr](broker-ibkr.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [devops](devops.md) |
+| Security | [code-review](code-review.md), [security](security.md) |
+| Testing | [frontend-dev](frontend-dev.md), [testing](testing.md) |
+| LLM / RAG | [llm-integration](llm-integration.md) |
+| Market data | [broker-futu](broker-futu.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [market-data-pipeline](market-data-pipeline.md) |
+| Trading | [broker-certification](broker-certification.md), [broker-futu](broker-futu.md), [financial-docs](financial-docs.md), [portfolio-accounting](portfolio-accounting.md), [sdk-build](sdk-build.md) |
+| Compliance | [compliance-regulatory](compliance-regulatory.md) |
+| Go SDK | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [sdk-build](sdk-build.md), [sdk-docs](sdk-docs.md) |
+
+## Quick Reference
+
+| Task | Prompt |
+|---|---|
+| Design an API | [`api-design.md`](api-design.md) |
+| Set up CI/CD | [`devops.md`](devops.md) |
+| Review code | [`code-review.md`](code-review.md) |
+| Security audit | [`security.md`](security.md) |
+| Design a database | [`database-design.md`](database-design.md) |
+| Build a trading bot | [`trading-bot.md`](trading-bot.md) |
+| Wire up market data | [`market-data-pipeline.md`](market-data-pipeline.md) |
+| Manage risk | [`trading-risk.md`](trading-risk.md) |
+| Backtest a strategy | [`quant-backtesting.md`](quant-backtesting.md) |
+| Track PnL and positions | [`portfolio-accounting.md`](portfolio-accounting.md) |
+| Tune performance | [`performance.md`](performance.md) |
+| Write tests | [`testing.md`](testing.md) |
+| Plan a migration | [`migration.md`](migration.md) |
+| Set up observability | [`observability-sre.md`](observability-sre.md) |
+| Handle an incident | [`incident-response.md`](incident-response.md) |
+| Integrate an LLM | [`llm-integration.md`](llm-integration.md) |
+| Build a data pipeline | [`data-engineering.md`](data-engineering.md) |
+
+## Statistics
+
+| Metric | Count |
+|---|---|
+| **Total prompts** | 38 |
+| **Orchestration and Planning** | 2 |
+| **Financial Domain — Trading and Broking** | 9 |
+| **Broker SDKs** | 7 |
+| **SDK Development** | 2 |
+| **Architecture and Engineering** | 11 |
+| **API Protocols** | 2 |
+| **Application Development** | 4 |
+| **Documentation** | 1 |
+| **Distinct tags** | 222 |
+| **Mode: all** | 7 |
+| **Mode: build** | 29 |
+| **Mode: plan** | 1 |
+| **Mode: review** | 1 |
+
+<!-- END GENERATED TABLES -->
+
+---
+
+## Contributing
+
+Prompts are added as files under `prompts/` with the frontmatter contract
+below. Run the two generators, then open a pull request.
+
+```yaml
+---
+title: Display Name
+description: One line, shown in index tables and search results
+mode: build # build | plan | review | all
+model: any
+category: architecture
+tags: ["lowercase", "kebab-case"]
+---
+```
+
+| Field | Rule |
+|---|---|
+| `title` | Display name. Must match the file's H1. |
+| `description` | One line. No trailing period. |
+| `mode` | One of `build`, `plan`, `review`, `all`. |
+| `model` | `any`, or a pinned model ID. Default to `any`. |
+| `category` | Must be a key in `scripts/apply_categories.py`. |
+| `tags` | Lowercase kebab-case. Reuse existing tags where one fits. |
+
+Regenerate derived files and run the checks:
+
+```bash
+python3 scripts/apply_titles.py        # frontmatter title + H1
+python3 scripts/apply_categories.py    # category key
+python3 scripts/generate_index.py      # tables in this file
+scripts/validate.sh                    # frontmatter schema, lint, links
+```
+
+CI runs the same checks, so a stale `index.md` or a malformed frontmatter
+block fails the pull request rather than reaching the site.
+
+See [CONTRIBUTING.md](https://github.com/shing1211/prompt-engineering/blob/main/CONTRIBUTING.md)
+for the full review criteria.
