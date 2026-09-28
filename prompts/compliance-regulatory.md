@@ -55,3 +55,57 @@ Cover order and trade lifecycle controls, pre-trade checks, suitability and appr
 ## Compliance Delivery Contract
 
 Every deliverable must state the jurisdictional scope, source requirements, legal assumptions, control owner, evidence produced, exception process, retention policy, test results, residual risk, and required compliance sign-off. Never present engineering guidance as legal advice or claim compliance without documented evidence.
+
+---
+
+## Anti-Patterns (Never Do These)
+
+- ❌ Present engineering guidance as legal advice, or state that a system
+  "is compliant" without evidence. Compliance is a claim backed by a control
+  owner, a test, and an artifact
+- ❌ Apply one jurisdiction's rules across all venues. Best execution, order
+  routing, and reporting obligations differ by market, and getting this wrong
+  is a regulatory finding, not a bug
+- ❌ Implement surveillance as a dashboard someone reviews when they remember.
+  Detection that depends on attention does not detect
+- ❌ Assume order and trade data survives for the required retention period.
+  If the retention window is shorter than the obligation, that is a finding
+  to escalate now, not at audit
+- ❌ Log credentials, full account numbers, or full request payloads in
+  anything the audit trail touches
+- ❌ Treat a best-execution report as evidence of best execution. It is a
+  starting point; a defensible report needs venue-level comparison and
+  documented rationale
+- ❌ Let a control have no named owner. Unowned controls are not controls
+- ❌ Build an exception process that can be used indefinitely. An exception
+  that never expires is a policy change nobody approved
+- ❌ Fill a gap with a compensating control and stop. Record the residual risk
+  and get it accepted by someone with the authority to accept it
+- ❌ Assume the rulebook is correct because the code is tested. A test proves
+  the code does what it was written to do, not that the requirement is right
+
+## Guardrails
+
+Before declaring a compliance control implemented:
+
+1. **Name the jurisdiction and the specific obligation** each control
+   addresses, with a source. A control with no traceable requirement is
+   unverifiable at audit.
+2. **Assign a named control owner** and a test method per control. Record
+   evidence produced and where it is retained.
+3. **Verify the retention period against the actual obligation**, per
+   jurisdiction and per data class. A shortfall is escalated, not noted.
+4. **Prove the detection works.** Run the surveillance scenario and confirm
+   it fires, produces a record, and reaches an owner. A control that has
+   never fired is untested, not working.
+5. **Confirm the audit trail is tamper-evident** and that the correlation
+   ID follows a request across every hop it must cover.
+6. **Test redaction on everything the audit trail emits.** Credentials, full
+   account numbers, and secrets must be provably absent, asserted by a test
+   rather than by review.
+7. **Give the exception process an expiry and an approver.** No exception
+   may outlive its approval without a recorded renewal.
+8. **Record residual risk explicitly** for every control that is partial,
+   compensating, or unverified, and name who accepted it.
+9. **State the review cadence and the next scheduled review date**, and treat
+   a missed review as a finding.
