@@ -73,7 +73,82 @@ You are expected to deliver a robust, enterprise-ready repository that adheres t
 * **Structured Logging:** Implement native logging using `log/slog` with immutable correlation IDs, log levels, and contextual metadata.
 * **Distributed Tracing & Metrics:** Integrate OpenTelemetry hooks (`otelhttp`) for span creation across outbound REST requests and inbound stream frames. Export performance metrics (latency histograms, connection drop counters).
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Hardcode the digest algorithm from memory.** Webull documents
+  **HMAC-SHA1** for request signing. SHA256 fails authentication in a way
+  that looks like bad credentials rather than a wrong digest, so it is
+  expensive to debug in production. Read the algorithm from the current
+  vendor reference and pin it in a test.
+* ❌ **Send only a token, or only a signature.** Webull auth is dual layer: an
+  HMAC signature computed from App Key and App Secret, plus a reusable access
+  token for trading and account operations. Either alone is rejected.
+* ❌ **Treat signature and token as interchangeable on refresh.** Refreshing
+  the token does not remove the need to sign, and vice versa. Model them as
+  separate concerns with separate lifecycles.
+* ❌ **Assume order cancellation is unsupported.** Older documentation stated
+  this; the current API exposes place, replace, and cancel together. Building
+  the assumption in produces a client that cannot manage its own orders.
+* ❌ **Derive the gRPC or streaming host from the HTTP base URL.** Trading and
+  market data are on `api.webull.com`, order events on `events-api.webull.com`,
+  and data streaming on `data-api.webull.com`, each with a separate sandbox
+  counterpart. Deriving one from another reaches a host that does not serve
+  that service.
+* ❌ **Mix sandbox and production hosts.** A single misconfigured host sends
+  test orders to a live account. Derive both host sets from one environment
+  setting and assert they agree.
+* ❌ **Assume US-only coverage is a bug.** The published OpenAPI covers the US
+  market. Hong Kong coverage must be confirmed with Webull, not assumed from
+  the retail app's availability.
+* ❌ **Ignore market-data subscription state.** A 403 on a US market-data call
+  usually means the subscription is not active, not that the signature is
+  wrong. Distinguish entitlement failures from authentication failures.
+* ❌ **Drop MQTT subscriptions without unsubscribing, or resubscribe blindly
+  after reconnect.** The first leaks server-side subscriptions; the second
+  silently misses events. Track subscription state and reconcile on
+  reconnect.
+* ❌ **Retry a failed order request because the call errored.** A timeout after
+  submission is an unknown order state. Reconcile before retrying.
+* ❌ **Log the App Secret, the signature, or the access token.** Redact all
+  three from logs, traces, metrics, and error payloads.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Confirm every API claim against Webull's current documentation**
+   (<https://developer.webull.com/apis/docs/sdk>) and record the digest
+   algorithm, header names, host set, and product coverage verified in
+   `docs/compatibility-matrix.md`. Record explicitly which of stocks,
+   options, futures, crypto, and event contracts you tested.
+2. **Assert the digest algorithm from configuration and pin it in a test.** A
+   wrong digest must fail a local test, not an authentication call against a
+   live account.
+3. **Assert the dual-layer auth path.** Prove a request carrying signature
+   but no token is rejected, and one carrying a token but no signature is
+   rejected, so the client cannot half-implement auth and appear to work.
+4. **Prove host selection.** Assert that the environment setting yields a
+   complete, internally consistent host set, and that a mixed sandbox and
+   production set fails at startup rather than at the first order.
+5. **Prove order lifecycle.** Place, replace, and cancel against sandbox and
+   assert each is idempotency-keyed, since an unkeyed retry duplicates.
+6. **Prove order safety under ambiguity.** Inject a timeout after submission
+   and assert reconciliation by order ID rather than a retry.
+7. **Prove stream lifecycle.** Drop the MQTT connection mid-session and assert
+   resubscription plus reconciliation, with no leaked server-side
+   subscriptions. Confirm gRPC order events resume without gaps.
+8. **Distinguish entitlement from authentication in errors.** A 403 from
+   market data must be reported as a missing subscription, not as a signing
+   failure, or every support ticket goes in the wrong direction.
+9. **Run the standard quality gates** — `go test -race ./...` clean, fuzz
+   targets over MQTT and gRPC frame deserialisation, `govulncheck`, `gosec`,
+   bounded allocation on every decode path, and redaction of the App Secret,
+   signature, and token from all telemetry.
+10. **Default to sandbox.** Webull provides a sandbox environment with test
+    accounts. Live trading requires an explicit configuration gate; CI and
+    examples must never authenticate against production.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc Compliance:** Write comprehensive, immaculate comments on all exported types, functions, and packages.
 * **Architecture Documentation:** Include an explicit `docs/` or `README.md` containing text-based architecture diagrams, configuration instructions, and security guidelines.
 * **Runnable Examples:** Provide clean, well-commented examples under `/examples/` covering authentication, market data streaming via MQTT, and order placement with idempotency keys.
