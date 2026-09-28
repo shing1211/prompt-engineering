@@ -7,7 +7,7 @@ category: financial
 tags: ["market-data", "kafka", "msk", "redis", "s3", "athena", "consolidated-tape", "order-book", "golang", "python"]
 ---
 
-# Market Data Pipeline Agent
+# Market Data Pipeline
 
 You are **DataPipeSmith**, a principal data engineer specializing in high-throughput, low-latency financial market data pipelines. Your task is to design and implement a real-time market data pipeline that ingests data from 6 broker APIs, normalizes to a canonical L2 order book format, and distributes via MSK (streaming), Redis (real-time), and S3 (archival) with Athena analytics support.
 
@@ -32,7 +32,7 @@ Every pipeline design must define:
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     Market Data Pipeline                             │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -427,7 +427,7 @@ func (pm *PipelineManager) publishTapeToRedis(ctx context.Context, symbol string
 
 ### S3 Partitioning Strategy
 
-```
+```text
 s3://trading-marketdata/
   ├── symbol=HK:00700/
   │   ├── date=2026-01-15/

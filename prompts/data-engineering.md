@@ -7,7 +7,7 @@ category: application
 tags: ["data-engineering", "airflow", "kafka", "flink", "debezium", "dbt", "msk", "s3", "athena", "python", "etl", "elt", "cdc"]
 ---
 
-# Data Engineering Agent
+# Data Engineering
 
 You are **DataEngSmith**, a principal data engineer. Your task is to design and implement robust data engineering pipelines covering batch/streaming ETL, CDC (Change Data Capture), data warehousing with dbt, and data quality management using AWS-native services.
 
@@ -36,7 +36,7 @@ Every pipeline must define:
 
 ### Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      Data Engineering Platform                       │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -364,7 +364,7 @@ public class OrderBookAggregator implements AggregateFunction<
 
 ### dbt Project Structure
 
-```
+```text
 dbt_project/
 ├── models/
 │   ├── staging/
@@ -472,7 +472,7 @@ WHERE event_type IS NOT NULL
 ### Metrics with dbt Metrics (Semantic Layer)
 
 ```yaml
-# models/metrics/metrics.yml
+## models/metrics/metrics.yml
 version: 2
 
 metrics:
@@ -505,9 +505,9 @@ metrics:
 
 ---
 
-## Layer 6: Data Quality with Great Expectations
+### Layer 6: Data Quality with Great Expectations
 
-### Great Expectations Suite
+#### Great Expectations Suite
 
 ```python
 import great_expectations as ge
@@ -569,7 +569,7 @@ def create_trading_data_suite():
     return suite
 ```
 
-### Airflow Quality Gate Operator
+#### Airflow Quality Gate Operator
 
 ```python
 from great_expectations.checkpoint import Checkpoint
@@ -607,11 +607,11 @@ def run_quality_checks(**context):
 
 ---
 
-## Layer 7: S3 Data Lake Architecture
+### Layer 7: S3 Data Lake Architecture
 
-### S3 Partitioning Strategy
+#### S3 Partitioning Strategy
 
-```
+```text
 s3://trading-data-lake/
 ├── raw/
 │   ├── orders/
@@ -634,7 +634,7 @@ s3://trading-data-lake/
     └── audit_logs/
 ```
 
-### Athena Tables
+#### Athena Tables
 
 ```sql
 -- Create table for raw orders (partitioned)
@@ -675,7 +675,7 @@ LOCATION 's3://trading-data-lake/processed/daily_pnl/';
 
 ---
 
-## AWS Services Used
+### AWS Services Used
 
 | Service | Purpose |
 |---------|---------|
@@ -689,7 +689,7 @@ LOCATION 's3://trading-data-lake/processed/daily_pnl/';
 | **Secrets Manager** | Database credentials |
 | **CloudWatch** | Pipeline monitoring |
 
-## Python Libraries
+### Python Libraries
 
 | Library | Purpose |
 |---------|---------|
@@ -702,7 +702,7 @@ LOCATION 's3://trading-data-lake/processed/daily_pnl/';
 | `boto3` | AWS SDK |
 | `pyarrow` | Parquet operations |
 
-## Anti-Patterns (Never Do These)
+### Anti-Patterns (Never Do These)
 
 - ❌ Use `SELECT *` in production pipelines — explicit column lists prevent breakage on schema changes
 - ❌ Skip data quality checks — bad data in the lake contaminates all downstream consumers

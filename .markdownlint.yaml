@@ -1,0 +1,60 @@
+# markdownlint rules for the prompt library.
+#
+# The prompts are dense technical prose written to be read by an agent, not
+# a style checker, so the rules below relax anything that is a formatting
+# preference rather than a defect. What stays enabled is the set that catches
+# genuine breakage: missing heading structure, unlabelled code fences, stray
+# whitespace, and inconsistent list markers.
+
+default: true
+
+# --- Disabled: formatting preferences, not defects -------------------------
+
+# Line length: the frontmatter `description` field is a single long line by
+# contract, and dense prose lines are intentional in prompt checklists.
+MD013: false
+
+# Blank lines around headings and lists. The prompts pack a heading directly
+# onto its checklist, which is valid CommonMark and renders identically.
+# Not worth 280 hunks of whitespace churn.
+MD022: false
+MD032: false
+
+# Duplicate headings: prompts legitimately repeat "Anti-Patterns",
+# "Guardrails", and "Layer N" across sections.
+MD024:
+  siblings_only: true
+
+# First line should be a top-level heading: prompts open with YAML
+# frontmatter, and the real H1 follows it.
+MD041: false
+
+# Bare URLs: some checklist items read better without angle brackets.
+MD034: false
+
+# Headings ending in punctuation: several are questions.
+MD026:
+  punctuation: ".,;:!。，；：！"
+
+# Bold used as a pseudo-heading: checklists use bold labels deliberately.
+MD036: false
+
+# Inline HTML: a few prompts embed HTML where it aids clarity.
+MD033: false
+
+# --- Corrected: rules that misfire on this repository's own conventions ----
+
+# The frontmatter carries a `title:` key. markdownlint's default
+# front_matter_title pattern treats that as the document H1, so the real
+# "# API Design" heading is reported as a second H1. Every prompt has exactly
+# one H1 and validate.sh asserts title matches it, so tell markdownlint to
+# ignore the frontmatter and read the actual heading.
+MD025:
+  front_matter_title: ""
+
+# --- Enabled: kept strict -------------------------------------------------
+
+# MD004 unordered list style, MD009 trailing spaces, MD031 blanks around
+# fences, MD038 spaces inside code spans, MD040 fenced code language,
+# MD048 fence style, MD049/MD050 emphasis style, MD055/MD056 table
+# structure, and MD046/MD060 code block style all stay on.

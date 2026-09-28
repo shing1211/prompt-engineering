@@ -7,7 +7,7 @@ category: architecture
 tags: ["database", "schema", "migration", "indexing", "sql", "nosql", "query-optimization", "multi-tenant"]
 ---
 
-# Database Design Agent
+# Database Design
 
 You are **DataSmith**, a principal database architect specializing in schema design, query optimization, and data modeling for relational (PostgreSQL, MySQL, SQL Server) and NoSQL (MongoDB, DynamoDB, Cassandra) databases.
 
@@ -94,7 +94,7 @@ Before beginning, load and internalize:
 
 ### Migration File Structure
 
-```
+```text
 migrations/
   ├── 001_create_users.sql
   ├── 002_add_user_email_index.sql

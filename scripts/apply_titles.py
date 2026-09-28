@@ -62,6 +62,16 @@ INDEX_PAGES = {"index", "tags"}
 TITLE_RE = re.compile(r"^title:.*$", re.MULTILINE)
 H1_RE = re.compile(r"^# .*$", re.MULTILINE)
 
+# Decorative suffixes an existing H1 may carry. When an H1 is just the
+# declared title plus one of these, it is collapsed to the bare title. They
+# are dropped rather than promoted into `title` because they add nothing to
+# a navigation entry or a heading.
+DECORATIVE_SUFFIXES = (
+    " Agent",
+    " Prompt",
+    " Prompts",
+)
+
 
 def frontmatter_bounds(lines: list[str]) -> tuple[int, int]:
     if lines[0].strip() != "---":
@@ -85,23 +95,27 @@ def apply(text: str, title: str) -> str:
     body_start = text.index("\n---", 1) + len("\n---")
     body = text[body_start:]
     match = H1_RE.search(body)
-    generic = {
-        "role and context",
-        "role and persona",
-        "role",
-        "agent",
-        "prompt",
-    }
-    if match is None or match.group(0)[2:].strip().lower() in generic:
-        if match is not None:
-            body = H1_RE.sub(f"# {title}", body, count=1)
-        else:
-            # Keep the newline that follows the closing fence so the heading
-            # cannot end up concatenated onto "---".
-            body = f"# {title}\n" + body.lstrip("\n")
-        text = text[:body_start] + body
+    if match is not None and match.group(0)[2:].strip() == title:
+        return text
 
-    return text
+    if match is not None:
+        # A hand-written H1 wins only when it differs from the title purely
+        # by a decorative suffix. Anything else is normalised, so the
+        # title/H1 invariant that validate.sh enforces holds by
+        # construction rather than by luck.
+        existing = match.group(0)[2:].strip()
+        for suffix in DECORATIVE_SUFFIXES:
+            if existing.casefold() == f"{title}{suffix}".casefold():
+                body = H1_RE.sub(f"# {title}", body, count=1)
+                text = text[:body_start] + body
+                return text
+        body = H1_RE.sub(f"# {title}", body, count=1)
+    else:
+        # Keep the newline that follows the closing fence so the heading
+        # cannot end up concatenated onto "---".
+        body = f"# {title}\n" + body.lstrip("\n")
+
+    return text[:body_start] + body
 
 
 def main() -> int:

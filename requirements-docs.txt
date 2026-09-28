@@ -1,0 +1,6 @@
+# Pinned so the Pages build is reproducible and matches what was verified
+# locally. Material for MkDocs has shipped breaking config changes in minor
+# versions, and the build runs with --strict, so an unpinned upgrade can
+# break the site with no change to our own files.
+mkdocs-material==9.7.7
+mkdocs==1.6.1

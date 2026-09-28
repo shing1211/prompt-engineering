@@ -7,7 +7,7 @@ category: orchestration
 tags: ["planning", "phase", "roadmap", "enhancement", "architecture"]
 ---
 
-# Planning Prompts
+# Planning
 
 ## A. Prompt for Implementation Planning
 

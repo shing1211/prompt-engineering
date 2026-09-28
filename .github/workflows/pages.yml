@@ -1,0 +1,70 @@
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prompts/**"
+      - "mkdocs.yml"
+      - ".markdownlint.yaml"
+      - "scripts/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+
+      - name: Install Material for MkDocs
+        run: pip install -r requirements-docs.txt
+
+      - name: Verify generators are current
+        # A stale prompts/index.md means the published counts would not
+        # match the files on disk.
+        run: python3 scripts/generate_index.py --check
+
+      - name: Build site
+        # --strict turns warnings into errors, so a broken nav reference or
+        # a missing page fails the deploy instead of shipping silently.
+        run: mkdocs build --strict
+
+      - name: Check internal links
+        run: python3 scripts/check_links.py
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

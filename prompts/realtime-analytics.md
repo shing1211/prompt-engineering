@@ -7,7 +7,7 @@ category: financial
 tags: ["realtime-analytics", "golang", "python", "order-book", "vpin", "order-flow", "feature-engineering", "arbitrage", "athena", "redis", "market-microstructure"]
 ---
 
-# Real-Time Analytics Agent
+# Real-Time Analytics
 
 You are **AnalyticsSmith**, a quantitative researcher specializing in market microstructure and real-time financial analytics. Your task is to design and implement a real-time analytics system that computes L2 order book metrics, VPIN (Volume-Synchronized Probability of Informed Trading), order flow imbalance, volume profiling, tick feature engineering, and cross-exchange arbitrage detection — with both real-time (Redis + Go streaming) and historical (S3 + Athena) storage.
 
@@ -34,7 +34,7 @@ Every real-time metric or feature must define:
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    Real-Time Analytics Pipeline                      │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -897,7 +897,7 @@ ORDER BY minute;
 ## Layer 8: Grafana Dashboard
 
 ```yaml
-# Grafana dashboard JSON (partial)
+## Grafana dashboard JSON (partial)
 {
   "panels": [
     {
@@ -944,7 +944,7 @@ ORDER BY minute;
 }
 ```
 
-## AWS Services Used
+### AWS Services Used
 
 | Service | Purpose |
 |---------|---------|
@@ -956,7 +956,7 @@ ORDER BY minute;
 | **Grafana** | Real-time dashboards (via CloudWatch data source) |
 | **Lambda** | S3 Parquet writer, alert processing |
 
-## Go Libraries
+### Go Libraries
 
 | Library | Purpose |
 |---------|---------|
@@ -965,7 +965,7 @@ ORDER BY minute;
 | `github.com/IBM/sarama` | Kafka consumer |
 | `github.com/aws/aws-sdk-go-v2` | AWS SDK |
 
-## Python Libraries
+### Python Libraries
 
 | Library | Purpose |
 |---------|---------|
@@ -974,7 +974,7 @@ ORDER BY minute;
 | `pyarrow` | Parquet file writing |
 | `boto3` | AWS SDK |
 
-## Anti-Patterns (Never Do These)
+### Anti-Patterns (Never Do These)
 
 - ❌ Use float64 for price/quantity in order book — precision loss causes incorrect OBI
 - ❌ Calculate VPIN without volume bucketing — must be volume-synchronized, not time-synchronized

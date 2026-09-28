@@ -14,15 +14,15 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 
 ---
 
-# Full-Lifecycle Engineering Blueprint
+## Full-Lifecycle Engineering Blueprint
 
-## 1. Architecture & Design Patterns
+### 1. Architecture & Design Patterns
 * **Clean Architecture & Domain-Driven Design (DDD):** Separate concerns strictly across Domain Models (`/pkg/domain`), Use Cases/Services (`/pkg/services`), Transport/Client Adapters (`/pkg/transport`), and Errors (`/pkg/errors`). Keep IBKR wire DTOs separate from stable public domain types.
 * **Dependency Injection:** Utilize manual or compile-time dependency injection. Inject HTTP transports, clocks, credential providers, WebSocket dialers, retry policies, and loggers; avoid service locators and global mutable state.
 * **Concurrency & Safety:** Enforce context propagation (`context.Context`), one reader and one writer per WebSocket connection, explicit cancellation, bounded event channels, and race-free session/account state managers. Never let a slow consumer block protocol heartbeats or order acknowledgements.
 * **Idempotent workflows:** Require client order identifiers and reconciliation before retrying order placement. Model order submission as an explicit state machine so transport retries cannot silently create duplicate orders.
 
-## 2. Core Technical Specifications (IBKR Web API Domain)
+### 2. Core Technical Specifications (IBKR Web API Domain)
 * **Authentication and session security:** Support Client Portal Gateway/session authentication, secure cookie and CSRF-token handling, configurable session validation, reauthentication detection, and pluggable credential providers. Keep secrets out of logs, traces, URLs, and persisted event payloads. Support OAuth 1.0a signing only where the selected IBKR Web API deployment requires it; do not apply HMAC signing generically to Client Portal Gateway requests.
 * **REST:** Build a context-aware HTTP client with custom transport tuning, connection reuse, deadlines, response-size limits, structured error decoding, and exponential backoff with full jitter for transient failures, HTTP 429 pacing responses, and eligible 5xx responses. Never automatically retry non-idempotent order requests without reconciliation.
 * **WebSocket:** Implement authenticated Client Portal WebSocket streaming with subscription tracking, heartbeat handling, reconnect backoff, resubscription, sequence/gap detection where available, bounded fan-out, and clean shutdown. Normalize account, order, execution, portfolio, and market-data events into typed domain events.
@@ -31,7 +31,7 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Account and portfolio:** Cover accounts, balances, margin, positions, ledger data, open orders, executions, and portfolio updates. Represent account values and quantities using `github.com/shopspring/decimal`; use explicit enums and nullable values for fields that IBKR can omit or encode as strings.
 * **Financial precision:** Strictly forbid native `float64` for money, prices, quantities, rates, margin, Greeks, and balances. Mandate `github.com/shopspring/decimal` or a reviewed fixed-point type for financial values, with explicit scale and rounding policies.
 
-## 3. Testing Methodology & Quality Assurance
+### 3. Testing Methodology & Quality Assurance
 * **Test coverage & types:**
   * Use table-driven unit tests for authentication/session handling, request encoding, contract qualification, decimal parsing, order validation, retry classification, event normalization, and state reconciliation.
   * Build integration-test skeletons with `httptest.Server`, a deterministic WebSocket test server, and injectable fake clocks/dialers. Tests must not require live IBKR credentials.
@@ -40,7 +40,7 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Concurrency and resilience:** Run all tests under `go test -race`, test reconnect storms, heartbeat timeouts, slow consumers, cancellation during writes, duplicate events, out-of-order updates, and bounded queue behavior.
 * **Golden and property tests:** Use versioned golden payloads for representative IBKR responses and property-based tests for idempotency keys, order-state transitions, pagination, and retry policy decisions.
 
-## 4. DevOps, CI/CD, and Automation
+### 4. DevOps, CI/CD, and Automation
 * **GitHub Actions Workflows:**
   * Run formatting, unit/integration tests, race detection, coverage thresholds, and static analysis on every change.
   * Use `golangci-lint` with strict linters including `gosec`, `govet`, `errcheck`, `ineffassign`, `revive`, and relevant error-wrapping and context checks.
@@ -49,41 +49,41 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Cross-compilation & releases:** Configure multi-architecture builds (`linux/amd64`, `linux/arm64`, `darwin/arm64`, and Windows where supported) using GoReleaser. Publish checksums, provenance, and signed release artifacts.
 * **Semantic Versioning:** Follow SemVer, document IBKR API compatibility and breaking changes, and maintain migration notes for domain model or wire-protocol changes.
 
-## 5. Observability, Logging, and Diagnostics
+### 5. Observability, Logging, and Diagnostics
 * **Structured logging:** Use `log/slog` with redaction, immutable correlation IDs, account-safe metadata, event type, conid, order ID, attempt number, latency, and connection state. Never log credentials, cookies, CSRF tokens, raw authorization headers, or unrestricted broker payloads.
 * **Distributed tracing & metrics:** Add OpenTelemetry hooks around outbound REST calls, WebSocket lifecycle transitions, event decoding, order reconciliation, and subscription changes. Export request latency, retry counts, pacing responses, reconnects, heartbeat failures, dropped events, queue depth, and order lifecycle durations.
 * **Operational diagnostics:** Provide health/readiness checks that distinguish transport availability, authenticated session validity, market-data authorization, and trading readiness. Include safe redacted diagnostics for support investigations.
 
-## 6. Documentation & Developer Experience (DX)
+### 6. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Write comprehensive comments for all exported types, functions, interfaces, options, errors, and packages. Explain session ownership and order retry semantics in public APIs.
 * **Architecture documentation:** Include `README.md` and `docs/` material with text-based architecture diagrams, Client Portal Gateway setup, Web API environment configuration, session renewal behavior, permissions, pacing limits, risk controls, and secure deployment guidance.
 * **Runnable examples:** Provide examples under `/examples/` covering session setup, contract qualification, account/portfolio streaming, market-data subscriptions, previewing and placing an idempotent order, bracket/OCA workflows, cancellation, and reconciliation. Examples must default to paper trading or dry-run mode and clearly require explicit live-trading opt-in.
 
 ---
 
-# Sequential Execution Phases
+## Sequential Execution Phases
 
 Execute this engineering project sequentially through the following phases:
 
-## Phase 1: Architecture, Domain Modeling, and Session Security
+### Phase 1: Architecture, Domain Modeling, and Session Security
 1. Establish the clean repository layout (`/cmd`, `/pkg/domain`, `/pkg/client`, `/pkg/marketdata`, `/pkg/trading`, `/pkg/account`, `/pkg/portfolio`, `/pkg/transport`, `/internal/auth`).
 2. Define domain models, enums, nullable fields, typed IDs, decimal-backed financial values, standardized custom errors, and wire-to-domain mappers.
 3. Implement Client Portal Gateway/session authentication, secure cookie and CSRF handling, session validation, credential-provider interfaces, and configurable paper/live environments. Add OAuth 1.0a support only behind an explicit deployment adapter when required.
 4. Set up `golangci-lint`, `govulncheck`, coverage/race targets, Makefile commands, and a no-live-credentials test configuration.
 
-## Phase 2: REST Client, Contracts, Accounts, and Trading Services
+### Phase 2: REST Client, Contracts, Accounts, and Trading Services
 1. Build the HTTP transport layer with deadlines, response limits, pacing-aware retry logic, structured errors, redaction, and request correlation.
 2. Implement contract search/qualification, market-data snapshots, accounts, balances, margin, positions, portfolio, orders, executions, previews, cancellation, replacement, and reconciliation services.
 3. Add explicit order validation for account, conid, quantity, price, side, order type, time in force, trading session, permissions, and idempotency/retry rules.
 4. Write robust table-driven tests and mock-server integration suites for success, validation failures, pacing responses, expired sessions, malformed payloads, and duplicate-order recovery.
 
-## Phase 3: Real-Time WebSocket Event Engine
+### Phase 3: Real-Time WebSocket Event Engine
 1. Build the WebSocket connection manager with authenticated session checks, heartbeat handling, reconnect state machines, subscription registries, and controlled resubscription.
 2. Implement typed parsers and normalizers for market data, order status, executions, account updates, portfolio updates, and system messages. Handle fragmented, duplicated, delayed, and unknown events safely.
 3. Add bounded fan-out, backpressure policy, sequence/gap monitoring, event persistence hooks, and reconciliation triggers after reconnects.
 4. Write deterministic integration, race, cancellation, reconnect, and fuzz tests for event deserialization and stream lifecycle behavior.
 
-## Phase 4: DevOps, Observability, and Production Hardening
+### Phase 4: DevOps, Observability, and Production Hardening
 1. Integrate `log/slog`, redaction, OpenTelemetry tracing, metrics, health checks, and safe diagnostic reports.
 2. Construct GitHub Actions CI/CD workflows for linting, dependency and secret scanning, security scanning (`govulncheck`, `gosec`), coverage, race testing, cross-platform builds, and GoReleaser releases.
 3. Perform threat modeling and failure-injection tests for session theft, credential leakage, replayed requests, duplicate orders, reconnect storms, pacing exhaustion, stale data, and partial outages.
@@ -91,7 +91,7 @@ Execute this engineering project sequentially through the following phases:
 
 ---
 
-## Cross-Cutting Delivery Contract
+### Cross-Cutting Delivery Contract
 
 Apply these gates to the IBKR SDK:
 

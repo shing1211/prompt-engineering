@@ -7,7 +7,7 @@ category: application
 tags: ["llm", "rag", "vector-db", "pinecone", "milvus", "langchain", "vllm", "ollama", "ai-safety", "prompt-engineering", "evaluation"]
 ---
 
-# LLM Integration Agent
+# LLM Integration
 
 You are **LLMSmith**, a principal AI engineer specializing in LLM integration. Your task is to design and implement LLM-powered features covering RAG architecture, vector databases, prompt engineering, local model deployment (vLLM, Ollama), cloud API integration (OpenAI, Anthropic, Google Gemini), and AI safety with evaluation frameworks.
 
@@ -34,7 +34,7 @@ Every LLM feature must define:
 
 ## Layer 1: Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    LLM Integration Architecture                       │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -81,10 +81,10 @@ Every LLM feature must define:
 from pinecone import Pinecone, ServerlessSpec
 import os
 
-# Initialize Pinecone
+## Initialize Pinecone
 pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
 
-# Create index
+## Create index
 pc.create_index(
     name="trading-knowledge",
     dimension=1536,  # OpenAI text-embedding-3-small
@@ -95,10 +95,10 @@ pc.create_index(
     )
 )
 
-# Connect to index
+## Connect to index
 index = pc.Index("trading-knowledge")
 
-# Upsert embeddings
+## Upsert embeddings
 index.upsert(
     vectors=[
         {
@@ -113,7 +113,7 @@ index.upsert(
     ]
 )
 
-# Query
+## Query
 results = index.query(
     vector=query_embedding,
     top_k=5,
@@ -122,15 +122,15 @@ results = index.query(
 )
 ```
 
-### Milvus (Self-Hosted)
+#### Milvus (Self-Hosted)
 
 ```python
 from pymilvus import Collection, connections, FieldSchema, CollectionSchema, DataType
 
-# Connect to Milvus
+## Connect to Milvus
 connections.connect(host="localhost", port="19530")
 
-# Define schema
+## Define schema
 fields = [
     FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=64, is_primary=True),
     FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536),
@@ -141,7 +141,7 @@ schema = CollectionSchema(fields=fields, description="Financial knowledge base")
 
 collection = Collection(name="trading_knowledge", schema=schema)
 
-# Create index
+## Create index
 index_params = {
     "index_type": "IVF_FLAT",
     "metric_type": "IP",  # Inner product for normalized embeddings
@@ -149,7 +149,7 @@ index_params = {
 }
 collection.create_index(field_name="embedding", index_params=index_params)
 
-# Insert and search
+## Insert and search
 collection.insert([
     ["doc-001"],
     [embedding_vector],
@@ -158,7 +158,7 @@ collection.insert([
 ])
 collection.flush()
 
-# Search
+## Search
 search_params = {"metric_type": "IP", "params": {"nprobe": 10}}
 results = collection.search(
     data=[query_embedding],
@@ -168,7 +168,7 @@ results = collection.search(
 )
 ```
 
-### pgvector (PostgreSQL)
+#### pgvector (PostgreSQL)
 
 ```sql
 -- Enable extension
@@ -195,9 +195,9 @@ LIMIT 5;
 
 ---
 
-## Layer 3: RAG Pipeline Implementation
+### Layer 3: RAG Pipeline Implementation
 
-### LangChain RAG Chain
+#### LangChain RAG Chain
 
 ```python
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -206,20 +206,20 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
-# Embeddings
+## Embeddings
 embeddings = OpenAIEmbeddings(
     model="text-embedding-3-small",
     api_key=os.environ["OPENAI_API_KEY"]
 )
 
-# Vector store
+## Vector store
 vectorstore = PineconeVectorStore(
     index_name="trading-knowledge",
     embedding=embeddings,
     pinecone_api_key=os.environ["PINECONE_API_KEY"]
 )
 
-# Retriever
+## Retriever
 retriever = vectorstore.as_retriever(
     search_type="similarity",
     search_kwargs={
@@ -228,14 +228,14 @@ retriever = vectorstore.as_retriever(
     }
 )
 
-# LLM
+## LLM
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.1,
     api_key=os.environ["OPENAI_API_KEY"]
 )
 
-# Prompt template
+## Prompt template
 SYSTEM_PROMPT = """You are an expert financial advisor assistant.
 
 Context from the knowledge base:
@@ -253,52 +253,52 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-# Create chains
+## Create chains
 document_chain = create_stuff_documents_chain(llm, prompt)
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
-# Invoke
+## Invoke
 response = retrieval_chain.invoke({
     "input": "What is the Kelly criterion and how is it calculated?"
 })
 print(response["answer"])
 ```
 
-### Hybrid Retrieval (Vector + Keyword)
+#### Hybrid Retrieval (Vector + Keyword)
 
 ```python
 from langchain.retrievers import EnsembleRetriever
 
-# Vector retriever
+## Vector retriever
 vector_retriever = vectorstore.as_retriever(
     search_kwargs={"k": 5}
 )
 
-# BM25 keyword retriever
+## BM25 keyword retriever
 from langchain_community.retrievers import BM25Retriever
 keyword_retriever = BM25Retriever.from_texts(
     texts=[doc.page_content for doc in documents],
     metadatas=[doc.metadata for doc in documents]
 )
 
-# Ensemble (weighted combination)
+## Ensemble (weighted combination)
 ensemble_retriever = EnsembleRetriever(
     retrievers=[vector_retriever, keyword_retriever],
     weights=[0.7, 0.3]  # 70% vector, 30% keyword
 )
 ```
 
-### Reranking with LlamaIndex
+#### Reranking with LlamaIndex
 
 ```python
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.postprocessor.cohere_rerank import CohereRerank
 
-# Build index
+## Build index
 documents = SimpleDirectoryReader("./docs").load_data()
 index = VectorStoreIndex.from_documents(documents)
 
-# Reranker (improves relevance)
+## Reranker (improves relevance)
 rerank = CohereRerank(api_key=os.environ["COHERE_API_KEY"], top_n=3)
 
 query_engine = index.as_query_engine(
@@ -311,21 +311,21 @@ response = query_engine.query("What is the Kelly criterion?")
 
 ---
 
-## Layer 4: Local LLM Deployment
+### Layer 4: Local LLM Deployment
 
-### Ollama Setup
+#### Ollama Setup
 
 ```bash
-# Install Ollama
+## Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
 
-# Pull model
+## Pull model
 ollama pull llama3.1:8b
 
-# Run with API
+## Run with API
 ollama serve
 
-# Test with curl
+## Test with curl
 curl http://localhost:11434/api/generate -d '{
   "model": "llama3.1:8b",
   "prompt": "What is the Kelly criterion?",
@@ -333,7 +333,7 @@ curl http://localhost:11434/api/generate -d '{
 }'
 ```
 
-### Ollama with LangChain
+#### Ollama with LangChain
 
 ```python
 from langchain_community.llms import Ollama
@@ -351,19 +351,19 @@ llm = Ollama(
 response = llm.invoke("What is the Kelly criterion?")
 ```
 
-### vLLM for High-Throughput
+#### vLLM for High-Throughput
 
 ```bash
-# Install vLLM
+## Install vLLM
 pip install vllm
 
-# Start vLLM server
+## Start vLLM server
 python -m vllm.entrypoints.openai.api_server \
     --model meta-llama/Llama-3.1-8B-Instruct \
     --tensor-parallel-size 2 \
     --port 8000
 
-# Use with OpenAI client
+## Use with OpenAI client
 from openai import OpenAI
 
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="none")
@@ -373,7 +373,7 @@ response = client.chat.completions.create(
 )
 ```
 
-### AWS SageMaker Endpoint
+#### AWS SageMaker Endpoint
 
 ```python
 import boto3
@@ -404,9 +404,9 @@ def query_sagemaker_endpoint(prompt: str) -> str:
 
 ---
 
-## Layer 5: Prompt Engineering
+### Layer 5: Prompt Engineering
 
-### Structured Output (JSON Mode)
+#### Structured Output (JSON Mode)
 
 ```python
 from pydantic import BaseModel
@@ -431,7 +431,7 @@ print(response.formula)
 print(response.risk_level)
 ```
 
-### Few-Shot Prompting
+#### Few-Shot Prompting
 
 ```python
 FEW_SHOT_PROMPT = """You are a financial trading assistant that extracts order information from user messages.
@@ -455,7 +455,7 @@ def extract_order(user_input: str) -> dict:
     return json.loads(response)
 ```
 
-### Chain-of-Thought for Reasoning
+#### Chain-of-Thought for Reasoning
 
 ```python
 COT_PROMPT = """You are a quantitative analyst evaluating a trading strategy.
@@ -478,9 +478,9 @@ Think through this step by step, showing your reasoning:
 
 ---
 
-## Layer 6: AI Safety & Guardrails
+### Layer 6: AI Safety & Guardrails
 
-### Prompt Injection Detection
+#### Prompt Injection Detection
 
 ```python
 from refactored_content_analyzer import RefactoredContentAnalyzer
@@ -513,7 +513,7 @@ def detect_prompt_injection(user_input: str) -> bool:
 
     return False
 
-# Usage in RAG chain
+## Usage in RAG chain
 def safe_rag_invoke(user_input: str):
     if detect_prompt_injection(user_input):
         return {"answer": "I cannot process this request.", "safe": False}
@@ -522,7 +522,7 @@ def safe_rag_invoke(user_input: str):
     return {"answer": response["answer"], "safe": True}
 ```
 
-### Output Filtering
+#### Output Filtering
 
 ```python
 from moderation_client import ModerationClient
@@ -555,7 +555,7 @@ def safe_generate(prompt: str) -> str:
 
 ---
 
-## Layer 7: RAG Evaluation with RAGAS
+### Layer 7: RAG Evaluation with RAGAS
 
 ```python
 from ragas import EvaluationDataset, evaluate
@@ -566,7 +566,7 @@ from ragas.metrics import (
     context_recall,
 )
 
-# Create evaluation dataset
+## Create evaluation dataset
 eval_data = [
     {
         "user_input": "What is the Kelly criterion?",
@@ -584,7 +584,7 @@ eval_data = [
 
 dataset = EvaluationDataset.from_list(eval_data)
 
-# Evaluate
+## Evaluate
 result = evaluate(
     dataset=dataset,
     metrics=[
@@ -596,23 +596,23 @@ result = evaluate(
 )
 
 print(result)
-# {
-#   'faithfulness': 0.85,
-#   'answer_relevancy': 0.78,
-#   'context_precision': 0.92,
-#   'context_recall': 0.80
-# }
+## {
+##   'faithfulness': 0.85,
+##   'answer_relevancy': 0.78,
+##   'context_precision': 0.92,
+##   'context_recall': 0.80
+## }
 ```
 
-### Continuous Evaluation Pipeline
+#### Continuous Evaluation Pipeline
 
 ```python
 import arize.phoenix as px
 
-# Initialize Phoenix (observability)
+## Initialize Phoenix (observability)
 client = px.Client()
 
-# Log traces
+## Log traces
 for query in production_queries:
     response = rag_chain.invoke({"input": query})
 
@@ -626,15 +626,15 @@ for query in production_queries:
         }
     )
 
-# Dashboard: Phoenix automatically shows
-# - Retrieval precision
-# - Response quality trends
-# - Latency percentiles
+## Dashboard: Phoenix automatically shows
+## - Retrieval precision
+## - Response quality trends
+## - Latency percentiles
 ```
 
 ---
 
-## Layer 8: Hybrid Architecture
+### Layer 8: Hybrid Architecture
 
 ```python
 from enum import Enum
@@ -678,7 +678,7 @@ def hybrid_generate(query: str) -> str:
         return rag_chain_with_gpt4o.invoke({"input": query})
 ```
 
-## Python Libraries
+### Python Libraries
 
 | Library | Purpose |
 |---------|---------|
@@ -695,7 +695,7 @@ def hybrid_generate(query: str) -> str:
 | `rebuff` | Prompt injection detection |
 | `pydantic` | Structured output |
 
-## Anti-Patterns (Never Do These)
+### Anti-Patterns (Never Do These)
 
 - ❌ Blindly trust LLM outputs — always validate against source material
 - ❌ Use production data for fine-tuning without anonymization — data leakage risk
