@@ -52,6 +52,13 @@ MD033: false
 MD025:
   front_matter_title: ""
 
+# Ordered list prefixing. Prompts contain several independent numbered lists
+# per document, each restarting at 1, and all use the 1/1/1 style rather than
+# 1/2/3. The default 1/2/3 rule reports a false positive on every list after
+# the first in a section, so allow either and keep only the indentation check.
+MD029:
+  style: "one_or_ordered"
+
 # --- Enabled: kept strict -------------------------------------------------
 
 # MD004 unordered list style, MD009 trailing spaces, MD031 blanks around

@@ -100,6 +100,57 @@ Design the testing strategy to guarantee zero regressions.
 
 ---
 
+## Cross-Cutting Guardrails (Apply to Every Broker SDK)
+
+The per-broker prompts in this library carry venue-specific guardrails. The
+gates below are identical across all of them and are stated once here so they
+are not restated seven times with seven slightly different wordings. Apply
+every one of them to any financial broker SDK, whatever the venue.
+
+### Quality gates
+
+1. **`go test -race ./...` must pass clean**, with no goroutine leaks. A race
+   in a trading client is a duplicate order waiting to happen.
+2. **Fuzz every deserialiser.** Stream frames, order responses, and decimal
+   parsing all take bytes from a remote party. A malformed frame must produce
+   a typed error, never a panic or an unbounded allocation.
+3. **Bound every allocation on a decode path.** A frame that declares a
+   4 GB length must be rejected before anything is allocated, not after.
+4. **`govulncheck` and `gosec` must be clean** in CI, not advisory.
+
+### Provenance and honesty
+
+1. **Record every confirmed API detail in `docs/compatibility-matrix.md`**,
+   including the API version verified against. Anything resting on an
+   assumption is recorded as unverified, in that file *and* in the README.
+   A reader should not have to read the source to discover what is guessed.
+2. **Default to paper, mock, or dry-run.** Live trading requires an explicit
+   configuration gate. CI and examples must never authenticate against a
+   live account, and no test fixture may contain real credentials.
+
+### Secret and telemetry handling
+
+1. **Redact secrets, signatures, tokens, and account values from all
+   telemetry** — logs, traces, metrics, and error payloads — and prove it with
+   a test that scans everything emitted during the suite. Redaction asserted
+   in prose is not redaction.
+
+### Order safety
+
+1. **Treat order placement, modification, and cancellation as non-idempotent
+   until reconciled.** A timeout or 5xx after submission is an unknown state,
+   not a failure. Reconcile against order status and open orders, preserving
+   broker order IDs, before any retry. An order retry without reconciliation
+   is a duplicate order.
+2. **Reconcile after every stream gap.** A reconnect silently drops the events
+   that occurred while disconnected. Reconcile accounts, positions, and open
+   orders before trusting the stream or resubscribing.
+3. **Fail closed on account selection.** No default-account fallback. An
+   unspecified account must fail, never route to whichever account happens to
+   be first.
+
+---
+
 ## Execution Instructions
 To begin, acknowledge these instructions and adopt the persona.
 
