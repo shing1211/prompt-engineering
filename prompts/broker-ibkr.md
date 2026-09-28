@@ -54,7 +54,74 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Distributed tracing & metrics:** Add OpenTelemetry hooks around outbound REST calls, WebSocket lifecycle transitions, event decoding, order reconciliation, and subscription changes. Export request latency, retry counts, pacing responses, reconnects, heartbeat failures, dropped events, queue depth, and order lifecycle durations.
 * **Operational diagnostics:** Provide health/readiness checks that distinguish transport availability, authenticated session validity, market-data authorization, and trading readiness. Include safe redacted diagnostics for support investigations.
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Hardcode the Client Portal base URL as a remote host.** The API is a
+  local bridge at `https://localhost:5000` reached through TWS or IB Gateway.
+  Pointing a deployment at a remote "Client Portal" host produces a client
+  that cannot work, and encourages shipping a bridge where a hosted API is
+  assumed.
+* ❌ **Treat live and paper as separable at the client layer.** The API
+  mirrors whichever account the local session is logged into. Gate on the
+  account type you actually observe, and refuse to trade until you have
+  asserted it.
+* ❌ **Assume the session outlives the TWS process.** A TWS restart, a
+  gateway login by another process, or a session expiry invalidates
+  everything. Detect reauthentication from the response, not from a timer.
+* ❌ **Retry a failed order request because the HTTP call errored.** A timeout
+  or 5xx after submission is an unknown order state. Reconcile against order
+  status and open orders before any retry.
+* ❌ **Apply HMAC signing to Client Portal requests.** Client Portal Gateway
+  is session and cookie based. OAuth 1.0a signing belongs to a different IBKR
+  product. Copying one deployment's auth into another produces a client that
+  authenticates against nothing.
+* ❌ **Use the ticker as a contract identity.** `conid` is canonical and must
+  come from contract search and qualification. Ticker strings are not unique
+  across venues, asset classes, or option expiries.
+* ❌ **Retry on HTTP 429 without a pacing budget.** IBKR's pacing violations
+  escalate and eventually lock the account. Honour the response, back off,
+  and record the violation rather than looping.
+* ❌ **Resubscribe on reconnect without reconciling first.** A reconnect
+  silently drops the events that happened while disconnected. Reconcile
+  positions, balances, and open orders before trusting the stream again.
+* ❌ **Log cookies, CSRF tokens, or account values.** They are credentials or
+  financial data. Redact them in logs, traces, metrics, and error payloads.
+* ❌ **Report production-readiness with unverified behaviour undocumented.**
+  Where the Web API contract could not be confirmed, say so explicitly in
+  `docs/compatibility-matrix.md` rather than implying support.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Confirm every API claim against IBKR's current documentation**
+   (<https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/>),
+   and record anything unresolved in `docs/compatibility-matrix.md`. Record
+   the gateway/API version the SDK was verified against.
+2. **Assert account type before the first order.** Read the account, confirm
+   it is the intended type, and fail closed if the account type cannot be
+   determined.
+3. **Prove the session lifecycle.** Test expiry, concurrent-session takeover,
+   TWS restart mid-stream, and reauthentication detection. Each must produce
+   a clear state, never a silent success.
+4. **Prove order safety under ambiguity.** Inject timeouts and 5xx after
+   submission and assert the client reconciles rather than retries. Client
+   order IDs and IBKR order IDs must survive the round trip.
+5. **Prove pacing behaviour.** Saturate the request path and assert the
+   client honours 429, backs off, and surfaces the violation instead of
+   hiding it.
+6. **Run the standard quality gates** — `go test -race ./...` clean, fuzz
+   targets over WebSocket frame deserialisation, `govulncheck`, `gosec`, and
+   bounded response/frame allocation on every decode path.
+7. **Prove redaction.** Assert that no log, trace, or metric emitted during
+   the test suite contains a cookie, CSRF token, or account value.
+8. **Prove the reconnect path.** Kill the stream mid-session and assert the
+   client resubscribes only after reconciling accounts, positions, and open
+   orders.
+9. **Default to paper or mock.** Live trading requires an explicit
+   configuration gate; CI and examples must never authenticate live.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Write comprehensive comments for all exported types, functions, interfaces, options, errors, and packages. Explain session ownership and order retry semantics in public APIs.
 * **Architecture documentation:** Include `README.md` and `docs/` material with text-based architecture diagrams, Client Portal Gateway setup, Web API environment configuration, session renewal behavior, permissions, pacing limits, risk controls, and secure deployment guidance.
 * **Runnable examples:** Provide examples under `/examples/` covering session setup, contract qualification, account/portfolio streaming, market-data subscriptions, previewing and placing an idempotent order, bracket/OCA workflows, cancellation, and reconciliation. Examples must default to paper trading or dry-run mode and clearly require explicit live-trading opt-in.
