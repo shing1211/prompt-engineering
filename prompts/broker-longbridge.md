@@ -51,7 +51,75 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Tracing and metrics:** Add OpenTelemetry hooks around outbound REST calls, WebSocket lifecycle transitions, event decoding, order reconciliation, and subscription changes. Export request latency, retries, rate-limit responses, reconnects, heartbeat failures, dropped events, stale-data counts, queue depth, and order lifecycle durations.
 * **Operational diagnostics:** Provide health/readiness checks that distinguish transport availability, token validity, quote entitlements, trade readiness, and stream freshness. Include safe redacted diagnostics for support investigations.
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Implement HMAC request signing as the primary auth path.** Longbridge's
+  current default is OAuth 2.0 with a bearer token. API-key signature auth
+  exists as a legacy fallback. Building HMAC-first produces a client that
+  authenticates against a path the API no longer prefers, and against
+  invented header names if the details are guessed.
+* ❌ **Treat the quote and trade WebSocket hosts as one endpoint.** They are
+  separate hosts with separate authentication. A single combined client
+  either reconnects to the wrong host or loses one stream on failure.
+* ❌ **Ignore the access point versus data centre distinction.** `.com` and
+  `.cn` are routing only and share auth; the data centre (`ap` versus `us`)
+  decides which US-only APIs exist. Freezing the wrong pair in configuration
+  produces calls that fail only for some accounts.
+* ❌ **Refresh the access token without coordinating in-flight requests.** A
+  refresh racing an active WebSocket or request burst can invalidate a token
+  the client is still using. Serialize refresh and reauthenticate dependent
+  streams deliberately.
+* ❌ **Exceed the per-account subscription cap silently.** One quote connection
+  per account with a bounded symbol cap means the overflow is dropped, not
+  rejected with a clear error. Track the cap and surface what was refused.
+* ❌ **Parse market-qualified symbols as plain strings.** `HK.00700` and
+  `US.AAPL` encode exchange and market. Splitting on a delimiter at the call
+  site produces wrong lot size, tick size, and session for the wrong venue.
+* ❌ **Treat entitlement errors as transient.** Quote permission is a
+  subscription state, not a rate limit. Retrying it wastes the budget and
+  hides a real configuration problem.
+* ❌ **Apply L2 depth updates without gap detection.** A dropped update yields
+  a book that looks correct. Track sequence and freshness, and resnapshot on
+  discontinuity.
+* ❌ **Retry a failed trade request because the HTTP call errored.** A timeout
+  after submission is an unknown order state. Reconcile before retrying.
+* ❌ **Embed tokens in URLs, logs, or traces.** They are bearer credentials.
+  Redact them everywhere and keep them out of error payloads.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Confirm every API claim against Longbridge's current documentation**
+   (<https://open.longbridge.com/docs/getting-started>) and record the
+   access point, data centre, and quote permission level the SDK was verified
+   against in `docs/compatibility-matrix.md`.
+2. **Assert the auth scheme from the environment.** The client must state
+   whether it is using OAuth 2.0 or the legacy signature path, and refuse to
+   start if the configured scheme is not one the target deployment supports.
+3. **Prove token lifecycle.** Test expiry, concurrent refresh, refresh during
+   an active stream, and revoked authorisation. Each must produce a defined
+   state and a deliberate reauthentication, never a silent retry loop.
+4. **Prove stream separation.** Kill the quote connection and assert the
+   trade stream is unaffected, and the reverse. Neither may reconnect to the
+   other's host.
+5. **Prove subscription accounting.** Subscribe past the documented symbol cap
+   and assert the client reports what was refused instead of dropping it
+   quietly.
+6. **Prove order safety under ambiguity.** Inject a timeout after submission
+   and assert reconciliation by client and broker order ID rather than a
+   retry.
+7. **Prove the book under loss.** Inject gaps, duplicates, and out-of-order
+   depth updates and assert resnapshot on discontinuity.
+8. **Run the standard quality gates** — `go test -race ./...` clean, fuzz
+   targets over stream frame deserialisation, `govulncheck`, `gosec`, bounded
+   allocation on every decode path, and redaction of tokens and account
+   values from logs, traces, and metrics.
+9. **Default to paper or mock.** Longbridge provides paper trading with live
+   market data. Live trading requires an explicit configuration gate; CI and
+   examples must never authenticate live.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Document every exported type, function, interface, option, error, and package. Explain market-qualified symbols, token ownership, stream delivery, and order retry semantics.
 * **Architecture documentation:** Include `README.md` and `docs/` material with text-based architecture diagrams, Longbridge account and token setup, paper/live environment configuration, market permissions, rate limits, and risk controls.
 * **Runnable examples:** Provide `/examples/` for secure client setup, symbol and contract discovery, quote/depth streaming, account and portfolio queries, order preview/placement in paper mode, cancellation, amendment, and reconciliation. Live trading must require explicit opt-in.
