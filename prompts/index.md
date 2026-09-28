@@ -60,7 +60,7 @@ One prompt per broker, each a production Go SDK build — 7 prompt(s).
 | [`broker-longbridge.md`](broker-longbridge.md) — Longbridge SDK | build | Build a production-grade Go SDK for Longbridge OpenAPI (REST + WebSocket quotes and trading streams) with token security, multi-market trading, CI/CD, fuzz testing, and enterprise hardening |
 | [`broker-tiger.md`](broker-tiger.md) — Tiger Trade SDK | build | Build a production-grade Go SDK for Tiger Trade OpenAPI (REST + WebSocket market data and trading events) with private-key authentication, order safety, CI/CD, fuzz testing, and enterprise hardening |
 | [`broker-vbroker.md`](broker-vbroker.md) — Hua Sing Tong vbroker SDK | build | Build a production-grade Go SDK for Hua Sing Tong vbroker Open API (HMAC REST + WebSocket market data and trading events) with HK market support, order safety, CI/CD, fuzz testing, and enterprise hardening |
-| [`broker-webull.md`](broker-webull.md) — Webull SDK | build | Build a production-grade Go SDK for Webull HK OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening |
+| [`broker-webull.md`](broker-webull.md) — Webull SDK | build | Build a production-grade Go SDK for the Webull OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening |
 
 ### SDK Development
 

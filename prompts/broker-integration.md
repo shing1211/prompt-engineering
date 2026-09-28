@@ -472,42 +472,90 @@ func (asm *AWSSecretsManager) GetBrokerCredentials(ctx context.Context, broker B
 
 ## Layer 8: Per-Broker Adapter Implementation Guide
 
-### Longbridge Adapter
-- Endpoint: `https://openapi.longbridgeapp.com`
-- Auth: HMAC-SHA256 with `X-Broker-Id`, `X-Timestamp`, `X-Signature` headers
-- WebSocket: `wss://openapi.longbridgeapp.com/v1/ws`
-- Order types: Market, Limit, Stop, Stop-Limit
-- Market hours: HK 09:30-16:00 HKT, US 09:30-16:00 EST
+> **Verify before you build.** Endpoints, header names, and capability claims
+> below are a starting point recorded from vendor documentation, and broker
+> APIs change. Treat every value here as unconfirmed until you have checked
+> it against the vendor's current docs, linked in each entry. If a value
+> cannot be verified, say so in your output rather than implementing from
+> memory. A wrong header name produces an SDK that fails authentication
+> against a live account, and the failure will not look like a guess.
 
-### Tiger Adapter
-- Endpoint: `https://openapi.tigerbroker.com`
-- Auth: `Tiger-Open-API-Key` + `Tiger-Open-API-Secret` + `X-Signature` (HMAC-SHA256)
-- WebSocket: `wss://openapi.tigerbroker.com/ws`
-- Special: Requires `account` field in requests for multi-account routing
+### Longbridge
+- Docs: <https://open.longbridge.com/docs/getting-started> — verify all values below
+- HTTP API: `https://openapi.longbridge.com` (`.cn` for mainland China routing)
+- WebSocket: quotes `wss://openapi-quote.longbridge.com`, trade
+  `wss://openapi-trade.longbridge.com` — these are separate hosts, not one
+- Auth: **OAuth 2.0 is the current default**, using a client ID obtained via
+  dynamic client registration. API-key signature auth exists as a legacy
+  fallback. Do not assume HMAC is the primary scheme.
+- Rate limits (verify current values): one quote connection per account, up to
+  ~500 subscribed symbols, ~10 quote calls/sec, ≤5 concurrent requests
+- Watch: access point (`.com`/`.cn`, routing only) and data centre
+  (`ap`/`us`, decides which US-only APIs exist) are different concepts and
+  cannot be combined freely
 
-### Webull Adapter
-- Endpoint: `https://openapi.webull.com`
-- Auth: `Access token` + `Refresh token` (OAuth2-like flow)
-- MQTT: `tcp://mqtt.webull.com:1883` (market data)
-- Note: Webull does NOT support order cancellation via API — only via app
+### Tiger Trade
+- Docs: <https://docs-en.itigerup.com/docs/quickstart> — verify all values below
+- Endpoint: `openapi.tigerfintech.com` (SDK embeds this; no manual config)
+- Auth: **private-key signature**, not HMAC headers. You generate a key pair
+  in the Developer Center, download `tiger_openapi_config.properties`, and
+  the SDK signs with your private key. PKCS#8 is recommended.
+- OAuth 2.0 is available for individual users on recent SDK versions
+  (Python ≥ 3.8.0, Java ≥ 2.7.0) and requires no private key. Institutional
+  users must use signature auth.
+- Special: `account` is required on trade requests for multi-account routing.
+  Account formats differ — Global (`U12300123`), Prime (5–10 digits), Paper
+  (17 digits)
+- Watch: the private key is shown once on the Developer Center page and is
+  never stored server-side. Losing it means regenerating the pair.
+
+### Webull
+- Docs: <https://developer.webull.com/apis/docs/sdk> — verify all values below
+- HTTP: trading and market data on `api.webull.com`; order events over
+  gRPC on `events-api.webull.com`; data streaming on `data-api.webull.com`
+- Sandbox: `api.sandbox.webull.com` and the matching `*.sandbox.*` hosts
+- Auth: **dual layer** — an HMAC-SHA1 request signature from your App Key and
+  App Secret, plus a reusable access token for trading and account operations.
+  Note the signature is SHA1, not SHA256. Headers are `x-app-key` and
+  `x-signature`.
+- Everything over HTTPS
+- Watch: order cancellation **is** supported over the API. Earlier
+  documentation stated otherwise; the current API exposes order replace and
+  cancel endpoints alongside place. Verify against the current reference
+  rather than trusting either claim.
 
 ### IBKR Client Portal Web API
-- Endpoint: `https://localhost:5000` (requires running IBKR TWS or Gateway locally)
-- Auth: `Bearer JWT` obtained via `/v1/portal/iserver/auth/status`
-- WebSocket: `wss://localhost:5000/v1/portal/ws`
-- Important: Paper trading account requires separate auth
+- Docs: <https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/>
+- Endpoint: `https://localhost:5000` — requires TWS or IB Gateway running and
+  logged in locally
+- Auth: session-cookie based, established via
+  `/v1/portal/iserver/auth/status`
+- Important: the API mirrors whatever account TWS is logged into, so paper and
+  live are not separable at the client level. Gate on account type explicitly.
+- Watch: this is a local bridge, not a hosted API. It inherits TWS's
+  throttling and its outages.
 
-### Futu OpenD Adapter
-- Endpoint: `127.0.0.1:11111` (OpenD must be running locally)
-- Auth: TLS certificate (self-signed, approved in OpenD settings)
-- Protocol: Binary frame (not JSON) — proprietary Futu protocol
-- Market data: L2 via `PushOrderBookData` messages
+### Futu OpenD
+- Docs: <https://www.futunn.com/en/openapi>
+- Endpoint: `127.0.0.1:11111` — OpenD must be running locally
+- Auth: TLS certificate, self-signed and approved in OpenD settings
+- Protocol: **binary frames, not JSON** — a proprietary protocol. Never
+  infer field layouts from observed traffic; work from the published protocol
+  definition
+- Market data: L2 depth arrives as order-book push messages
 
-### vbroker (Hua Sing Tong) Adapter
-- Endpoint: `https://openapi.vbkr.com` (from vbkr.com/solve/open-api)
-- Auth: HMAC-SHA256 with `X-Vbroker-Id`, `X-Timestamp`, `X-Signature` headers
-- WebSocket: `wss://openapi.vbkr.com/v1/ws`
-- Note: Verify if WebSocket uses `token` auth after initial handshake
+### vbroker (Hua Sing Tong)
+- Docs: no public developer portal was locatable at time of writing
+- Endpoint: `https://openapi.vbkr.com` — host resolves, but the API surface
+  and header names are **unconfirmed**
+- Auth: reported as HMAC-SHA256 with `X-Vbroker-Id`, `X-Timestamp`,
+  `X-Signature`, but this has not been verified against vendor documentation.
+  Treat it as a hypothesis and confirm before implementing
+- WebSocket: reported as `wss://openapi.vbkr.com/v1/ws`; whether it reuses the
+  REST signature or switches to token auth after the handshake is unknown
+- This adapter is the least verified in the table. Confirm the contract with
+  the vendor directly, and record the answer in
+  `docs/compatibility-matrix.md`
 
 ---
 

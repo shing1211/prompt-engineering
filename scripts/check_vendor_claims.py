@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""Check that vendor-specific claims in the prompts are not stated as fact.
+
+The library's rule, in SECURITY.md, is that a prompt should "ground claims
+in something verifiable... if not sure, say to verify rather than instruct
+the agent to guess." That rule was being violated by the per-broker adapter
+table, which asserted auth header names and endpoints with no provenance
+note, three of which were wrong.
+
+This check is deliberately narrow. It cannot verify that a documented URL is
+still correct without network access, and it cannot check that a stated
+algorithm matches the vendor. What it can do is catch the failure mode
+itself: a prompt that hard-codes broker auth internals without anywhere
+telling the reader to confirm them first.
+
+Rules:
+
+  1. If a prompt asserts a broker auth header, endpoint, or digest
+     algorithm, it must carry an explicit verification instruction.
+  2. An unverified vendor claims nothing at all: no public portal, and the
+     prompt must say so.
+
+Exits 0 when clean, 1 on drift.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+PROMPTS = Path("prompts")
+
+# Claims that must never be presented as settled fact without a
+# verification instruction somewhere in the same file.
+CLAIM_PATTERNS = [
+    r"\bX-[A-Z][A-Za-z]*-Id\b",              # X-Broker-Id, X-Vbroker-Id, ...
+    r"\bHMAC-SHA256\b",
+    r"\bHMAC-SHA1\b",
+    r"\bopenapi\.[a-z0-9.-]+",
+    r"\bwss://[a-z0-9.-]+",
+    r"\bTiger-Open-API-Key\b",
+    r"\blocalhost:\d+",                     # local gateways: IBKR, Futu OpenD
+    r"\b127\.0\.0\.1:\d+",
+    r"\bBearer JWT\b",
+    r"/v\d+/portal/",
+    r"\bPushOrderBookData\b",
+    r"\bx-app-key\b",
+    r"\bx-signature\b",
+]
+
+# Wording that discharges the requirement.
+VERIFY_PATTERNS = [
+    r"\bverif(?:y|ied|ication)\b",
+    r"\bconfirm(?:ed|ation)?\b",
+    r"\buntil verified\b",
+    r"\bauthoritative\b",
+    r"\bdo not assume\b",
+    r"\btreat .{0,40}as (?:a )?hypothes[ie]s\b",
+    r"\bnot confirmed\b",
+    r"\bleast-documented\b",
+    r"\bunconfirmed\b",
+    r"\bread .{0,30}from the vendor\b",
+]
+
+# Vendor domains we can cite as a source, meaning a verification instruction
+# is only useful if it points somewhere. Files matching this are exempt from
+# the "must cite a doc" expectation but still need the verify wording.
+DOCS_PRESENT = re.compile(r"https://(?:open\.longbridge|docs-en\.itigerup|developer\.webull|www\.futunn|www\.interactivebrokers)[a-z0-9./-]*")
+
+BROKER_PROMPTS = sorted(PROMPTS.glob("broker-*.md"))
+
+
+def main() -> int:
+    problems: list[str] = []
+    checked = 0
+
+    for path in BROKER_PROMPTS:
+        text = path.read_text(encoding="utf-8")
+        body = text.split("\n---", 1)[-1]  # skip frontmatter
+        checked += 1
+
+        claims = []
+        for pattern in CLAIM_PATTERNS:
+            for match in re.finditer(pattern, body):
+                claims.append(match.group(0))
+        if not claims:
+            continue
+
+        has_verify = any(re.search(p, body, re.I) for p in VERIFY_PATTERNS)
+        if not has_verify:
+            problems.append(
+                f"{path.name}: asserts {sorted(set(claims))} with no "
+                f"verification instruction"
+            )
+            continue
+
+        # A verify instruction is only actionable if it names a source. Two
+        # exemptions: a file that declares itself a pattern library with no
+        # specific vendor, or one that declares the vendor contract
+        # unlocatable. Both are honest positions; silently omitting a source
+        # is not.
+        declares_generic = re.search(
+            r"not a vendor integration|pattern library", body, re.I
+        )
+        declares_unverified = re.search(
+            r"no public developer portal|least-documented", body, re.I
+        )
+        if not DOCS_PRESENT.search(body) and not (
+            declares_generic or declares_unverified
+        ):
+            problems.append(
+                f"{path.name}: tells the reader to verify but cites no "
+                f"vendor documentation URL"
+            )
+
+    print(f"checked {checked} broker prompts for unverified vendor claims")
+
+    for problem in problems:
+        print(f"  {problem}")
+
+    if problems:
+        print(
+            "\nBroker auth internals must carry an explicit instruction to "
+            "verify them against\ncurrent vendor documentation, and cite where "
+            "that documentation lives.",
+            file=sys.stderr,
+        )
+        return 1
+
+    print("every broker prompt that asserts vendor internals says to verify them")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,6 +1,6 @@
 ---
 title: Webull SDK
-description: Build a production-grade Go SDK for Webull HK OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening
+description: Build a production-grade Go SDK for the Webull OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening
 mode: build
 model: any
 category: broker-sdk
@@ -8,7 +8,7 @@ tags: ["sdk", "go", "webull", "mqtt", "grpc", "rest", "ci-cd", "fuzz-testing"]
 ---
 
 # Webull SDK
-You are a Principal Systems Architect, Elite Go Engineer, and Head of Infrastructure Engineering. Your task is to lead the end-to-end design, implementation, automated testing, security hardening, CI/CD pipeline configuration, and deployment of a production-grade, highly resilient Go SDK for the **Webull HK OpenAPI platform** (supporting REST, MQTT for market data, and gRPC for real-time order/account pushes).
+You are a Principal Systems Architect, Elite Go Engineer, and Head of Infrastructure Engineering. Your task is to lead the end-to-end design, implementation, automated testing, security hardening, CI/CD pipeline configuration, and deployment of a production-grade, highly resilient Go SDK for the **Webull OpenAPI platform** (supporting REST, MQTT for market data, and gRPC for real-time order/account pushes). Note that the published Webull OpenAPI covers the **US market**; if you need Hong Kong coverage, confirm with Webull before building, and do not assume HK endpoints exist.
 
 You are expected to deliver a robust, enterprise-ready repository that adheres to strict software engineering, security, and developer experience (DX) best practices.
 
@@ -21,8 +21,32 @@ You are expected to deliver a robust, enterprise-ready repository that adheres t
 * **Dependency Injection:** Utilize manual or compile-time dependency injection (avoid service locators or global state to ensure testability).
 * **Concurrency & Safety:** Enforce proper context propagation (`context.Context`), eliminate goroutine leaks using explicit cancellation patterns, and design thread-safe state managers.
 
-### 2. Core Technical Specifications (Webull HK Domain)
-* **Cryptographic Security:** Implement strict HMAC-SHA256 request signing, monotonic timestamp verification, and secure API key/secret management to prevent replay attacks against Webull endpoints.
+### 2. Core Technical Specifications (Webull Domain)
+
+> **Verify the auth scheme before implementing.** Webull's request signature is
+> documented as **HMAC-SHA1**, not SHA256, and authentication is dual-layer: a
+> signature computed from your App Key and App Secret, plus a reusable access
+> token for trading and account operations. Headers are `x-app-key` and
+> `x-signature`. Confirm against
+> <https://developer.webull.com/apis/docs/sdk> before writing the signer. A
+> wrong digest algorithm fails authentication in a way that looks like bad
+> credentials, not bad code.
+
+* **Cryptographic Security:** Implement request signing with the digest
+  algorithm the current documentation specifies (SHA1 as of writing), plus
+  monotonic timestamp verification and secure App Key/Secret management to
+  prevent replay. Never hardcode the algorithm from memory — read it from the
+  vendor reference.
+* **Endpoint Selection:** Support both sandbox and production. Trading and
+  market data use `api.webull.com` in production and `api.sandbox.webull.com`
+  in sandbox; order events are a separate gRPC host (`events-api.webull.com`
+  production, `events-api.sandbox.webull.com` sandbox) and data streaming uses
+  `data-api.webull.com`. These are not interchangeable — confirm each host
+  against the SDK documentation rather than deriving it from the base URL.
+* **Capability scope:** Do not assume an order type or operation is unsupported
+  because older documentation said so. Webull's API now exposes order
+  place, replace, and cancel together, and covers equities, options, futures,
+  crypto, and event contracts. Verify the current product matrix.
 * **Multi-Protocol Integration:**
   * **REST:** HTTP client tuning (custom `Transport`, keep-alives) with exponential backoff and full jitter for rate limits (HTTP 429).
   * **MQTT:** Resilient market data stream handling (`eclipse/paho.mqtt.golang`) with automatic reconnection and channel multiplexing.
@@ -63,7 +87,7 @@ Execute this engineering project sequentially through the following phases:
 ### Phase 1: Architecture, Domain Modeling, and Security Foundation
 1. Establish the clean repository layout (`/cmd`, `/pkg/domain`, `/pkg/client`, `/pkg/marketdata`, `/pkg/trading`, `/pkg/account`, `/internal/auth`).
 2. Define domain models, custom types using `decimal.Decimal`, and standardized custom error types.
-3. Implement the cryptographic HMAC signer and configuration options for Sandbox/Production environments.
+3. Confirm the signing algorithm and header names against the current vendor reference, then implement the request signer with separate Sandbox/Production endpoint configuration.
 4. Set up `golangci-lint` configurations and initial Makefile commands.
 
 ### Phase 2: REST Client & Trading/Account Services

@@ -150,6 +150,14 @@ else
     fail "nav does not match the files in prompts/"
 fi
 
+step "Vendor claims are marked as unverified"
+
+if python3 scripts/check_vendor_claims.py; then
+    ok "broker internals are not stated as settled fact"
+else
+    fail "a broker prompt asserts vendor internals without a verify instruction"
+fi
+
 # ------------------------------------------------------ 4. line endings + EOL
 
 step "Line endings and whitespace policy"

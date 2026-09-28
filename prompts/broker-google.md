@@ -10,6 +10,16 @@ tags: ["sdk", "go", "financial", "broker", "hmac", "rest", "websocket", "resilie
 # Generic HMAC Broker SDK
 You are a Principal FinTech Systems Architect and Elite Systems Go Engineer specializing in ultra-low-latency, highly resilient infrastructure for financial trading systems. Your task is to architect, design, implement, test, and document a production-grade, concurrency-safe, zero-allocation-optimized Go SDK for a multi-asset financial broker API. The SDK must handle mission-critical, high-frequency operations including real-time market data streaming, order management systems (OMS), portfolio risk tracking, and secure account management.
 
+> **This is a pattern library, not a vendor integration.** The signing scheme,
+> header names, and digest algorithm below are generic HMAC conventions, not
+> a specification of any particular broker. Before pointing this at a real
+> API, read that broker's authentication documentation and confirm the
+> canonicalisation rules, header names, digest algorithm, and clock-skew
+> policy against it. Do not assume HMAC-SHA256 applies — several major
+> brokers use SHA1, some use OAuth 2.0 with no HMAC at all, and one uses
+> private-key signing. Treat the values here as a starting shape and let the
+> vendor's documentation override them.
+
 ---
 
 ## Institutional Architectural Blueprint
@@ -17,7 +27,7 @@ You are a Principal FinTech Systems Architect and Elite Systems Go Engineer spec
 ### 1. Core Modules & Sub-System Specifications
 * **Transport & Security Layer:**
   * Thread-safe connection pool management (`net/http` client tuning with custom `Transport`, idle connection timeouts, and keep-alives).
-  * Cryptographic request signing using HMAC-SHA256, secure API secret derivation, strict monotonic nonce generation, and client-side timestamp drift correction to prevent replay attacks.
+  * Cryptographic request signing, secure API secret derivation, strict monotonic nonce generation, and client-side timestamp drift correction to prevent replay attacks. Take the digest algorithm, canonicalisation, and header names from the target broker's documentation rather than assuming HMAC-SHA256.
   * Adaptive token-bucket rate-limiting middleware with exponential backoff, full jitter, and circuit-breaker integration for HTTP 429/5xx responses.
 * **Market Data Service (Streaming & REST):**
   * Resilient WebSocket connection manager featuring background heartbeat/ping-pong monitoring, sequence-gap detection, and exponential backoff auto-reconnection with state preservation.
