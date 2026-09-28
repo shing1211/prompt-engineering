@@ -83,7 +83,14 @@ Evaluate every file against these dimensions. Record violations with file path, 
 - [ ] Code samples are syntax-checked and, where possible, run against a controlled environment.
 
 ### Authentication & Security Documentation
-- [ ] Authentication guide covers **all supported auth schemes**: API key setup, OAuth2 authorization code flow, JWT token lifecycle, and credential rotation procedures.
+
+> The auth schemes listed below are the common ones, not a checklist to assert
+> as fact. Document the schemes **this** SDK actually supports, read from its
+> source and configuration API. Do not infer the auth model from the vendor's
+> marketing or from what a similar API uses, and do not document an OAuth
+> flow because an API key step is also present.
+
+- [ ] Authentication guide covers **every auth scheme the SDK actually supports**: API key setup, OAuth2 authorization code flow, JWT token lifecycle, and credential rotation procedures, as applicable.
 - [ ] Each auth method has a runnable example in the primary SDK language(s).
 - [ ] Environment variable names are consistent across examples and match the SDK's configuration API.
 - [ ] Security-sensitive instructions are flagged for human review (see Layer 9).

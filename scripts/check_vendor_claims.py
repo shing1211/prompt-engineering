@@ -72,7 +72,26 @@ VERIFY_PATTERNS = [
 # the "must cite a doc" expectation but still need the verify wording.
 DOCS_PRESENT = re.compile(r"https://(?:open\.longbridge|docs-en\.itigerup|developer\.webull|www\.futunn|www\.interactivebrokers)[a-z0-9./-]*")
 
-BROKER_PROMPTS = sorted(PROMPTS.glob("broker-*.md"))
+# Cited host -> vendor terms that must appear in the same file for the
+# citation to actually cover the claims. Guards against a file that cites one
+# broker's documentation while asserting a different broker's internals.
+KNOWN_VENDOR_HOSTS = {
+    "longbridge.com": ("longbridge",),
+    "openapi.longbridgeapp.com": ("longbridge",),
+    "tigerbroker.com": ("tiger", "itigerup"),
+    "tigerfintech.com": ("tiger", "itigerup"),
+    "itigerup.com": ("tiger",),
+    "webull.com": ("webull",),
+    "vbkr.com": ("vbkr", "vbroker"),
+    "futu": ("futu", "futunn"),
+    "futunn.com": ("futu",),
+}
+
+# Scope of the vendor-claim rule. Covers the per-broker SDK prompts and the
+# generic SDK prompts, because Phase 1 moves the shared Go SDK skeleton into
+# sdk-build.md. If only broker-*.md were scanned, the new home for that
+# material would be the one file CI does not inspect.
+CLAIM_PROMPTS = sorted(PROMPTS.glob("broker-*.md")) + sorted(PROMPTS.glob("sdk-*.md"))
 
 # A threshold phrased as a rule. The problem is not the number itself, it is
 # asserting one as universal when the value is a per-broker or per-account
@@ -141,7 +160,7 @@ def main() -> int:
     problems: list[str] = []
     checked = 0
 
-    for path in BROKER_PROMPTS:
+    for path in CLAIM_PROMPTS:
         text = path.read_text(encoding="utf-8")
         body = text.split("\n---", 1)[-1]  # skip frontmatter
         checked += 1
@@ -167,7 +186,16 @@ def main() -> int:
         # unlocatable. Both are honest positions; silently omitting a source
         # is not.
         declares_generic = re.search(
-            r"not a vendor integration|pattern library", body, re.I
+            r"not a vendor integration|"
+            r"pattern library|"
+            # Generic documentation prompts have no vendor of their own. Their
+            # source of truth is the target repository's own spec and source.
+            r"source of truth is the (?:target )?(?:repo|repository|SDK)|"
+            r"this SDK actually supports|"
+            r"SDK truth over prose|"
+            r"openapi\.ya?ml|swagger\.json",
+            body,
+            re.I,
         )
         declares_unverified = re.search(
             r"no public developer portal|least-documented", body, re.I
@@ -179,8 +207,40 @@ def main() -> int:
                 f"{path.name}: tells the reader to verify but cites no "
                 f"vendor documentation URL"
             )
+            continue
 
-    print(f"checked {checked} broker prompts for unverified vendor claims")
+        # A verify instruction paired with a doc URL is only meaningful if the
+        # URL belongs to the vendor the claims are about. A generic file that
+        # cites one broker's docs while asserting another broker's internals
+        # is the same defect as asserting with no source at all, so it has to
+        # be caught rather than accepted as a pass. Applies to any file, not
+        # only ones that call themselves generic, since the defect is the
+        # mismatch between the cited source and the claim.
+        # Match both the API host form (openapi.vbkr.com) and the docs host
+        # form (open.longbridge.com), since vendors use either.
+        cited_hosts = {
+            m.group(1).lower()
+            for m in re.finditer(
+                r"https?://(?:openapi\.|open\.|api\.|developer\.|docs-en\.)?([a-z0-9-]+[a-z0-9.-]*\.[a-z]{2,})",
+                body,
+            )
+        }
+        for host in cited_hosts:
+            expected = KNOWN_VENDOR_HOSTS.get(host)
+            if not expected:
+                continue
+            # Strip URLs before searching for the vendor name, otherwise the
+            # cited URL satisfies its own requirement and the check passes on
+            # a file that only ever names the broker in a link.
+            prose = re.sub(r"https?://\S+", " ", body)
+            if not any(re.search(e, prose, re.I) for e in expected):
+                problems.append(
+                    f"{path.name}: cites {host} documentation but never names "
+                    f"{expected[0]} in the text, so the cited source does not "
+                    f"cover the claims made"
+                )
+
+    print(f"checked {checked} SDK prompts for unverified vendor claims")
 
     for problem in problems:
         print(f"  {problem}")
@@ -192,16 +252,16 @@ def main() -> int:
 
     if problems or threshold_problems:
         print(
-            "\nBroker auth internals must carry an explicit instruction to "
-            "verify them against\ncurrent vendor documentation, and cite where "
-            "that documentation lives.\n"
+            "\nSDK prompt auth internals must carry an explicit instruction "
+            "to verify them\nagainst current vendor documentation, and cite "
+            "where that documentation lives.\n"
             "Risk thresholds must be framed as configurable or illustrative, "
             "not as universal rules.",
             file=sys.stderr,
         )
         return 1
 
-    print("every broker prompt that asserts vendor internals says to verify them")
+    print("every SDK prompt that asserts vendor internals says to verify them")
     print("every prompt stating a risk threshold says it is configurable")
     return 0
 
