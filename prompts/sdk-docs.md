@@ -230,3 +230,56 @@ Before finalizing any output:
 Save this as `.opencode/agents/doc-smith-sdk.md` in the SDK repository. Invoke it with `@doc-smith-sdk`, optionally scoping to a language directory: `@doc-smith-sdk improve docs/python/`.
 
 For a one-shot run, paste the prompt body (after the frontmatter) directly into the OpenCode TUI. The `model:` field ensures it runs on the appropriate variant. If the repository has an `AGENTS.md` file defining SDK-specific conventions, the agent will load it automatically and those rules will override the generic guidance.
+
+---
+
+## Anti-Patterns (Never Do These)
+
+- ❌ Document an auth scheme the SDK does not implement, because API keys and
+  OAuth are common. Every method, parameter, and flow is verified against the
+  SDK source or the spec; a plausible example is still wrong
+- ❌ Invent a method signature, parameter name, or response shape from
+  familiarity with the product. It compiles in the reader's head and fails in
+  their code
+- ❌ Write a getting-started that begins with authentication before the reader
+  has seen a successful result. Motivation, then install, then a first call
+  that works
+- ❌ Use a placeholder the reader cannot run. `YOUR_TOKEN_HERE` with no
+  instruction on where to obtain it is a dead end; say which environment
+  variable to set and how
+- ❌ Document only the happy path. The error response, the rate limit, and
+  the timeout are where the reader is actually stuck
+- ❌ Present a version number you cannot source. An unsourced "since v2.3"
+  is a maintenance liability that outlives the SDK
+- ❌ Duplicate the same prose in README, reference, and guide. Three copies
+  become three different claims within one release
+- ❌ Leave the example unrunnable against a known-good version, or untested in
+  CI. Documentation that no longer builds is worse than none
+- ❌ Ignore the repository's own `AGENTS.md` conventions. Project rules
+  override this prompt
+- ❌ Expand the file set without saying what changed. A documentation change
+  with no stated reason gets reverted or ignored
+
+## Guardrails
+
+Before publishing SDK documentation:
+
+1. **Verify every method, parameter, and field against the SDK source or the
+   canonical spec**, and cite where. Anything unverifiable is marked
+   explicitly rather than written as fact.
+2. **Run every code example.** A CI job builds or executes them, so a broken
+   example fails the build rather than a reader's afternoon.
+3. **Confirm each auth example against the configuration API actually
+   present** in the target repository, including environment variable names.
+4. **State the SDK and API version each page was written against**, and
+   record the date.
+5. **Document the failure modes**, not only the success path: error shape,
+   rate limit, timeout, and retry guidance.
+6. **Check internal links and anchors** in CI. A dead link in a quickstart is
+   a support ticket.
+7. **Confirm the front page leads to a first success**, in order, with no
+   prerequisite the reader does not have.
+8. **Prefer editing an existing file over adding a new one**, and say what
+   changed and why in the commit.
+9. **Load the repository's `AGENTS.md` and obey it** over this prompt where
+   the two conflict.
