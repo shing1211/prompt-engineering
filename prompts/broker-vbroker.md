@@ -59,7 +59,75 @@ You are expected to deliver an enterprise-ready repository that respects vbroker
 * **Tracing and metrics:** Add OpenTelemetry hooks around signed REST calls, WebSocket lifecycle transitions, event decoding, order reconciliation, and subscription changes. Export request latency, signature failures, clock-skew errors, retries, rate-limit responses, reconnects, heartbeat failures, dropped events, queue depth, and order lifecycle durations.
 * **Operational diagnostics:** Provide readiness checks that distinguish transport availability, credential/signature validity, clock synchronization, market-data authorization, WebSocket authentication, and trading readiness. Include safe redacted diagnostics.
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Ship a client built from this prompt's unverified assumptions.** The
+  header names, digest, and WebSocket auth below are hypotheses, not a
+  contract. If the vendor has not confirmed them, say so and stop. A
+  speculative client that compiles is worse than no client, because it
+  looks finished.
+* ❌ **Present assumed header names in the README as though they were
+  documented.** `X-Vbroker-Id`, `X-Timestamp`, and `X-Signature` are
+  placeholders pending confirmation. Mark every one of them inline.
+* ❌ **Assume the WebSocket reuses the REST signature.** It may switch to token
+  auth after the handshake. Implement both paths behind one interface and
+  select by what the handshake actually returns.
+* ❌ **Implement signing without a clock-skew policy.** An HMAC scheme with a
+  timestamp will reject valid requests once clocks drift, and accepting wide
+  skew to work around it opens a replay window. Measure and bound skew
+  explicitly.
+* ❌ **Allow nonce reuse.** A repeated nonce defeats replay protection. Generate
+  monotonically and persist the window the server will accept.
+* ❌ **Canonicalise without pinning the exact rules.** Method, path, query
+  ordering, body encoding, and separator choices all change the signature.
+  Obtain the canonical form from the vendor and pin it in tests, so a silent
+  mismatch becomes a failing test rather than a 401 at scale.
+* ❌ **Log the signature or any signed header.** They are credentials
+  equivalent to the secret. Redact them in logs, traces, and error payloads.
+* ❌ **Ignore HKEX conventions.** Lot size, tick size, board lot, and trading
+  session are validation rules the exchange enforces. Derive them from
+  instrument metadata, not from a hardcoded table that will drift.
+* ❌ **Retry a failed trade request because the HTTP call errored.** A timeout
+  after submission is an unknown order state. Reconcile before retrying.
+* ❌ **Skip reconciliation after a stream gap.** Events during the disconnect
+  are lost. Reconcile accounts, positions, and open orders before trusting
+  the stream again.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Obtain the contract from the vendor, or report that you could not.** This
+   gate is not optional and comes first. If the header names, canonical
+   string, digest algorithm, and WebSocket handshake are not confirmed by the
+   vendor in writing, do not proceed to claim production readiness. Record
+   the outcome either way in `docs/compatibility-matrix.md`.
+2. **Pin every confirmed detail in a test.** Canonical string, header order,
+   digest algorithm, nonce behaviour, and clock-skew tolerance each get a test
+   derived from the vendor's stated rules, so an implementation that drifts
+   fails locally instead of in production.
+3. **Prove both WebSocket auth paths.** Exercise signature-based and
+   token-after-handshake, and assert the client selects correctly from the
+   handshake response rather than from configuration alone.
+4. **Prove replay protection.** Assert nonce uniqueness across a window, and
+   that a deliberately replayed request is rejected.
+5. **Prove skew handling.** Test with a deliberately offset client clock and
+   assert a clear, bounded failure rather than silent acceptance.
+6. **Prove order safety under ambiguity.** Inject a timeout after submission
+   and assert reconciliation by broker order ID rather than a retry.
+7. **Prove instrument validation.** Assert lot size, tick size, and session are
+   read from instrument metadata and enforced before a trade request is sent.
+8. **Prove redaction.** Assert no signature, signed header, or credential
+   appears in any log, trace, or metric emitted during the test suite.
+9. **Run the standard quality gates** — `go test -race ./...` clean, fuzz
+   targets over stream frame deserialisation, `govulncheck`, `gosec`, bounded
+   allocation on every decode path.
+10. **Default to paper or mock, and label everything unconfirmed.** Live
+    trading requires an explicit configuration gate, and any value still
+    resting on an assumption must be marked as such in the README, not just
+    in the compatibility matrix.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Document every exported type, function, interface, option, error, and package. Explain canonical signing, clock requirements, WebSocket authentication, event delivery, and order retry semantics.
 * **Architecture documentation:** Include `README.md` and `docs/` with endpoint configuration, credential storage and rotation, HMAC examples without real secrets, HKEX market rules, permissions, rate limits, risk controls, and text-based architecture diagrams.
 * **Runnable examples:** Provide `/examples/` for signed REST setup, clock validation, account and position queries, market-data subscription, paper-order placement, cancellation, WebSocket event handling, and reconciliation. Live trading must require explicit opt-in.
