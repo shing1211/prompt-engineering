@@ -2,7 +2,7 @@
 title: Financial Platform Documentation
 description: Improve all Markdown documentation in a unified financial trading and portfolio management system
 mode: build
-model: claude-sonnet-4-20250514
+model: any
 category: documentation
 tags: ["documentation", "financial", "trading", "portfolio", "broker", "event-driven"]
 ---
@@ -63,17 +63,17 @@ If `AGENTS.md` defines financial-domain style rules, they override generic guida
 Evaluate every file against these dimensions. Record violations with file path, line number, and severity (Critical / Major / Minor).
 
 ### Architecture Overview Documentation
-- [ ] System overview describes the microservices topology: core services (market data, signal, risk, execution, portfolio, reporting), their responsibilities, and their communication patterns (Redis Pub/Sub, Kafka, gRPC, REST)[reference:0].
-- [ ] A service catalog table exists with: service name, container/image, port, responsibility, and operator README link[reference:1].
-- [ ] Event-driven architecture is documented: event sourcing, CQRS pattern, message bus, event immutability, schema evolution strategy (Avro + Schema Registry)[reference:2][reference:3].
+- [ ] System overview describes the microservices topology: core services (market data, signal, risk, execution, portfolio, reporting), their responsibilities, and their communication patterns (Redis Pub/Sub, Kafka, gRPC, REST).
+- [ ] A service catalog table exists with: service name, container/image, port, responsibility, and operator README link.
+- [ ] Event-driven architecture is documented: event sourcing, CQRS pattern, message bus, event immutability, schema evolution strategy (Avro + Schema Registry).
 - [ ] Failure isolation is described: how a failure in one broker session or one microservice does not cascade to others.
 - [ ] Deployment topology (BLUE/RED stacks, compose files, Kubernetes namespaces) is documented with a diagram.
 
 ### Multi-Broker Abstraction Documentation
-- [ ] The "write once, run anywhere" model is clearly explained: same tool names, same instrument IDs, same quantity units, same error codes across brokers[reference:4].
+- [ ] The "write once, run anywhere" model is clearly explained: same tool names, same instrument IDs, same quantity units, same error codes across brokers.
 - [ ] Each broker integration page documents: endpoint URL format, authentication method (API key, OAuth2, FIX credentials), supported order types, supported asset classes, rate limits, and any broker-specific quirks.
-- [ ] Broker capability divergence is documented in a comparison table (e.g., Broker A supports MARKET/LIMIT/SL, Broker B supports MARKET/LIMIT only)[reference:5].
-- [ ] Session lifecycle is documented: initialize handshake, authenticate, capabilities discovery, subscribe, place order, receive fill, acknowledge event, reconnect with Last-Event-ID[reference:6].
+- [ ] Broker capability divergence is documented in a comparison table (e.g., Broker A supports MARKET/LIMIT/SL, Broker B supports MARKET/LIMIT only).
+- [ ] Session lifecycle is documented: initialize handshake, authenticate, capabilities discovery, subscribe, place order, receive fill, acknowledge event, reconnect with Last-Event-ID.
 - [ ] Failover behavior is documented: what happens when a broker connection drops, how orders are reconciled, and how the system resumes.
 
 ### Multi-Asset Class Documentation
@@ -86,21 +86,21 @@ Evaluate every file against these dimensions. Record violations with file path, 
 - [ ] The full order lifecycle is documented as a state machine: `CREATED → VALIDATED → ROUTED → ACKNOWLEDGED → PARTIALLY_FILLED → FILLED → CANCELLED → REJECTED`.
 - [ ] Each state transition is documented with: trigger event, responsible microservice, latency expectations, and error conditions.
 - [ ] Order validation rules are documented: buying power checks, risk limit checks, market hours checks, asset-class-specific validation.
-- [ ] Smart order routing logic is documented: how orders are split across brokers/venues, best execution criteria, and routing preference configuration[reference:7].
+- [ ] Smart order routing logic is documented: how orders are split across brokers/venues, best execution criteria, and routing preference configuration.
 - [ ] Partial fill handling, cancel/replace logic, and order amendment rules are documented with examples.
 
 ### Portfolio Management Documentation
-- [ ] Portfolio data model is documented: positions, cash balances, P&L (realized and unrealized), NAV calculation, performance attribution[reference:8].
+- [ ] Portfolio data model is documented: positions, cash balances, P&L (realized and unrealized), NAV calculation, performance attribution.
 - [ ] Position aggregation across brokers is documented: how the system consolidates positions from multiple broker accounts into a unified portfolio view.
-- [ ] Rebalancing logic is documented: target allocations, drift thresholds, rebalancing triggers, and execution strategy[reference:9].
-- [ ] Risk analytics are documented: Value at Risk (VaR), stress testing, exposure monitoring, limit management, and compliance checks[reference:10].
+- [ ] Rebalancing logic is documented: target allocations, drift thresholds, rebalancing triggers, and execution strategy.
+- [ ] Risk analytics are documented: Value at Risk (VaR), stress testing, exposure monitoring, limit management, and compliance checks.
 - [ ] Performance metrics are documented: time-weighted return, money-weighted return, Sharpe ratio, drawdown, and their calculation methodology.
 
 ### Event Schema & Message Contract Documentation
 - [ ] Every event type has a documented schema: event name, version, fields, data types, required/optional status, and example payload.
 - [ ] Kafka topics or Redis channels are documented: topic name, partitioning strategy, retention policy, and consumer groups.
 - [ ] Event ordering guarantees are documented: monotonic sequence numbers, idempotency keys, at-least-once vs. exactly-once semantics.
-- [ ] Event replay and recovery procedures are documented: how to rebuild state from the event log, replay cursors, and gap-fill mechanisms[reference:11].
+- [ ] Event replay and recovery procedures are documented: how to rebuild state from the event log, replay cursors, and gap-fill mechanisms.
 
 ### Authentication & Security Documentation
 - [ ] All authentication schemes are documented: API key, OAuth2 authorization code flow, JWT token lifecycle, FIX session credentials, and credential rotation procedures.
@@ -115,9 +115,9 @@ Evaluate every file against these dimensions. Record violations with file path, 
 - [ ] Best execution documentation: execution quality metrics, venue analysis, and regulatory disclosure requirements.
 
 ### FIX Protocol Documentation (If Applicable)
-- [ ] FIX session configuration is documented: host, port, SenderCompID, TargetCompID, heartbeat interval, and reconnect logic[reference:12].
+- [ ] FIX session configuration is documented: host, port, SenderCompID, TargetCompID, heartbeat interval, and reconnect logic.
 - [ ] FIX message mapping is documented: which FIX messages are used for order entry, cancel/replace, execution reports, and market data.
-- [ ] Session-level best practices are documented: TestRequest before Logout, sequence number management, and failover to secondary gateway[reference:13].
+- [ ] Session-level best practices are documented: TestRequest before Logout, sequence number management, and failover to secondary gateway.
 - [ ] FIX certification and testing procedures are documented: sandbox environment setup, certification test cases, and production go-live checklist.
 
 ### Audience Fitness (Financial System-Specific)
@@ -235,14 +235,14 @@ Before finalizing any output:
 
 | Addition | Grounding in Financial Systems Best Practices |
 |---|---|
-| **Multi-Broker Abstraction Audit** | The "one protocol, any broker" model with zero code changes, session lifecycle, and capability divergence tables[reference:14][reference:15][reference:16]. |
+| **Multi-Broker Abstraction Audit** | The "one protocol, any broker" model with zero code changes, session lifecycle, and capability divergence tables. |
 | **Multi-Asset Class Audit** | Per-asset documentation of instrument identifiers, trading hours, settlement conventions, tick sizes, and asset-specific risk semantics. |
 | **Order Lifecycle State Machine** | Full documentation of order states, transitions, responsible microservices, and event mappings. |
 | **Event Schema & Message Contract Audit** | Every event type documented with schema, version, fields, ordering guarantees, and producer/consumer mapping. |
-| **Portfolio Management Audit** | Position aggregation across brokers, P&L calculation, NAV, rebalancing, VaR, stress testing, and performance attribution[reference:17]. |
-| **Microservices Topology Audit** | Service catalog with container names, ports, communication patterns (Redis, Kafka, gRPC, REST), and failure isolation[reference:18][reference:19]. |
+| **Portfolio Management Audit** | Position aggregation across brokers, P&L calculation, NAV, rebalancing, VaR, stress testing, and performance attribution. |
+| **Microservices Topology Audit** | Service catalog with container names, ports, communication patterns (Redis, Kafka, gRPC, REST), and failure isolation. |
 | **Regulatory & Compliance Audit** | Audit trails, position limits, best execution, and regulatory reporting requirements (MiFID II, EMIR, Dodd-Frank). |
-| **FIX Protocol Audit** | Session configuration, message mapping, sequence number management, failover, and certification procedures[reference:20][reference:21]. |
+| **FIX Protocol Audit** | Session configuration, message mapping, sequence number management, failover, and certification procedures. |
 | **Financial-Specific Anti-Patterns** | Never invent broker capabilities, never conflate asset classes, never show hardcoded credentials, never merge broker instructions without labels. |
 | **Domain-Specific Stop Conditions** | Broker page complete only after auth + capability table + session lifecycle. Event schema complete only after fields + example + producer/consumer. |
 
