@@ -13,6 +13,51 @@ trusting the values.
 
 Nothing yet.
 
+## [0.3.0] - 2026-09-28
+
+Broadens the library. Four new prompts, three new categories, and metadata
+that finally reflects what was already there.
+
+### Added
+
+- **`platform-engineering.md`** (new `platform` category). Kubernetes,
+  packaging, GitOps, networking, policy, secrets, progressive delivery, and
+  cost, written around what breaks when an agent writes it: drift from a
+  hand-mutated cluster, secrets in a ConfigMap or an image layer, a change
+  reaching 100% in one step, a PDB ignored during a node upgrade.
+- **`backend-services.md`** (`architecture`). Language-neutral by design. Makes
+  the cross-stack claim concrete rather than asserted: idempotency is a
+  property of the operation, a timeout means unknown rather than failed,
+  retries need a budget and jitter, and a shared write needs a precondition.
+- **`data-platforms.md`** (new `data` category). The principles behind the
+  tool-heavy `data-engineering.md`: contracts enforced at write time, late and
+  out-of-order data, idempotency demonstrated rather than assumed, quality
+  checks that can fail the run, and a metric with a stated grain.
+- **`jvm-backend.md`** (new `java` category). Spring Boot, Quarkus, and
+  Micronaut compared against each other rather than a Spring manual, with the
+  JVM-specific failure modes: virtual threads without a bounded pool, H2 in
+  place of the real engine, `@Transactional` on a self-invoked method, a heap
+  larger than the container limit.
+- A generated **Browse by Language** table, split on implementation languages
+  only, with an "Any stack" row for the 16 prompts that assume none.
+
+### Changed
+
+- Repository description and topics broadened: 15 topics became 20, adding
+  `java`, `python`, `typescript`, `software-architecture`, and `kubernetes`.
+  The description leads with cross-stack practice rather than Go.
+- README leads with the language split and points at the table.
+- `llm-integration.md` tagged `python`. It carries 15 Python code blocks and
+  had no language tag, which is what the generated table is there to surface.
+- Site word count corrected to ~80,000 after 0.2.0.
+
+### Verification
+
+All four prompts carry anti-patterns and guardrails from the start, so
+`check_prompt_sections.py` gates them. Verified by injection: stripping the
+guardrails section from `jvm-backend.md` produces a non-zero exit naming the
+file. 42 prompts, 44 pages, 2815 internal links resolve.
+
 ## [0.2.0] - 2026-09-28
 
 Every prompt now carries the two sections README.md and CONTRIBUTING.md
@@ -165,7 +210,8 @@ First public release. 38 prompts, a browsable site, and CI.
   issues, and a **Prompt idea** issue form replaces the scoping flow that
   CONTRIBUTING had promised Discussions would provide
 
-[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/shing1211/prompt-engineering/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/shing1211/prompt-engineering/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shing1211/prompt-engineering/releases/tag/v0.1.0
