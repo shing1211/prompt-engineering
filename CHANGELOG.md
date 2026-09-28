@@ -10,7 +10,28 @@ under that heading.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- Corrected four wrong vendor facts in `broker-integration.md`: Longbridge
+  uses OAuth 2.0 rather than HMAC, Tiger uses private-key signing rather
+  than header-based HMAC, and both Tiger and Webull were pointing at hosts
+  that do not resolve. Two corrections were independently confirmed against
+  working Go clients in this workspace
+- Retracted the claim that Webull does not support order cancellation over
+  the API. The current API exposes place, replace, and cancel together
+- Corrected `broker-webull.md`, which carried the same SHA256 error and was
+  framed as a Hong Kong API when the published OpenAPI is US-market
+- Marked vbroker honestly as the least-documented adapter, with no public
+  developer portal located
+- Reframed broker-specific risk limits in `trading-risk.md` as configurable
+  mandates rather than universal constants. Maintenance margin varies by
+  broker, account type, instrument, and market
+
+### Added
+
+- `scripts/check_vendor_claims.py`, wired into `validate.sh`, which fails a
+  prompt that asserts vendor internals without a verification instruction or
+  that states a risk threshold as a rule
 
 ## [0.1.0] - 2026-09-28
 
