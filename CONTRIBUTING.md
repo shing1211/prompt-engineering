@@ -121,3 +121,10 @@ in the description.
 ## Code of conduct
 
 Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Why this library exists, and where it is going
+
+[docs/strategy.md](docs/strategy.md) records the positioning decision behind
+the library, the competitive landscape, and the open work. Read it if you
+want to propose a new prompt category, or understand why the library is
+organised around a financial trading vertical rather than breadth.
