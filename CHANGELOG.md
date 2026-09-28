@@ -13,6 +13,52 @@ trusting the values.
 
 Nothing yet.
 
+## [0.2.0] - 2026-09-28
+
+Every prompt now carries the two sections README.md and CONTRIBUTING.md
+present as what makes a prompt worth reading. No new prompts, and no
+existing guidance removed: this release adds the judgement that was missing.
+
+### Added
+
+- **Anti-patterns sections in all 38 prompts.** Seven broker SDK prompts, the
+  two documentation prompts, and six others had none; fourteen had only one
+  of the two sections.
+- **Guardrails sections in all 38 prompts.** The cross-cutting gates —
+  quality, provenance, telemetry, order safety — are stated once in
+  `sdk-build.md` under Cross-Cutting Guardrails rather than restated seven
+  times with seven different wordings. Each broker prompt keeps its
+  venue-specific gates.
+- `scripts/check_prompt_sections.py`, wired into `validate.sh`, asserting both
+  sections exist in every prompt. It is structural only: a prompt can pass
+  this check and still be filler, and the check says so.
+- `check_nav.py` and `check_vendor_claims.py`, also in `validate.sh`. The
+  first catches a prompt that renders but is missing from the site nav; the
+  second catches vendor internals asserted as fact.
+
+### Fixed
+
+- Four wrong vendor facts corrected in `broker-integration.md` — Longbridge
+  uses OAuth 2.0, Tiger uses private-key signing, and two cited hosts do not
+  resolve. See the 0.1.1 section.
+- Broker-specific risk limits in `trading-risk.md` reframed as configurable
+  mandates. Maintenance margin varies by broker, account type, and market.
+- `broker-webull.md` corrected from SHA256 to SHA1 and from Hong Kong to the
+  published US-market coverage.
+- `sdk-docs.md` told the agent to document all auth schemes as a flat
+  checklist, inventing documentation for an SDK that may use none of them.
+- `broker-vbroker.md` now states plainly that no public developer portal
+  could be located and its specifics are unverified.
+- MD029 no longer false-positives on the prompts' per-section ordered lists.
+
+### Enforcement
+
+Every check is proven to fail by injection, not merely to pass. Stripping a
+verification instruction, a doc citation, a risk threshold's framing, a nav
+entry, or either required section each produces a non-zero exit naming the
+file. Five of the defects found in the checks themselves were found this
+way, including one that passed when it should have failed.
+
 ## [0.1.1] - 2026-09-28
 
 ### Fixed
@@ -119,6 +165,7 @@ First public release. 38 prompts, a browsable site, and CI.
   issues, and a **Prompt idea** issue form replaces the scoping flow that
   CONTRIBUTING had promised Discussions would provide
 
-[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/shing1211/prompt-engineering/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shing1211/prompt-engineering/releases/tag/v0.1.0
