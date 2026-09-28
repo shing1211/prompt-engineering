@@ -62,3 +62,49 @@ Every plan must include:
 5. Task-level acceptance criteria, exact verification commands, rollback or recovery steps, dependencies, and risk severity.
 6. Security, data migration, observability, operability, and backward-compatibility impact for changes that cross module or deployment boundaries.
 7. A definition of done that includes implementation evidence, tests, documentation, and unresolved limitations.
+
+---
+
+## Anti-Patterns (Never Do These)
+
+- ❌ Produce a plan with no verification command — a task that cannot be
+  falsified is a task nobody can tell is done
+- ❌ Recommend microservices, a new datastore, or a rewrite because the
+  current system is old. Name the measurable problem that justifies it, or
+  drop it from the plan
+- ❌ Plan from the task list alone without reading the code. A plan that
+  contradicts what exists is worse than no plan
+- ❌ Batch unrelated work into one task. A task that touches seven modules
+  cannot be reverted, and it hides which change caused the failure
+- ❌ Mark a task done because it was attempted. Done means the verification
+  command passed and the evidence is recorded
+- ❌ Fill the plan with work the project does not need. If a pending item is
+  stale, say so and propose removing it rather than implementing it
+- ❌ Leave risk unquantified. "Low risk" without a reason is not an
+  assessment, it is a way of avoiding one
+- ❌ Promise a phase boundary that depends on an unowned external party
+- ❌ Hand a downstream agent a task whose acceptance criteria depend on
+  judgement the plan never specified
+
+## Guardrails
+
+Before presenting a plan:
+
+1. **Verify the repository first.** Cite the files and symbols the plan
+   depends on. If a claim about current behaviour is unverified, mark it as
+   an assumption with an owner and a way to check it.
+2. **Name the cheapest check that could falsify each task.** A task whose
+   acceptance criteria cannot fail has not been specified.
+3. **Separate confirmed from assumed.** Assumptions get an owner and a
+   validation step, or they become tasks.
+4. **Give every task a rollback.** If a change cannot be undone, say what
+   the recovery procedure is instead.
+5. **Check the scope boundaries explicitly.** State the non-goals, so
+   approval means something specific.
+6. **Flag cross-boundary impact.** Security, data migration, observability,
+   operability, and backward compatibility, for anything crossing a module or
+   deployment boundary.
+7. **Order by dependency, not convenience.** The next agent works from this
+   plan in order; a sequence that looks obvious and is not wastes a session.
+8. **Stop at the plan.** In plan mode, do not implement, commit, or push.
+   Produce the plan and wait for approval.

@@ -190,3 +190,59 @@ In PLAN mode, produce the artifacts but do NOT execute writes, commits, or pushe
 ## START
 
 Confirm MODE and CONFIG, then begin Phase 1.
+
+---
+
+## Anti-Patterns (Never Do These)
+
+- ❌ Implement in the orchestration session. The whole point of this prompt is
+  that the main session stays small; coding in it defeats the design
+- ❌ Spawn a sub-agent without a brief. No objective, no file paths, no
+  acceptance criteria, no verification command. The agent will guess
+- ❌ Spawn two agents editing the same files. Parallelise independent work,
+  not concurrent writes to one package
+- ❌ Mark a task `done` before its verification command has passed. Treat
+  sub-agent output as unverified until you have checked the changed-file
+  scope, the diagnostics, and the acceptance criteria yourself
+- ❌ Let `todos.md` drift from reality. It is the single source of truth; a
+  stale tracker makes every downstream decision wrong
+- ❌ Continue past a failed verification. Re-brief the same specialist, or
+  respawn with the correct role
+- ❌ Downgrade acceptance criteria to make a task pass. Record the failure and
+  keep the bar
+- ❌ Execute writes in PLAN mode. It produces artifacts and stops
+- ❌ Commit, push, migrate production data, or enable live trading without
+  explicit approval in the current run
+- ❌ Reuse another run's folder. Every run gets its own; mixing artifacts
+  across runs makes provenance unrecoverable
+- ❌ Force-push or rebase a shared branch during release. Stop and report on
+  any rejection
+- ❌ Start implementation when the plan is unapproved. The plan is the
+  contract, and the orchestrator's first job is getting it agreed
+
+## Guardrails
+
+Before each phase transition:
+
+1. **Confirm MODE and CONFIG, or discover them.** An unconfirmed
+   configuration silently becomes a guess about the stack, the verification
+   commands, or the remotes.
+2. **Verify the plan is approved before BUILD mode executes anything.** PLAN
+   mode stops after the plan; it does not drift into implementation.
+3. **Check each sub-agent's changed-file scope against the brief.** A task
+   that touched files it was not given is a failed task regardless of what it
+   reports.
+4. **Run the task's verification command and record the result** in
+   `<run>/todos.md` before marking it `done`. Unverified work is not done
+   work.
+5. **Prefer the smallest reversible check that could disconfirm the current
+   hypothesis** before spawning broad implementation work.
+6. **Record assumptions, blocked dependencies, failed checks, and deferred
+   risks** in the run artifacts. Silence here is how the next session
+   inherits a false premise.
+7. **Keep run artifacts in the run folder**, and append one line to
+   `docs/runs/index.md` at close-out so a resumed session can find the right
+   history.
+8. **Never commit, push, publish, migrate production data, or enable live
+   trading without explicit approval in the current run.** This applies to
+   sub-agents too; a delegated agent is still acting for you.
