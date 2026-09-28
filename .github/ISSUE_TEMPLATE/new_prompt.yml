@@ -8,7 +8,8 @@ body:
     attributes:
       value: |
         Use this form when you have **written** a prompt. For an idea that
-        still needs scoping, open a discussion in **Prompt Requests** first.
+        still needs scoping, open an issue with the **Prompt idea** form
+        first.
 
         Read [CONTRIBUTING.md](/blob/main/CONTRIBUTING.md) before submitting.
         The frontmatter contract and the review criteria are both there.

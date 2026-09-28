@@ -121,13 +121,16 @@ topic indexing takes time to settle.
 
 ## Community mechanics
 
-**Discussions as a public roadmap.** The Prompt Requests category turns the
-board into a backlog. Contributor proposes, maintainer implements,
-contributor is credited. This is the main reason a person other than the
-maintainer would keep coming back, and it is the mechanism that produces
-organic pull requests.
+**A public roadmap, once there is one to be public.** The mechanism is worth
+having: contributor proposes, maintainer implements, contributor is credited.
+That is what produces organic pull requests. It needs somewhere to live, and
+Discussions was the obvious candidate but was turned off for now, so it
+currently runs on issue threads under the `idea` label. Revisit once there
+is actual external traffic to serve; a discussion board with three posts in
+it reads as an abandoned project, and issues serve the same purpose until
+then.
 
-**Adoption Reports.** Social proof is what converts a reader into a sharer.
+**Adoption reports.** Social proof is what converts a reader into a sharer.
 A trading bot screenshot or a benchmark beats any description of the
 prompts. Ask the first few people who use one.
 
@@ -180,7 +183,7 @@ trading content.
 | Stars | 0 | Direction, not magnitude |
 | Distinct referrers to the site | 0 | Which submissions actually send traffic |
 | Pull requests from non-maintainers | 0 | The real health signal |
-| Discussion threads with external participants | 1 | Is the roadmap working |
+| Issue threads with external participants | 0 | Is the roadmap working |
 | Prompts with a reported real-world use | 0 | The only metric that validates the premise |
 
 Re-evaluate track B's value after two quarters. If the directory submission

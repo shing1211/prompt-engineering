@@ -121,8 +121,8 @@ site has a searchable [tag index](prompts/tags.md) across 222 tags.
 New prompts are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
 frontmatter contract, the review criteria, and the generator commands.
 
-For a proposed prompt rather than a finished one, open a discussion in
-**Prompt Requests** instead of a pull request.
+For a proposed prompt rather than a finished one, open an issue with the
+**Prompt idea** form instead of a pull request.
 
 ## License
 

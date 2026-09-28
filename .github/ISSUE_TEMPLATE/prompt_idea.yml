@@ -1,0 +1,77 @@
+name: Prompt idea
+description: Propose a prompt that does not exist yet, before writing a draft
+title: "[idea] "
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form when you have an **idea** but not a finished prompt.
+        If you have already written one, use the **New prompt** form or open
+        a pull request directly.
+
+        Agreeing on scope here first is quicker than having a large pull
+        request rejected over its shape.
+
+  - type: input
+    id: task
+    attributes:
+      label: What task would this prompt handle?
+      description: One or two sentences, in concrete terms.
+      placeholder: Reconcile broker order state against internal records
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap
+    attributes:
+      label: Why is an existing prompt not enough?
+      description: >
+        Which files in the library did you try, and where did they stop
+        short? Naming the specific shortfall is more useful than
+        describing the domain in general.
+    validations:
+      required: true
+
+  - type: textarea
+    id: looks_like
+    attributes:
+      label: What good looks like
+      description: >
+        What would the prompt need to make the agent do that it does not do
+        today? Name specific behaviours, deliverables, or checks.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Which category would it belong to?
+      options:
+        - orchestration
+        - financial
+        - broker-sdk
+        - sdk
+        - architecture
+        - protocols
+        - application
+        - documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: >
+        Documentation, specifications, or existing internal prompts that
+        should inform this. If the domain involves a broker or vendor API,
+        the relevant docs are most useful.
+
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to write this prompt if it gets agreed

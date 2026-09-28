@@ -48,9 +48,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/shing1211/prompt-engineering
       name: Source on GitHub
-    - icon: fontawesome/brands/github
-      link: https://github.com/shing1211/prompt-engineering/discussions
-      name: Discussions
+    - icon: fontawesome/solid/comment
+      link: https://github.com/shing1211/prompt-engineering/issues
+      name: Issues and proposals
 
 # MkDocs populates page.meta from each file's YAML frontmatter, which is how
 # the tags plugin below discovers tags without a custom hook.

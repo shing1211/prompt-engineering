@@ -36,9 +36,8 @@ First public release. 38 prompts, a browsable site, and CI.
 - Pages deploy workflow
 - Governance files: `LICENSE` (MIT), `CONTRIBUTING.md`,
   `CODE_OF_CONDUCT.md`, `SECURITY.md`
-- Issue forms for bug reports, new prompts, and site feedback; a pull
-  request template; discussion templates for Q&A and prompt requests
-- Discussion board with categories retuned for a prompt library
+- Issue forms for bug reports, prompt ideas, new prompts, and site feedback;
+  a pull request template
 
 ### Fixed
 

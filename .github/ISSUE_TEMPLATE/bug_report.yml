@@ -11,8 +11,8 @@ body:
         prompt is inaccurate, internally inconsistent, or would lead an agent
         to do something it should not.
 
-        If you have an idea for a prompt that does not exist yet, use a
-        discussion in **Prompt Requests** instead.
+        If you have an idea for a prompt that does not exist yet, use the
+        **Prompt idea** form instead.
 
   - type: input
     id: file

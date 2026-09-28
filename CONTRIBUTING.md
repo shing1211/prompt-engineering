@@ -8,11 +8,11 @@ files in sync.
 
 | You have | Do this |
 |---|---|
-| An idea for a prompt, not a finished draft | Open a discussion in **Prompt Requests** |
+| An idea for a prompt, not a finished draft | Open an issue using the **Prompt idea** form |
 | A finished prompt | Open a pull request |
 
-Proposals first is not bureaucracy. It is easier to agree on scope in a
-discussion than to reject a 900-line file over the shape of it.
+Proposals first is not bureaucracy. It is easier to agree on scope in an
+issue thread than to reject a 900-line file over the shape of it.
 
 ## Frontmatter contract
 
