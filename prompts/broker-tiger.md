@@ -50,7 +50,76 @@ You are expected to deliver a robust, enterprise-ready repository that respects 
 * **Tracing and metrics:** Add OpenTelemetry hooks around signed REST calls, WebSocket lifecycle transitions, event decoding, order reconciliation, and subscription changes. Export request latency, retries, rate-limit responses, reconnects, heartbeat failures, dropped events, queue depth, and order lifecycle durations.
 * **Operational diagnostics:** Provide health/readiness checks that distinguish transport availability, authentication validity, market-data authorization, and trading readiness. Include safe redacted diagnostics for support investigations.
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Log or persist the private key, even transiently.** The private key is
+  generated once in the Developer Center and never stored server-side; losing
+  it means regenerating the pair. Keep it in a credential provider, never in
+  config files, logs, traces, or test fixtures.
+* ❌ **Mix PKCS#1 and PKCS#8 keys without checking the format.** The SDKs
+  recommend PKCS#8. Loading the wrong format fails as an opaque read error
+  that looks like a corrupted file rather than a format mismatch.
+* ❌ **Implement HMAC header signing.** Tiger's institutional flow is
+  private-key signature. Invented header schemes produce a client that
+  authenticates against nothing.
+* ❌ **Treat account formats as interchangeable.** Global accounts start with
+  `U`, Prime accounts are short numerics, Paper accounts are 17 digits, and
+  they carry different permissions and hours. Parse the format rather than
+  treating account as an opaque string, and never route trade requests to the
+  wrong one.
+* ❌ **Assume OAuth 2.0 is available on every deployment.** It is offered for
+  individual users on recent SDK versions; institutional users must use
+  signature authentication. Detect which the account requires rather than
+  configuring one path.
+* ❌ **Retry a failed trade request because the HTTP call errored.** A timeout
+  after submission is an unknown order state. Reconcile before retrying.
+* ❌ **Infer a unique instrument from a symbol alone.** Tiger requires contract
+  and exchange identifiers. A symbol resolved without qualification can point
+  at a different contract entirely.
+* ❌ **Ignore session hours and per-market permission differences.** Prime
+  accounts may trade outside regular hours where paper accounts are
+  restricted, and market-data access is purchased separately from the app.
+  Read the entitlement rather than assuming.
+* ❌ **Discard unknown push message types silently or fatally.** A dropped
+  stream loses order updates with no error. Count and expose unknown types
+  rather than tearing down the session.
+* ❌ **Skip reconciliation after a stream gap.** Events during the disconnect
+  are lost. Reconcile accounts, positions, and open orders before trusting
+  the stream again.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Confirm every API claim against Tiger's current documentation**
+   (<https://docs-en.itigerup.com/docs/quickstart>) and record the account
+   type, authentication method, and SDK version verified in
+   `docs/compatibility-matrix.md`.
+2. **Assert authentication method against account type.** The client must
+   refuse to start if it is configured for OAuth 2.0 on an account that
+   requires signature authentication, or the reverse.
+3. **Prove key handling.** Test PKCS#8 and PKCS#1 loading, a missing key, a
+   malformed key, and key rotation. Assert the key never appears in logs,
+   traces, error messages, or test output.
+4. **Prove account-type routing.** Place a request against each supported
+   account format and assert it routes to the correct account, with paper
+   never used for a live order.
+5. **Prove order safety under ambiguity.** Inject a timeout after submission
+   and assert reconciliation by Tiger order ID rather than a retry.
+6. **Prove the stream under loss.** Inject gaps and unknown message types and
+   assert reconciliation of accounts, positions, and open orders before
+   resubscribing, with unknown types counted rather than fatal.
+7. **Prove instrument qualification.** Assert that a symbol is resolved to a
+   contract and exchange identifier before any trade frame is built, and that
+   an unqualified symbol is rejected.
+8. **Run the standard quality gates** — `go test -race ./...` clean, fuzz
+   targets over stream frame deserialisation, `govulncheck`, `gosec`, bounded
+   allocation on every decode path, and redaction of keys, tokens, and account
+   values from logs and traces.
+9. **Default to paper or mock.** Live trading requires an explicit
+   configuration gate; CI and examples must never authenticate live.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Document every exported type, function, interface, option, error, and package. Explain account selection, signing, event delivery, and order retry semantics.
 * **Architecture documentation:** Include `README.md` and `docs/` material with text-based architecture diagrams, Tiger OpenAPI setup, paper/live environment configuration, key handling, permissions, rate limits, and risk controls.
 * **Runnable examples:** Provide `/examples/` for signed client setup, account and contract discovery, quote streaming, order-event streaming, previewing and placing an idempotent paper order, cancellation, amendment, and reconciliation. Live trading must require explicit opt-in.
