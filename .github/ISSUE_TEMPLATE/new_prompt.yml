@@ -1,0 +1,114 @@
+name: New prompt
+
+description: Propose a finished prompt for the library
+title: "[prompt] "
+labels: ["new prompt"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form when you have **written** a prompt. For an idea that
+        still needs scoping, open a discussion in **Prompt Requests** first.
+
+        Read [CONTRIBUTING.md](/blob/main/CONTRIBUTING.md) before submitting.
+        The frontmatter contract and the review criteria are both there.
+
+  - type: input
+    id: slug
+    attributes:
+      label: Proposed filename
+      description: Lowercase kebab-case, with the `.md` extension.
+      placeholder: order-reconciliation.md
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Display name. Must match the H1 in the file.
+      placeholder: Order Reconciliation
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: One-line description
+      description: >
+        Shown in index tables and search results. No trailing period.
+      placeholder: >
+        Reconcile broker order state against internal records with break
+        detection and dispute handling
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - build
+        - plan
+        - review
+        - all
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - orchestration
+        - financial
+        - broker-sdk
+        - sdk
+        - architecture
+        - protocols
+        - application
+        - documentation
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: >
+        Comma-separated, lowercase kebab-case. Reuse existing tags where one
+        fits. See `prompts/index.md` for the current vocabulary.
+      placeholder: reconciliation, trading, broker, go
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap
+    attributes:
+      label: What gap does this fill?
+      description: >
+        Why is an existing prompt not enough? Name the specific situation
+        this covers.
+    validations:
+      required: true
+
+  - type: textarea
+    id: structure
+    attributes:
+      label: Structure
+      description: >
+        Confirm the prompt follows the library's layered shape: identity and
+        principles, project context, domain checklist, anti-patterns,
+        guardrails, delivery contract.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: >
+        Documentation or specification backing the technical claims. If any
+        detail is unverified, say so and note that the prompt instructs the
+        agent to verify it.

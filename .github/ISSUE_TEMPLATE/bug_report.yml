@@ -1,0 +1,76 @@
+name: Bug report
+
+description: Something in a prompt is wrong, misleading, or unsafe
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. This repository is text only, so "bug" means a
+        prompt is inaccurate, internally inconsistent, or would lead an agent
+        to do something it should not.
+
+        If you have an idea for a prompt that does not exist yet, use a
+        discussion in **Prompt Requests** instead.
+
+  - type: input
+    id: file
+    attributes:
+      label: File
+      description: The prompt file, e.g. `prompts/trading-risk.md`
+      placeholder: prompts/trading-risk.md
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - Factually wrong or outdated
+        - Incomplete, missing an important step
+        - Ambiguous, an agent could read it two ways
+        - Inconsistent with other prompts in the library
+        - Unsafe, it would cause an agent to do something harmful
+        - Broken rendering, formatting, or navigation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong?
+      description: Quote the specific lines and explain the problem.
+      placeholder: |
+        On line 142 the prompt says order state can be treated as rejected
+        when the connection drops, but the reconciliation contract in
+        broker-integration.md requires treating it as unknown.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it say instead?
+      description: If you have a suggested rewrite, paste it. Optional but helpful.
+
+  - type: input
+    id: source
+    attributes:
+      label: Source for the correction
+      description: >
+        If the current text is wrong, what is the authoritative source?
+        A documentation URL, a protocol definition, or a specification.
+      placeholder: https://openapi.futunn.com/doc/intro
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: >
+        What happens if an agent follows this prompt as written? What breaks,
+        or what unsafe action results?
+    validations:
+      required: true

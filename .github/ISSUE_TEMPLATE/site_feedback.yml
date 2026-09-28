@@ -1,0 +1,53 @@
+name: Site feedback
+description: The GitHub Pages site, navigation, search, or rendering
+title: "[site] "
+labels: ["site"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For the site at <https://shing1211.github.io/prompt-engineering/>.
+        If the problem is in the **text** of a prompt, use the bug report form
+        instead.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is the problem?
+      options:
+        - Navigation or page layout
+        - Search returns the wrong thing, or nothing
+        - Tag index is missing or wrong
+        - A link is broken
+        - Dark or light theme renders badly
+        - Code blocks or tables render badly
+        - The site did not build, or a page 404s
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+      description: The address where you saw it.
+      placeholder: https://shing1211.github.io/prompt-engineering/tags/
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you expected, and what you saw instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: device
+    attributes:
+      label: Environment
+      description: >
+        Browser, operating system, and whether you were in dark or light
+        mode. Helps with rendering problems.
+      render: text

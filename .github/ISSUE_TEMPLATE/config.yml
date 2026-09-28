@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Propose a prompt (idea, not written yet)
+    url: https://github.com/shing1211/prompt-engineering/discussions/new?category=prompt-requests
+    about: Discuss scope in Q&A or Prompt Requests before writing a draft.
+  - name: Ask how to use an existing prompt
+    url: https://github.com/shing1211/prompt-engineering/discussions/new?category=q-a
+    about: Usage questions belong in Q&A.
+  - name: Report a security issue
+    url: https://github.com/shing1211/prompt-engineering/security/advisories/new
+    about: Private reporting for unsafe or injection-prone prompt content.
