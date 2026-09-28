@@ -19,6 +19,10 @@ Rules:
      algorithm, it must carry an explicit verification instruction.
   2. An unverified vendor claims nothing at all: no public portal, and the
      prompt must say so.
+  3. If a prompt states a numeric risk threshold as a rule, it must say the
+     value is configurable or an example rather than universal. Broker
+     maintenance margin and account-level risk limits are mandates, not
+     constants.
 
 Exits 0 when clean, 1 on drift.
 """
@@ -70,6 +74,68 @@ DOCS_PRESENT = re.compile(r"https://(?:open\.longbridge|docs-en\.itigerup|develo
 
 BROKER_PROMPTS = sorted(PROMPTS.glob("broker-*.md"))
 
+# A threshold phrased as a rule. The problem is not the number itself, it is
+# asserting one as universal when the value is a per-broker or per-account
+# mandate.
+RULE_THRESHOLD = re.compile(
+    r"(should (?:not )?(?:exceed|be below|stay below)|"
+    r"must (?:not )?exceed|never exceed|"
+    r"\d+\s*%\s*utili[sz]ed|"
+    r"maintenance margin|"
+    # A threshold declared in config, where the phrasing is a key and a
+    # number rather than a sentence.
+    r"\b(?:breach|warning|hard|stop|kill)_\w*_?(?:threshold|limit)\w*\s*:\s*[0-9])",
+    re.I,
+)
+
+THRESHOLD_DISCHARGE = re.compile(
+    r"\bconfigurable\b|"
+    r"\bexample\b|\billustrative\b|"
+    r"\bmandate\b|not a (?:constant|recommendation)\b|"
+    r"\bvaries by\b|\bdiffer(?:s)? by\b|"
+    r"\bload (?:them|it) from\b|"
+    r"\bnot universal\b|"
+    r"\brisk appetite\b",
+    re.I,
+)
+
+# How many lines either side of a rule-threshold a discharge note can sit and
+# still count. A note 300 lines away from the claim it qualifies is not
+# qualifying it. A blockquote note sits directly above the block it governs,
+# so 6 is enough for that shape while keeping unrelated later sections from
+# accidentally satisfying an earlier claim.
+DISCHARGE_WINDOW = 6
+
+
+def check_thresholds() -> list[str]:
+    problems: list[str] = []
+    for path in sorted(PROMPTS.glob("*.md")):
+        if path.stem in ("index", "tags"):
+            continue
+        body = path.read_text(encoding="utf-8").split("\n---", 1)[-1]
+        lines = body.split("\n")
+
+        flagged: list[int] = []
+        for i, line in enumerate(lines):
+            if not RULE_THRESHOLD.search(line):
+                continue
+            # A line that is itself the discharge note does not need one.
+            if THRESHOLD_DISCHARGE.search(line):
+                continue
+            lo = max(0, i - DISCHARGE_WINDOW)
+            hi = min(len(lines), i + DISCHARGE_WINDOW + 1)
+            if not any(THRESHOLD_DISCHARGE.search(x) for x in lines[lo:hi]):
+                flagged.append(i)
+
+        if flagged:
+            first = lines[flagged[0]].strip()[:80]
+            problems.append(
+                f"{path.name}: {len(flagged)} risk threshold(s) stated as a "
+                f"rule with no nearby note that they are configurable "
+                f"(first: {first})"
+            )
+    return problems
+
 
 def main() -> int:
     problems: list[str] = []
@@ -119,16 +185,24 @@ def main() -> int:
     for problem in problems:
         print(f"  {problem}")
 
-    if problems:
+    threshold_problems = check_thresholds()
+    print(f"checked {len(list(PROMPTS.glob('*.md'))) - 2} prompts for hard-coded risk thresholds")
+    for problem in threshold_problems:
+        print(f"  {problem}")
+
+    if problems or threshold_problems:
         print(
             "\nBroker auth internals must carry an explicit instruction to "
             "verify them against\ncurrent vendor documentation, and cite where "
-            "that documentation lives.",
+            "that documentation lives.\n"
+            "Risk thresholds must be framed as configurable or illustrative, "
+            "not as universal rules.",
             file=sys.stderr,
         )
         return 1
 
     print("every broker prompt that asserts vendor internals says to verify them")
+    print("every prompt stating a risk threshold says it is configurable")
     return 0
 
 

@@ -468,15 +468,28 @@ func (mc *MarginCalculator) CalculatePortfolioMargin(positions []*Position) (mar
 
 ### Margin Alert Levels
 
+> **Margin call thresholds are broker- and account-specific, not universal.**
+> The percentages below are illustrative defaults for the shape of the
+> alerting you need, not the numbers any given broker will call you at.
+> Maintenance margin requirements differ by broker, by account type (cash vs
+> margin vs portfolio), by instrument, and by market — and they change.
+> Read the actual maintenance margin from the broker's contract or account
+> configuration and make it configurable. Hard-coding "90% means a margin
+> call" produces an alert that is either too late or too noisy, and in a real
+> account the wrong one can be expensive.
+
 ```go
 type MarginAlertLevel int
 
+// Thresholds are per-broker and per-account configuration, not constants.
+// Load them at startup from the broker's published maintenance margin
+// requirements rather than baking in numbers.
 const (
     MarginLevelSafe MarginAlertLevel = iota
-    MarginLevelWarning  // > 60% utilized
-    MarginLevelDanger   // > 75% utilized
-    MarginLevelCritical // > 90% utilized (margin call imminent)
-    MarginLevelBreach   // > 100% (margin call triggered)
+    MarginLevelWarning  // configurable, e.g. > 60% utilized
+    MarginLevelDanger   // configurable, e.g. > 75% utilized
+    MarginLevelCritical // configurable, approaching broker maintenance margin
+    MarginLevelBreach   // configurable, at or past maintenance margin
 )
 
 func (mc *MarginCalculator) GetAlertLevel(marginUsed, marginAvailable decimal.Decimal) MarginAlertLevel {
@@ -765,38 +778,50 @@ func toFloat64(d decimal.Decimal) float64 {
 
 ## Layer 8: Risk Limits Configuration
 
+> **Every threshold below is an example, not a recommendation.** Limits are a
+> mandate set by risk appetite, account size, regulatory constraint, and
+> strategy. A 2% VaR limit that suits one portfolio is reckless for another.
+> Load these from configuration, version them, and record who approved each
+> value. In particular `margin_util` must be derived from the broker's
+> maintenance margin requirement rather than assumed — see the margin alert
+> levels above.
+
 ```yaml
 risk:
+  # Illustrative values only. Replace with values approved for the account.
   limits:
     - metric: "var"
+      confidence_level: 0.99
       warning_threshold_pct: 1.0   # 1% of portfolio
       breach_threshold_pct: 2.0    # 2% of portfolio
-      description: "99% VaR should not exceed 2% of portfolio"
+      description: "Example: 99% one-day VaR should not exceed 2% of portfolio"
 
     - metric: "drawdown"
       warning_threshold_pct: 3.0   # 3%
       breach_threshold_pct: 5.0    # 5% max drawdown
-      description: "Stop trading if drawdown exceeds 5%"
+      description: "Example: stop trading if drawdown exceeds 5%"
 
     - metric: "margin_util"
-      warning_threshold_pct: 60.0  # 60%
-      breach_threshold_pct: 80.0   # 80%
-      description: "Margin utilization should stay below 80%"
+      # Derive from the broker's maintenance margin for this account and
+      # instrument set. Do not assume a universal percentage.
+      warning_threshold_pct: 60.0
+      breach_threshold_pct: 80.0
+      description: "Example: alert before approaching broker maintenance margin"
 
     - metric: "net_delta"
       warning_threshold_pct: 10.0  # 10% of portfolio
       breach_threshold_pct: 20.0   # 20%
-      description: "Net delta exposure limits"
+      description: "Example: net delta exposure limits"
 
     - metric: "largest_position"
-      warning_threshold_pct: 15.0  # Single position > 15% of portfolio
-      breach_threshold_pct: 25.0   # Single position > 25% of portfolio
-      description: "No single position should exceed 25% of portfolio"
+      warning_threshold_pct: 15.0  # Example: single position > 15% of portfolio
+      breach_threshold_pct: 25.0   # Example: single position > 25% of portfolio
+      description: "Example limit only. Concentrations must come from a mandate"
 
     - metric: "concentration"
-      warning_threshold_pct: 30.0  # Top 5 positions > 30%
-      breach_threshold_pct: 50.0   # Top 5 positions > 50%
-      description: "Sector or broker concentration limits"
+      warning_threshold_pct: 30.0  # Example: top 5 positions > 30%
+      breach_threshold_pct: 50.0   # Example: top 5 positions > 50%
+      description: "Example limits only. Sector and broker caps are mandates"
 ```
 
 ## AWS Services Used
@@ -820,10 +845,15 @@ risk:
 ## Anti-Patterns (Never Do These)
 
 - ❌ Use float64 for any monetary risk calculation — rounding errors accumulate
-- ❌ Calculate VaR with less than 252 days of history — insufficient sample size
-- ❌ Allow margin utilization above 90% — margin call is imminent
+- ❌ Compute VaR on a sample shorter than the estimation window requires for
+  the chosen method, or without stating that window and its assumptions
+- ❌ Hard-code margin call thresholds — they vary by broker, account type, and
+  instrument. Read them from configuration
 - ❌ Trigger kill switch without canceling all open orders — orphaned orders execute
 - ❌ Monitor Greeks only at end of day — delta can move rapidly intraday
-- ❌ Use 95% confidence for VaR — use 99% for financial trading
+- ❌ Apply a single VaR confidence level to every portfolio without stating it.
+  99% is a common choice for trading, but it is a risk-appetite decision, not
+  a correctness rule
 - ❌ Ignore correlation between positions — diversification benefit is overstated
-- ❌ Set max drawdown > 10% — account recovery becomes very difficult
+- ❌ Set a max drawdown limit without connecting it to recovery capacity and
+  risk appetite. The number is a mandate, not a constant
