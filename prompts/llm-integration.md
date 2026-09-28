@@ -4,7 +4,7 @@ description: LLM integration guide with RAG architecture, vector databases (Pine
 mode: build
 model: any
 category: application
-tags: ["llm", "rag", "vector-db", "pinecone", "milvus", "langchain", "vllm", "ollama", "ai-safety", "prompt-engineering", "evaluation"]
+tags: ["llm", "rag", "vector-db", "pinecone", "milvus", "langchain", "vllm", "ollama", "ai-safety", "prompt-engineering", "evaluation", "python"]
 ---
 
 # LLM Integration

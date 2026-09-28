@@ -122,7 +122,7 @@ Documentation workflows — 1 prompt(s).
 | Technology | Prompts |
 |---|---|
 | Go / Golang | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-integration](broker-integration.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [portfolio-accounting](portfolio-accounting.md), [realtime-analytics](realtime-analytics.md), [sdk-build](sdk-build.md), [security](security.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
-| Python | [data-engineering](data-engineering.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
+| Python | [data-engineering](data-engineering.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
 | TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
 | AWS | [broker-integration](broker-integration.md), [migration](migration.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
 | Kafka / MSK | [data-engineering](data-engineering.md), [event-driven-architecture](event-driven-architecture.md), [market-data-pipeline](market-data-pipeline.md) |
@@ -141,6 +141,17 @@ Documentation workflows — 1 prompt(s).
 | Trading | [broker-certification](broker-certification.md), [broker-futu](broker-futu.md), [financial-docs](financial-docs.md), [portfolio-accounting](portfolio-accounting.md), [sdk-build](sdk-build.md) |
 | Compliance | [compliance-regulatory](compliance-regulatory.md) |
 | Go SDK | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [sdk-build](sdk-build.md), [sdk-docs](sdk-docs.md) |
+
+## Browse by Language
+
+Prompts written against a specific language's tooling. Everything not listed here assumes no language-specific tooling and applies as written.
+
+| Language | Prompts |
+|---|---|
+| Go | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-integration](broker-integration.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [portfolio-accounting](portfolio-accounting.md), [realtime-analytics](realtime-analytics.md), [sdk-build](sdk-build.md), [security](security.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
+| Python | [data-engineering](data-engineering.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
+| TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
+| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [broker-certification](broker-certification.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
 
 ## Quick Reference
 
@@ -178,6 +189,7 @@ Documentation workflows — 1 prompt(s).
 | **Application Development** | 4 |
 | **Documentation** | 1 |
 | **Distinct tags** | 222 |
+| **Language-agnostic** | 16 |
 | **Mode: all** | 7 |
 | **Mode: build** | 29 |
 | **Mode: plan** | 1 |

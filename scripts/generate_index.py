@@ -74,6 +74,22 @@ FEATURED_TAGS: list[tuple[str, str]] = [
     ("Go SDK", ("sdk",)),
 ]
 
+# Tags that mean "this prompt is written for that language". A prompt with
+# none of these assumes no language-specific tooling and applies as-is, which
+# is the cross-stack claim the library makes. Keep this list to actual
+# implementation languages: framework, platform, and domain tags belong in
+# FEATURED_TAGS instead.
+LANGUAGE_TAGS: dict[str, tuple[str, ...]] = {
+    "Go": ("go", "golang"),
+    "Python": ("python",),
+    "TypeScript": ("typescript", "javascript"),
+    "Java / JVM": ("java", "kotlin", "scala"),
+    "Rust": ("rust",),
+    "C# / .NET": ("csharp", "dotnet"),
+}
+
+# Prompts matching none of the above are language-agnostic.
+
 QUICK_REFERENCE: list[tuple[str, str]] = [
     ("Start a new project", "Orchestrate"),
     ("Plan the next phase", "Plan"),
@@ -183,6 +199,41 @@ def render(prompts: list[dict[str, object]]) -> str:
         out.append(f"| {label} | {links} |")
     out.append("")
 
+    out.append("## Browse by Language")
+    out.append("")
+    out.append(
+        "Prompts written against a specific language's tooling. Everything "
+        "not listed here assumes no language-specific tooling and applies "
+        "as written."
+    )
+    out.append("")
+    out.append("| Language | Prompts |")
+    out.append("|---|---|")
+    all_language_keys = {k for keys in LANGUAGE_TAGS.values() for k in keys}
+    for label, keys in LANGUAGE_TAGS.items():
+        matched = [
+            p for p in prompts if set(p["tags"]) & set(keys)  # type: ignore[operator]
+        ]
+        if not matched:
+            continue
+        links = ", ".join(
+            f"[{p['slug']}]({p['slug']}.md)"
+            for p in sorted(matched, key=lambda x: str(x["slug"]))
+        )
+        out.append(f"| {label} | {links} |")
+    agnostic = [
+        p
+        for p in prompts
+        if not (set(p["tags"]) & all_language_keys)  # type: ignore[operator]
+    ]
+    if agnostic:
+        links = ", ".join(
+            f"[{p['slug']}]({p['slug']}.md)"
+            for p in sorted(agnostic, key=lambda x: str(x["slug"]))
+        )
+        out.append(f"| **Any stack** | {links} |")
+    out.append("")
+
     out.append("## Quick Reference")
     out.append("")
     out.append("| Task | Prompt |")
@@ -206,6 +257,7 @@ def render(prompts: list[dict[str, object]]) -> str:
             out.append(f"| **{CATEGORY_TITLES[category]}** | {len(entries)} |")
     unique_tags = {tag for p in prompts for tag in p["tags"]}  # type: ignore[union-attr]
     out.append(f"| **Distinct tags** | {len(unique_tags)} |")
+    out.append(f"| **Language-agnostic** | {len(agnostic)} |")
     for mode in sorted({str(p["mode"]) for p in prompts}):
         out.append(f"| **Mode: {mode}** | {sum(1 for p in prompts if p['mode'] == mode)} |")
     out.append("")
