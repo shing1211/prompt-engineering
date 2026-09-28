@@ -652,3 +652,32 @@ Apply these gates to every broker adapter and to the unified abstraction:
 - **State and recovery:** Persist or inject recoverable session, subscription, and order state; detect sequence gaps and stale data; resynchronize from authoritative snapshots after reconnects.
 - **Security evidence:** Add tests proving secret redaction, TLS verification, timestamp/nonce or signature validation where applicable, bounded response/frame allocation, and rejection of malformed or replayed messages.
 - **Definition of done:** A phase is complete only when implementation, focused tests, race testing, fuzz smoke tests, documentation, examples, configuration, and observable diagnostics are present and verified. Report coverage, supported broker/API versions, known limitations, and unverified assumptions in the final handoff.
+
+---
+
+## Guardrails
+
+Before this abstraction is considered production-ready:
+
+1. **Verify every broker adapter against its own vendor documentation**, and
+   record the API version confirmed in `docs/compatibility-matrix.md`. A
+   shared interface does not license a shared assumption.
+2. **Test capability divergence explicitly.** For each venue, assert what the
+   adapter does with a capability that venue lacks. The correct behaviour is
+   a typed refusal, never a silent no-op that looks like success.
+3. **Prove the unified identifier model round-trips.** A symbol entering as a
+   venue-specific string must leave as one that the same venue accepts, or be
+   refused. Ambiguity here silently routes an order.
+4. **Assert order safety per adapter.** A timeout in any adapter is an unknown
+   state requiring reconciliation against that venue's order query, not a
+   retry.
+5. **Verify secrets are per-venue and never shared.** One broker's credential
+   must not be usable against another's adapter.
+6. **Confirm session lifecycle differences are isolated.** Where one venue
+   needs a local gateway and another needs OAuth, that difference lives behind
+   the interface and cannot leak into domain logic.
+7. **Run the cross-cutting gates in `sdk-build.md` for every adapter**, not
+   once for the abstraction. Seven adapters means seven times the race,
+   fuzz, and redaction evidence.
+8. **Prove the abstraction adds no order latency of its own** against a
+   direct-to-broker baseline.

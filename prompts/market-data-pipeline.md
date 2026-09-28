@@ -615,3 +615,32 @@ func (pm *PipelineManager) requestSnapshot(brokerID BrokerID) error {
 - ❌ Store L2 order book in S3 as JSON — use Parquet with columnar compression
 - ❌ Subscribe to too many symbols per WebSocket — broker rate limits will drop connections
 - ❌ Ignore market holidays — HK and US have different trading days; check before backfilling
+
+---
+
+## Guardrails
+
+Before the pipeline is considered production-ready:
+
+1. **Verify sequence continuity from every venue** and define what happens on
+   a gap. Silence is not a policy; resnapshot is a policy.
+2. **Prove the consolidated book is correct under loss** by injecting gaps,
+   duplicates, and out-of-order updates and asserting a resnapshot rather than
+   a discontinuous book.
+3. **Confirm entitlement and subscription limits are checked before
+   subscribing**, and that exceeding one is reported rather than silently
+   dropping data.
+4. **Verify trade direction classification accuracy** against a labelled
+   sample. A misclassified aggressor side corrupts every downstream
+   microstructure feature built on it, including VPIN.
+5. **Assert freshness end to end.** Every record carries its venue timestamp
+   and a receive timestamp, and lag is measured and alerted rather than
+   assumed.
+6. **Prove hot-path boundedness.** A frame declaring an enormous size must be
+   rejected before allocation, not after.
+7. **Confirm the lake and cache layers agree** on a reconciliation basis, and
+   alert on a divergence rather than reconciling silently.
+8. **Define replay semantics per consumer** and confirm each is replay-safe
+   before the replay button exists.
+9. **Measure and budget end-to-end latency** per hop, and state where the
+   budget is spent rather than where it is hoped to be.

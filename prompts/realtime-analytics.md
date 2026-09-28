@@ -984,3 +984,30 @@ ORDER BY minute;
 - ❌ Trade on VPIN signals without rigorous out-of-sample validation — VPIN is noisy
 - ❌ Ignore trade direction classification errors — misclassifying buy/sell degrades VPIN accuracy
 - ❌ Backtest using only top-of-book — mid-price moves can occur without best-bid/ask changes
+
+---
+
+## Guardrails
+
+Before any analytics output is trusted:
+
+1. **Validate trade direction against a labelled sample** and report the
+   measured error rate. VPIN, order flow imbalance, and every feature built
+   on them inherit this number, so it must be measured rather than assumed.
+2. **Prove the book reconstruction under loss** by injecting gaps, duplicates,
+   and out-of-order depth updates, and assert a resnapshot with a logged
+   discontinuity.
+3. **Confirm every feature declares its lookback window and warm-up period.**
+   A feature reporting a value before its window is full is worse than one
+   that reports nothing.
+4. **Assert tick data is not silently deduplicated or reordered.** Silent
+   correction of upstream data hides the upstream defect.
+5. **Verify the hot path is bounded** and that a pathological burst degrades
+   by dropping with a counter rather than by exhausting memory.
+6. **Confirm storage and streaming paths agree** on a reconciliation basis,
+   and alert on divergence.
+7. **State the statistical assumptions of every signal** and refuse to
+   compute a value those assumptions are violated under, rather than emitting
+   a number that cannot be interpreted.
+8. **Prove the arbitrage detector cannot fire on stale data**, by testing with
+   injected lag on one side of a pair.
