@@ -1,0 +1,17 @@
+# Normalize line endings to LF in the repository.
+* text=auto eol=lf
+
+# Markdown and config files are always LF.
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.py   text eol=lf
+*.txt  text eol=lf
+
+# Never rewrite binary assets.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
