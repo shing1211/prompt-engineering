@@ -578,3 +578,31 @@ curl https://api.trading.example.com/health
 - ❌ Deploy without feature flag fallback — no rollback path
 - ❌ Use `DELETE` without `WHERE` — mass data loss
 - ❌ Skip post-migration verification — undetected corruption propagates
+
+---
+
+## Guardrails
+
+Before a migration runs against production:
+
+1. **Prove it is backward compatible in both directions** for the duration of
+   the rollout, and verify that with a test rather than by reasoning about the
+   schema.
+2. **Run the migration on a production-shaped copy first**, at production
+   volume, and record the duration. A migration that takes forty minutes
+   holds a lock for forty minutes.
+3. **Verify the rollback path exists and has been rehearsed.** An untested
+   rollback is not a rollback.
+4. **Assert no destructive change lands in the same release as the code that
+   stops using the old column.** Separating them is what makes a partial
+   failure recoverable.
+5. **Confirm the migration is idempotent or explicitly guarded**, so a retry
+   after a partial failure cannot corrupt state.
+6. **Test against the worst case, not the average**: the largest table, the
+   longest transaction, and concurrent traffic.
+7. **Check the lock behaviour explicitly** and confirm it fits the maintenance
+   window, with the timeout configured to fail rather than hang.
+8. **Verify observability exists before the migration**, and alert on
+   replication lag and error rate during and after it.
+9. **Stage the rollout** and define the abort criteria and the person who can
+   call them, before the first batch runs.

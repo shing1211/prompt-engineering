@@ -574,3 +574,29 @@ Internet
 - ❌ Trust client-side validation only — always validate server-side
 - ❌ Expose internal IDs as public API identifiers — use UUIDs
 - ❌ Skip security testing because "we're not a target" — automated attacks scan everyone
+
+---
+
+## Guardrails
+
+Before a security change is considered complete:
+
+1. **Run SAST, dependency scanning, and secret scanning in CI**, and fail the
+   build on findings. A scanner nobody blocks on is a report.
+2. **Verify redaction with a test** that scans everything emitted during the
+   suite, rather than reviewing log statements by eye.
+3. **Check authorization on every endpoint and every derived path**, including
+   nested resources and alternate route shapes. A missing check on a derived
+   route is the common finding.
+4. **Confirm input validation at the boundary** and that failures return a
+   typed error without echoing the input back.
+5. **Verify TLS verification is never disabled**, including in test helpers
+   and local tooling, which are the paths that reach production by accident.
+6. **Test the authentication flows for their failure modes:** expired token,
+   revoked session, privilege change mid-session, and clock skew.
+7. **Confirm dependency risk is triaged**, not merely listed, and that a
+   critical finding blocks the release.
+8. **Threat-model the change** and record what you decided not to mitigate,
+   with the reason. An unstated gap is an unowned one.
+9. **Verify secrets are not present in the repository, its history, or its
+   fixtures**, and that any rotation is documented and rehearsed.

@@ -158,6 +158,14 @@ else
     fail "a broker prompt asserts vendor internals without a verify instruction"
 fi
 
+step "Every prompt has the required sections"
+
+if python3 scripts/check_prompt_sections.py; then
+    ok "every prompt has anti-patterns and guardrails"
+else
+    fail "a prompt is missing anti-patterns or guardrails"
+fi
+
 # ------------------------------------------------------ 4. line endings + EOL
 
 step "Line endings and whitespace policy"

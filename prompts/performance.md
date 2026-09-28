@@ -782,3 +782,29 @@ onFCP(sendToAnalytics);
 - ❌ Build large Docker images with all dev tools — attack surface + cold starts
 - ❌ Use synchronous logging in high-throughput paths — use async/buffered
 - ❌ Ignore p99 latency — average latency hides outliers that users experience
+
+---
+
+## Guardrails
+
+Before a performance change is claimed as an improvement:
+
+1. **Measure before and after, on the same workload**, with the numbers
+   recorded. A change justified by intuition is a change without evidence.
+2. **Benchmark the code path, not a toy input.** A profile on ten items
+   proves nothing about a million.
+3. **Verify the allocation claim with `testing.B` and the memory profile**,
+   not with a code comment asserting zero allocation.
+4. **Test for a latency regression in CI** against a threshold, so the next
+   change that reintroduces the problem is caught by the build.
+5. **Profile the real bottleneck.** Optimising the allocation on a path that
+   accounts for 2% of latency is effort spent where it will not show.
+6. **Check the p99, not the mean.** The mean hides the tail that users
+   actually experience and that a percentile SLO is written against.
+7. **Verify correctness is preserved.** A faster implementation that changes a
+   result is a regression, and the benchmark must cover the case that would
+   have caught it.
+8. **Load-test with a realistic mix and a realistic dependency**, including
+   latency and failure, since a service that is fast alone is not fast.
+9. **Record the cost of the optimisation** in complexity and maintainability,
+   so the next reader can judge whether it is still worth it.
