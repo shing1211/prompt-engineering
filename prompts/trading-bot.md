@@ -890,3 +890,34 @@ execution:
 - ❌ Trade without position limits — a single bad trade wipes the account
 - ❌ Run in live mode without paper trading first — no excuses
 - ❌ Ignore market hours — HK 09:30-16:00 HKT, US 09:30-16:00 EST, different holidays
+
+---
+
+## Guardrails
+
+Before the bot is allowed to trade anything real:
+
+1. **Verify the state machine is total.** Every order must reach a terminal
+   state, or the bot must refuse to start. An order stuck in `submitting`
+   across a restart is an untracked position.
+2. **Prove paper and live are not the same code path with a flag.** A mode
+   switch that only changes an endpoint can still leave live credentials and
+   real-money semantics in the paper configuration.
+3. **Test every transition on a disconnect mid-flight**, including during
+   amend and cancel, and assert reconciliation rather than resend.
+4. **Confirm position sizing cannot exceed available buying power or the
+   configured cap**, and that a sizing calculation failure halts rather than
+   defaults to a size.
+5. **Verify the strategy is not active outside its intended session**, and
+   that a clock skew cannot make it trade in a closed market.
+6. **Assert idempotency on every order submission**, with a client-generated
+   key the broker honours, and a test that a duplicate submission does not
+   create a second order.
+7. **Prove graceful degradation.** On loss of market data, on stale quotes, or
+   on a partial broker outage, the bot must stop opening risk rather than
+   trade on what it has.
+8. **Confirm the kill switch is reachable independently** of the strategy and
+   the broker connection, and that it cancels open orders.
+9. **Backtest against out-of-sample data and walk-forward**, and report the
+   result with the period, the costs assumed, and the survivorship treatment.
+   A strategy validated only in-sample has not been validated.

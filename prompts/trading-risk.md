@@ -857,3 +857,33 @@ risk:
 - ❌ Ignore correlation between positions — diversification benefit is overstated
 - ❌ Set a max drawdown limit without connecting it to recovery capacity and
   risk appetite. The number is a mandate, not a constant
+
+---
+
+## Guardrails
+
+Before the risk system is trusted with a live account:
+
+1. **Derive every threshold from a stated mandate**, not from a default in
+   this file. Record the approver, the date, and the reason. A limit nobody
+   approved is not a control.
+2. **Read maintenance margin from the broker's published requirement** for the
+   account and instrument set. Never hardcode it, and never assume it matches
+   another venue or account type.
+3. **Prove the kill switch actually stops trading.** In a test, trip it and
+   assert no new order reaches the broker, that open orders are cancelled,
+   and that the system cannot resume without an explicit reset.
+4. **Verify the kill switch fails safe.** If the risk service is unreachable,
+   the system must stop, not continue with stale limits.
+5. **Confirm limits are evaluated on every order path**, including
+   amendments, and that a rejected order is reported with the limit it
+   breached.
+6. **Reconcile the risk system's position view against the broker** on a
+   schedule, and treat a divergence as a stop condition rather than a warning.
+7. **Validate the VaR or exposure method against a known dataset** and record
+   its error on that set. An unvalidated risk number is an opinion.
+8. **Test the failure modes that bypass limits** — a stale position view, a
+   clock skew, a partially failed order — and assert each one halts or refuses
+   rather than proceeding.
+9. **Prove redaction of account values** from logs, traces, and alerts. Risk
+   telemetry is read widely, and position sizes are commercially sensitive.
