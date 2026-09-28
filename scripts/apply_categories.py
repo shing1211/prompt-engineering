@@ -38,6 +38,7 @@ CATEGORIES: dict[str, list[str]] = {
     "sdk": ["sdk-build", "sdk-docs"],
     "architecture": [
         "architecture",
+        "backend-services",
         "api-design",
         "database-design",
         "code-review",
@@ -50,6 +51,15 @@ CATEGORIES: dict[str, list[str]] = {
         "incident-response",
     ],
     "protocols": ["graphql-development", "grpc-development"],
+    "data": [
+        "data-platforms",
+    ],
+    "java": [
+        "jvm-backend",
+    ],
+    "platform": [
+        "platform-engineering",
+    ],
     "application": [
         "frontend-dev",
         "llm-integration",

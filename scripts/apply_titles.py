@@ -18,6 +18,7 @@ PROMPTS = Path("prompts")
 
 TITLES: dict[str, str] = {
     "api-design": "API Design",
+    "backend-services": "Backend Services",
     "architecture": "Architecture Design",
     "broker-certification": "Broker Certification",
     "broker-futu": "Futu OpenD SDK",
@@ -32,7 +33,9 @@ TITLES: dict[str, str] = {
     "compliance-regulatory": "Compliance and Regulatory",
     "database-design": "Database Design",
     "data-engineering": "Data Engineering",
+    "data-platforms": "Data Platforms",
     "devops": "DevOps",
+    "jvm-backend": "JVM Backend",
     "event-driven-architecture": "Event-Driven Architecture",
     "financial-docs": "Financial Platform Documentation",
     "frontend-dev": "Frontend Development",
@@ -46,6 +49,7 @@ TITLES: dict[str, str] = {
     "orchestrate": "Orchestrator",
     "performance": "Performance",
     "plan": "Planning",
+    "platform-engineering": "Platform Engineering",
     "portfolio-accounting": "Portfolio Accounting",
     "quant-backtesting": "Quant Backtesting",
     "realtime-analytics": "Real-Time Analytics",

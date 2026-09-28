@@ -73,12 +73,13 @@ Reusable patterns for building and documenting SDKs — 2 prompt(s).
 
 ### Architecture and Engineering
 
-Cross-cutting engineering practice — 11 prompt(s).
+Cross-cutting engineering practice — 12 prompt(s).
 
 | Prompt | Mode | Description |
 |---|---|---|
 | [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling |
 | [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency |
+| [`backend-services.md`](backend-services.md) — Backend Services | all | Design backend services without a language assumption, covering boundaries, idempotency, consistency, versioning, and the failure modes of distributed systems |
 | [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages |
 | [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases |
 | [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) |
@@ -89,6 +90,14 @@ Cross-cutting engineering practice — 11 prompt(s).
 | [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python |
 | [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates |
 
+### Platform and Infrastructure
+
+Kubernetes, packaging, delivery, and operability — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`platform-engineering.md`](platform-engineering.md) — Platform Engineering | build | Build and operate Kubernetes infrastructure with Helm, GitOps, Terraform, progressive delivery, and the failure modes of agent-written infrastructure |
+
 ### API Protocols
 
 GraphQL and gRPC specifics — 2 prompt(s).
@@ -97,6 +106,14 @@ GraphQL and gRPC specifics — 2 prompt(s).
 |---|---|---|
 | [`graphql-development.md`](graphql-development.md) — GraphQL Development | build | GraphQL development guide with Apollo Server 4, DataLoader for N+1 problem, Apollo Federation for microservices, graphql-ws subscriptions, schema registry, and performance optimization (persisted queries, APQ) |
 | [`grpc-development.md`](grpc-development.md) — gRPC Development | build | gRPC development guide with Protobuf v3, buf CLI for modern protobuf tooling, Go grpc-go, gRPC-gateway for REST-to-gRPC, Envoy proxy, Istio service mesh, and streaming RPC patterns |
+
+### Data Platforms
+
+Lakehouse, contracts, and data quality — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`data-platforms.md`](data-platforms.md) — Data Platforms | build | Build lakehouse and streaming data platforms with data contracts, late-arriving data handling, lineage, quality gates, and cost control |
 
 ### Application Development
 
@@ -108,6 +125,14 @@ Frontend, LLM, events, and data pipelines — 4 prompt(s).
 | [`event-driven-architecture.md`](event-driven-architecture.md) — Event-Driven Architecture | build | Design event-driven financial systems with Kafka, schema evolution, CQRS, event sourcing, ordering, replay, deduplication, and resilient asynchronous workflows |
 | [`frontend-dev.md`](frontend-dev.md) — Frontend Development | build | Frontend development guide with React 18, Next.js 14 App Router, Zustand state management, shadcn/ui + Tailwind CSS, TanStack Query, Core Web Vitals, accessibility, and Vitest/Playwright testing |
 | [`llm-integration.md`](llm-integration.md) — LLM Integration | build | LLM integration guide with RAG architecture, vector databases (Pinecone/Milvus), prompt engineering, vLLM/Ollama local deployment, AI safety, RAG evaluation with RAGAS, and cloud API integration (OpenAI, Anthropic, Google Gemini) |
+
+### JVM and Java
+
+Spring Boot, Quarkus, and the JVM — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`jvm-backend.md`](jvm-backend.md) — JVM Backend | build | Build JVM backend services with Spring Boot, Quarkus, or Micronaut compared against each other, covering persistence, concurrency, testing, and JVM-specific operational concerns |
 
 ### Documentation
 
@@ -122,20 +147,20 @@ Documentation workflows — 1 prompt(s).
 | Technology | Prompts |
 |---|---|
 | Go / Golang | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-integration](broker-integration.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [portfolio-accounting](portfolio-accounting.md), [realtime-analytics](realtime-analytics.md), [sdk-build](sdk-build.md), [security](security.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
-| Python | [data-engineering](data-engineering.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
+| Python | [data-engineering](data-engineering.md), [data-platforms](data-platforms.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
 | TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
-| AWS | [broker-integration](broker-integration.md), [migration](migration.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
+| AWS | [broker-integration](broker-integration.md), [data-platforms](data-platforms.md), [migration](migration.md), [platform-engineering](platform-engineering.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
 | Kafka / MSK | [data-engineering](data-engineering.md), [event-driven-architecture](event-driven-architecture.md), [market-data-pipeline](market-data-pipeline.md) |
 | Redis | [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [realtime-analytics](realtime-analytics.md) |
 | PostgreSQL | [database-design](database-design.md), [migration](migration.md) |
 | React / Next.js | [frontend-dev](frontend-dev.md) |
 | GraphQL / Apollo | [api-design](api-design.md), [graphql-development](graphql-development.md) |
 | gRPC / Protobuf | [api-design](api-design.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md) |
-| Kubernetes | [devops](devops.md) |
-| Terraform | [devops](devops.md), [migration](migration.md) |
-| CI/CD | [broker-futu](broker-futu.md), [broker-ibkr](broker-ibkr.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [devops](devops.md) |
+| Kubernetes | [devops](devops.md), [platform-engineering](platform-engineering.md) |
+| Terraform | [devops](devops.md), [migration](migration.md), [platform-engineering](platform-engineering.md) |
+| CI/CD | [broker-futu](broker-futu.md), [broker-ibkr](broker-ibkr.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [devops](devops.md), [platform-engineering](platform-engineering.md) |
 | Security | [code-review](code-review.md), [security](security.md) |
-| Testing | [frontend-dev](frontend-dev.md), [testing](testing.md) |
+| Testing | [frontend-dev](frontend-dev.md), [jvm-backend](jvm-backend.md), [testing](testing.md) |
 | LLM / RAG | [llm-integration](llm-integration.md) |
 | Market data | [broker-futu](broker-futu.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [market-data-pipeline](market-data-pipeline.md) |
 | Trading | [broker-certification](broker-certification.md), [broker-futu](broker-futu.md), [financial-docs](financial-docs.md), [portfolio-accounting](portfolio-accounting.md), [sdk-build](sdk-build.md) |
@@ -149,9 +174,10 @@ Prompts written against a specific language's tooling. Everything not listed her
 | Language | Prompts |
 |---|---|
 | Go | [broker-futu](broker-futu.md), [broker-google](broker-google.md), [broker-ibkr](broker-ibkr.md), [broker-integration](broker-integration.md), [broker-longbridge](broker-longbridge.md), [broker-tiger](broker-tiger.md), [broker-vbroker](broker-vbroker.md), [broker-webull](broker-webull.md), [grpc-development](grpc-development.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [portfolio-accounting](portfolio-accounting.md), [realtime-analytics](realtime-analytics.md), [sdk-build](sdk-build.md), [security](security.md), [trading-bot](trading-bot.md), [trading-risk](trading-risk.md) |
-| Python | [data-engineering](data-engineering.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
+| Python | [data-engineering](data-engineering.md), [data-platforms](data-platforms.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
 | TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
-| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [broker-certification](broker-certification.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
+| Java / JVM | [jvm-backend](jvm-backend.md) |
+| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [backend-services](backend-services.md), [broker-certification](broker-certification.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [platform-engineering](platform-engineering.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
 
 ## Quick Reference
 
@@ -179,19 +205,22 @@ Prompts written against a specific language's tooling. Everything not listed her
 
 | Metric | Count |
 |---|---|
-| **Total prompts** | 38 |
+| **Total prompts** | 42 |
 | **Orchestration and Planning** | 2 |
 | **Financial Domain — Trading and Broking** | 9 |
 | **Broker SDKs** | 7 |
 | **SDK Development** | 2 |
-| **Architecture and Engineering** | 11 |
+| **Architecture and Engineering** | 12 |
+| **Platform and Infrastructure** | 1 |
 | **API Protocols** | 2 |
+| **Data Platforms** | 1 |
 | **Application Development** | 4 |
+| **JVM and Java** | 1 |
 | **Documentation** | 1 |
-| **Distinct tags** | 222 |
-| **Language-agnostic** | 16 |
-| **Mode: all** | 7 |
-| **Mode: build** | 29 |
+| **Distinct tags** | 244 |
+| **Language-agnostic** | 18 |
+| **Mode: all** | 8 |
+| **Mode: build** | 32 |
 | **Mode: plan** | 1 |
 | **Mode: review** | 1 |
 

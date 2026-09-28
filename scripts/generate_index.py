@@ -32,8 +32,11 @@ CATEGORY_TITLES: dict[str, str] = {
     "broker-sdk": "Broker SDKs",
     "sdk": "SDK Development",
     "architecture": "Architecture and Engineering",
+    "platform": "Platform and Infrastructure",
     "protocols": "API Protocols",
+    "data": "Data Platforms",
     "application": "Application Development",
+    "java": "JVM and Java",
     "documentation": "Documentation",
 }
 
@@ -45,8 +48,11 @@ CATEGORY_BLURB: dict[str, str] = {
     "broker-sdk": "One prompt per broker, each a production Go SDK build",
     "sdk": "Reusable patterns for building and documenting SDKs",
     "architecture": "Cross-cutting engineering practice",
+    "platform": "Kubernetes, packaging, delivery, and operability",
     "protocols": "GraphQL and gRPC specifics",
+    "data": "Lakehouse, contracts, and data quality",
     "application": "Frontend, LLM, events, and data pipelines",
+    "java": "Spring Boot, Quarkus, and the JVM",
     "documentation": "Documentation workflows",
 }
 

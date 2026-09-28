@@ -108,6 +108,7 @@ nav:
       - SDK Documentation: sdk-docs.md
   - Architecture and Engineering:
       - Architecture: architecture.md
+      - Backend Services: backend-services.md
       - API Design: api-design.md
       - Database Design: database-design.md
       - Code Review: code-review.md
@@ -118,9 +119,15 @@ nav:
       - Migration: migration.md
       - Observability and SRE: observability-sre.md
       - Incident Response: incident-response.md
+  - Platform and Infrastructure:
+      - Platform Engineering: platform-engineering.md
   - API Protocols:
       - GraphQL: graphql-development.md
       - gRPC: grpc-development.md
+  - Data Platforms:
+      - Data Platforms: data-platforms.md
+  - JVM and Java:
+      - JVM Backend: jvm-backend.md
   - Application:
       - Frontend: frontend-dev.md
       - LLM Integration: llm-integration.md
