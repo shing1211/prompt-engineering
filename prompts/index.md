@@ -212,17 +212,22 @@ tags: ["lowercase", "kebab-case"]
 | `category` | Must be a key in `scripts/apply_categories.py`. |
 | `tags` | Lowercase kebab-case. Reuse existing tags where one fits. |
 
-Regenerate derived files and run the checks:
+Adding a prompt touches three files: the prompt itself, its `title` and
+`category` entries in the two generator scripts, and an entry in the `nav:`
+block of `mkdocs.yml`. Skipping the nav entry is the easy mistake, because
+MkDocs still builds an unlisted page — it just never appears in the sidebar.
 
 ```bash
-python3 scripts/apply_titles.py        # frontmatter title + H1
-python3 scripts/apply_categories.py    # category key
-python3 scripts/generate_index.py      # tables in this file
-scripts/validate.sh                    # frontmatter schema, lint, links
+python3 scripts/apply_titles.py           # frontmatter title + H1
+python3 scripts/apply_categories.py       # category key
+python3 scripts/fix_heading_hierarchy.py  # one H1 per document
+python3 scripts/generate_index.py         # tables in this file
+scripts/validate.sh                       # schema, nav, links, lint
 ```
 
-CI runs the same checks, so a stale `index.md` or a malformed frontmatter
-block fails the pull request rather than reaching the site.
+CI runs the same checks, so a stale `index.md`, a malformed frontmatter
+block, or a prompt missing from the nav fails the pull request rather than
+reaching the site.
 
 See [CONTRIBUTING.md](https://github.com/shing1211/prompt-engineering/blob/main/CONTRIBUTING.md)
 for the full review criteria.

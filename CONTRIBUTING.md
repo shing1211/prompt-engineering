@@ -71,26 +71,59 @@ than instructing the agent to guess.
 
 ## Commands
 
-Run these from the repository root. All three are idempotent.
+Run these from the repository root.
+
+### Generators
+
+Rewrite files, and are idempotent. Commit whatever they change.
 
 ```bash
-python3 scripts/apply_titles.py      # sync frontmatter title and H1
-python3 scripts/apply_categories.py  # sync the category key
-python3 scripts/generate_index.py    # regenerate index.md tables
-scripts/validate.sh                  # the same checks CI runs
+python3 scripts/apply_titles.py           # sync frontmatter title and H1
+python3 scripts/apply_categories.py       # sync the category key
+python3 scripts/fix_heading_hierarchy.py  # one H1 per document
+python3 scripts/generate_index.py         # regenerate index.md tables
 ```
 
-`generate_index.py --check` exits non-zero when `prompts/index.md` is stale,
-which is how CI prevents the counts from drifting. If you add a prompt
-without regenerating, that check fails.
+A new prompt needs a `title` and a `category` registered in the first two
+scripts before they will accept the file.
+
+### Checks
+
+Read-only. These are what `scripts/validate.sh` runs, and what CI runs on
+every pull request.
+
+```bash
+scripts/validate.sh                        # everything below, in one go
+python3 scripts/generate_index.py --check  # index.md tables are current
+python3 scripts/check_nav.py               # every prompt is in the site nav
+python3 scripts/check_links.py             # internal links in built/ site/
+```
+
+`check_links.py` needs a built site: run `mkdocs build` first, and it skips
+itself if `site/` is absent.
+
+### Adding a prompt
+
+Three files need updating, not one:
+
+1. `prompts/<slug>.md` with valid frontmatter
+2. `title` and `category` in `apply_titles.py` and `apply_categories.py`
+3. an entry in the `nav:` block of `mkdocs.yml`
+
+Skipping the third is the easy mistake: MkDocs still builds an unlisted
+page, so the prompt renders and is reachable by URL, but it is missing from
+the sidebar and CI logs only an INFO line. `check_nav.py` is what turns that
+into a failure.
 
 ## Local site preview
 
 ```bash
-uv run --with mkdocs-material mkdocs serve
+uv run --with-requirements requirements-docs.txt mkdocs serve
 ```
 
-No install step is needed; `uv` resolves the dependency into a cache.
+No install step is needed; `uv` resolves the dependency into a cache. Use
+`requirements-docs.txt` rather than naming a package, so the preview matches
+the pinned versions CI builds with.
 
 ## Review criteria
 

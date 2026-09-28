@@ -55,11 +55,27 @@ First public release. 38 prompts, a browsable site, and CI.
   model ID
 - Made the prompt counts in `index.md` generated from frontmatter rather than
   maintained by hand, after they drifted out of sync with the files on disk
+- Normalised heading hierarchy in 19 prompts. Several used `#` for what were
+  really top-level sections, so each document had multiple H1s and the
+  generated table of contents listed the title three times over. Fixed by
+  `scripts/fix_heading_hierarchy.py`, 455 headings adjusted
+- Labelled 24 unlabelled code fences. They were ASCII diagrams and directory
+  trees, now tagged `text` so they render correctly
+- Disambiguated two identical "Anti-Patterns" headings in
+  `graphql-development.md`, the first now scoped to error handling
+- Trailing whitespace, missing final newlines, inconsistent list markers,
+  spaces inside code spans, and blank-line issues around fences and tables
+- Set `MD025.front_matter_title` in the markdownlint config. The
+  `title:` frontmatter key was being read as the document H1, so every real
+  heading was reported as a duplicate
 
 ### Repository
 
 - `index.md` rewritten as the library's home page with generated category,
   technology, quick-reference, and statistics tables
+- Discussions is disabled for now. Every reference to it was repointed at
+  issues, and a **Prompt idea** issue form replaces the scoping flow that
+  CONTRIBUTING had promised Discussions would provide
 
 [Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/shing1211/prompt-engineering/releases/tag/v0.1.0

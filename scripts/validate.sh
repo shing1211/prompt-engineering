@@ -120,7 +120,7 @@ if [ "$FAILURES" -eq 0 ]; then ok "frontmatter schema"; else fail "frontmatter s
 
 step "Generators are idempotent"
 
-for script in apply_titles.py apply_categories.py; do
+for script in apply_titles.py apply_categories.py fix_heading_hierarchy.py; do
     before=$(git diff --stat -- prompts | tail -1 || true)
     if ! python3 "scripts/$script" >/dev/null; then
         fail "$script exited non-zero"
@@ -140,6 +140,14 @@ if python3 scripts/generate_index.py --check; then
     ok "index.md tables are current"
 else
     fail "index.md tables are stale; run python3 scripts/generate_index.py"
+fi
+
+step "Site navigation"
+
+if python3 scripts/check_nav.py; then
+    ok "every prompt is listed in the nav"
+else
+    fail "nav does not match the files in prompts/"
 fi
 
 # ------------------------------------------------------ 4. line endings + EOL

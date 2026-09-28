@@ -105,10 +105,12 @@ GitHub search is the highest-leverage lever and the cheapest to pull.
 
 - [x] Description set, carrying the vertical
 - [x] Topics set (see below)
-- [ ] Pin the repo. A pinned repo appears in a profile's prominent list,
-      which is how star-collectors discover projects
-- [ ] Add the Pages URL to the description's website field. Done: the
-      `homepage` field is set
+- [x] Pages URL set as the repository `homepage`, which is what puts the link
+      in the repository header
+- [ ] Pin the repo from your profile page. A pinned repo appears in a
+      profile's prominent list, which is how star-collectors find projects.
+      This is a profile-level action rather than a repository setting, so
+      there is no API or CLI route to it
 
 Topics applied: `prompt-engineering`, `opencode`, `claude-code`,
 `agentic-ai`, `ai-prompts`, `system-prompts`, `fintech`, `trading`,
