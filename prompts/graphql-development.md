@@ -831,3 +831,34 @@ const resolvers = {
 - ❌ Return DB exceptions to clients — wrap in typed error results
 - ❌ Use N+1 without DataLoader — performance issues at scale
 - ❌ Skip rate limiting — expensive queries cause DoS
+
+---
+
+## Guardrails
+
+Before publishing a GraphQL schema or resolver set:
+
+1. **Confirm the schema lints and composes in CI** (Apollo Federation
+   composition for a supergraph, introspection for a single service). A schema
+   that does not compose is not shippable.
+2. **Prove N+1 is actually gone.** Instrument a representative query against
+   a realistic dataset and assert the query count does not scale with result
+   size. A DataLoader that is constructed per request instead of per context
+   looks correct and is not.
+3. **Set and enforce query depth and complexity limits** in the server, and
+   test that an over-complex query is rejected rather than merely slow.
+4. **Verify every resolver's authorization**, including nested and aliased
+   paths, and test that a field cannot be reached by routing around the
+   parent.
+5. **Assert input validation at the schema boundary**, and that a typed error
+   is returned rather than a database exception.
+6. **Confirm subscriptions are authenticated and authorized per event**, not
+   only at connection time. Authorization changes during a long-lived
+   subscription are the case that gets missed.
+7. **Check persisted queries or APQ are enabled and that arbitrary queries
+   are rejected** when that is the chosen posture.
+8. **Confirm the response cache keys include every variable that affects the
+   result.** A cache key missing one variable serves one user's data to
+   another.
+9. **Run a schema-diff check in CI** and require a deliberate decision on
+   every breaking change before merge.

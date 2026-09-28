@@ -799,3 +799,30 @@ grpcurl -d '{"order_ids": ["order-123"]}' localhost:50051 trading.v1.TradingServ
 - ❌ Skip `validate` rules — malformed data crashes services
 - ❌ Use `string` for everything — use proper types (int64, bool, enums)
 - ❌ Forget breaking change detection — run `buf breaking` before every release
+
+---
+
+## Guardrails
+
+Before publishing a protobuf schema or service:
+
+1. **Run `buf lint` and `buf breaking` in CI**, and fail the build on either.
+   A breaking change that reaches clients is not recoverable by patching
+   clients.
+2. **Assert the generated code is committed or reproducibly generated** and
+   that the schema is the single source of truth, never the generated file.
+3. **Verify field-number stability.** Never reuse or renumber a field; mark
+   removed fields `reserved` with their numbers and names.
+4. **Confirm every RPC declares its idempotency and retry semantics**, and
+   that the client honours them. An unannotated retryable call is a duplicate
+   order in another system.
+5. **Test deadline and cancellation propagation.** A handler that ignores the
+   context keeps working after the caller has given up, holding resources.
+6. **Assert bounded message size** on both send and receive, and that an
+   oversized message is rejected rather than buffered.
+7. **Confirm streaming handlers cannot leak goroutines** under client
+   disconnect, and prove it with a race and leak test.
+8. **Check authN and authZ on every RPC and every streaming method**, and
+   test that a metadata-less call is rejected.
+9. **Verify the gateway or proxy configuration matches the proto**, including
+   HTTP mappings for REST interop, with a round-trip test.

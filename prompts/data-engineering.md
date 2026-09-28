@@ -712,3 +712,31 @@ LOCATION 's3://trading-data-lake/processed/daily_pnl/';
 - ❌ Use the same credentials for ETL and application — least privilege violation
 - ❌ Create tables without proper partitioning — query costs explode
 - ❌ Skip schema evolution planning — adding new required columns breaks downstream
+
+---
+
+## Guardrails
+
+Before a pipeline is trusted with production data:
+
+1. **Assert data contracts at the boundary** and fail the run on a schema
+   violation, rather than passing malformed rows downstream for someone else
+   to discover.
+2. **Prove idempotency.** Re-running the pipeline over the same input must
+   produce the same output, and a test must demonstrate that rather than
+   assume it.
+3. **Verify freshness and completeness explicitly** against a declared
+   expectation, and alert when a partition is late or short. A job that
+   succeeds on empty input has succeeded at nothing.
+4. **Confirm backfills are re-runnable and scoped**, with a documented
+   procedure, because they will be needed and will be run under pressure.
+5. **Test against a schema change** that is incompatible but syntactically
+   valid, which is the failure that reaches production.
+6. **Verify data quality checks run as a gate**, not as a report. A check that
+   cannot fail the pipeline is a dashboard.
+7. **Confirm secrets and PII are handled per classification**, and that
+   anything sensitive is masked in logs and in the transformation layer.
+8. **Record lineage** from source to sink for every published dataset, and
+   prove it is queryable rather than merely documented.
+9. **Measure cost and runtime against a budget** and alert on regression, so
+   a pipeline that works and bankrupts the account is caught by something.

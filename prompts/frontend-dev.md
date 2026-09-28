@@ -748,3 +748,31 @@ test.describe('Order Placement', () => {
 | `recharts` | Charts |
 | `framer-motion` | Animations |
 | `@radix-ui/*` | Headless UI primitives (shadcn) |
+
+---
+
+## Guardrails
+
+Before a frontend change is considered done:
+
+1. **Measure the Core Web Vitals you are claiming to improve**, before and
+   after, on a representative device profile. A performance claim without a
+   measurement is an assumption.
+2. **Verify accessibility with an automated check in CI** and a manual pass
+   for focus order, keyboard operation, and screen reader labelling.
+   Automated checks catch roughly a third of real issues.
+3. **Assert no render-blocking work on the critical path**, and that the
+   largest contentful element is prioritised.
+4. **Confirm client-side data fetching is typed end to end** and that a
+   schema change breaks the build rather than the runtime.
+5. **Test loading, empty, error, and partial states** for every async view. A
+   view that handles only the success path is unfinished.
+6. **Check bundle impact** on any dependency change, and refuse a change that
+   adds weight without a stated reason.
+7. **Verify error boundaries exist** at the route level so one failed view
+   does not blank the application.
+8. **Confirm hydration mismatches are absent** by running the production
+   build locally, not only the dev server.
+9. **Test at a realistic viewport and on a throttled network**, since the
+   failure modes that reach users are usually the ones a fast dev machine
+   hides.
