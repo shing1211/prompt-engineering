@@ -125,6 +125,12 @@ THRESHOLD_DISCHARGE = re.compile(
 # accidentally satisfying an earlier claim.
 DISCHARGE_WINDOW = 6
 
+# A discharge note may not cross a list-item boundary. In a config block each
+# metric is its own "- metric:" entry, and a neighbouring entry's example
+# framing says nothing about this one. Without this, the last entry's
+# discharge note silently covers every entry above it.
+ENTRY_BOUNDARY = re.compile(r"^\s*[-*]\s+\w+\s*:|^\s*###\s|^\s*##\s")
+
 
 def check_thresholds() -> list[str]:
     problems: list[str] = []
@@ -143,7 +149,23 @@ def check_thresholds() -> list[str]:
                 continue
             lo = max(0, i - DISCHARGE_WINDOW)
             hi = min(len(lines), i + DISCHARGE_WINDOW + 1)
-            if not any(THRESHOLD_DISCHARGE.search(x) for x in lines[lo:hi]):
+            # Search outward and stop at the first entry boundary on each
+            # side, so a discharge note cannot leak across metrics.
+            found = False
+            for j in range(i, hi):
+                if j != i and ENTRY_BOUNDARY.match(lines[j]):
+                    break
+                if THRESHOLD_DISCHARGE.search(lines[j]):
+                    found = True
+                    break
+            if not found:
+                for j in range(i - 1, lo - 1, -1):
+                    if ENTRY_BOUNDARY.match(lines[j]):
+                        break
+                    if THRESHOLD_DISCHARGE.search(lines[j]):
+                        found = True
+                        break
+            if not found:
                 flagged.append(i)
 
         if flagged:

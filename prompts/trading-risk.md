@@ -814,14 +814,14 @@ risk:
       description: "Example: net delta exposure limits"
 
     - metric: "largest_position"
-      warning_threshold_pct: 15.0  # Example: single position > 15% of portfolio
-      breach_threshold_pct: 25.0   # Example: single position > 25% of portfolio
-      description: "Example limit only. Concentrations must come from a mandate"
+      warning_threshold_pct: 15.0  # single position > 15% of portfolio
+      breach_threshold_pct: 25.0   # single position > 25% of portfolio
+      description: "Example only. Concentration limits are mandates, not constants"
 
     - metric: "concentration"
-      warning_threshold_pct: 30.0  # Example: top 5 positions > 30%
-      breach_threshold_pct: 50.0   # Example: top 5 positions > 50%
-      description: "Example limits only. Sector and broker caps are mandates"
+      warning_threshold_pct: 30.0  # top 5 positions > 30%
+      breach_threshold_pct: 50.0   # top 5 positions > 50%
+      description: "Example only. Sector and broker caps are mandates"
 ```
 
 ## AWS Services Used

@@ -26,12 +26,28 @@ under that heading.
 - Reframed broker-specific risk limits in `trading-risk.md` as configurable
   mandates rather than universal constants. Maintenance margin varies by
   broker, account type, instrument, and market
+- Corrected `sdk-docs.md`, which told the agent to document "all supported
+  auth schemes" as a flat checklist, inventing auth documentation for an SDK
+  that may use none of them
 
 ### Added
 
 - `scripts/check_vendor_claims.py`, wired into `validate.sh`, which fails a
   prompt that asserts vendor internals without a verification instruction or
-  that states a risk threshold as a rule
+  that states a risk threshold as a rule. It covers the per-broker prompts
+  and the generic SDK prompts, verifies a cited doc URL belongs to the vendor
+  the file names, and will not let one config entry's example framing
+  discharge a neighbour's hard-coded value
+
+### Audit scope
+
+The vendor-fact audit covered every prompt that hard-codes broker or exchange
+specifics: the nine `broker-*` prompts (seven per-broker SDKs plus the
+integration guide and the certification guide), the two `sdk-*` prompts, and
+the risk-management prompt, 12 in total. The remaining 26 prompts were
+reviewed and carry no vendor claims; they are principle-based rather than
+tied to a particular API, so this audit says nothing about the correctness of
+their technical judgement.
 
 ## [0.1.0] - 2026-09-28
 
