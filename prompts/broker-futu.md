@@ -50,7 +50,71 @@ You are expected to deliver an enterprise-ready repository that treats OpenD as 
 * **Tracing and metrics:** Add OpenTelemetry hooks around connect/authenticate, frame encode/decode, request round trips, push dispatch, subscriptions, and order reconciliation. Export frame latency, decode failures, reconnects, heartbeat failures, dropped pushes, queue depth, subscription count, and unknown message counts.
 * **Operational diagnostics:** Provide readiness checks that distinguish local gateway reachability, certificate validity, authentication, protocol compatibility, market-data permission, and trading readiness. Include a safe redacted OpenD diagnostic report.
 
-### 6. Documentation & Developer Experience (DX)
+### 6. Anti-Patterns (Never Do These)
+
+* ❌ **Infer binary frame layouts from observed traffic.** Field order, padding,
+  and length prefixes are implementation details of a specific OpenD version.
+  Work from the published protocol definition. Reverse-engineered layouts
+  break silently on upgrade and corrupt orders, not just reads.
+* ❌ **Disable certificate verification to make a self-signed cert work.**
+  Approve the specific self-signed certificate explicitly and rotate it. A
+  blanket `InsecureSkipVerify` removes TLS from a connection that already
+  crosses a network boundary.
+* ❌ **Assume OpenD is running.** It is a separate locally-managed process.
+  Detect the connection refused case as its own state and surface it, rather
+  than reporting a generic auth or protocol failure.
+* ❌ **Reuse a request serial after reconnect.** Serials correlate request to
+  response within a session. After a reconnect the counter resets, and a
+  reused serial can match a stale response to a new request.
+* ❌ **Treat a disconnected frame as a rejected order.** A dropped connection
+  after a trade frame is an unknown state. Reconcile against order status by
+  order ID before retrying.
+* ❌ **Trust L2 push without sequence checking.** Out-of-order or missing depth
+  updates produce a plausible but wrong book. Detect gaps and resnapshot
+  rather than applying a discontinuous update.
+* ❌ **Subscribe without checking entitlements and quotas.** Futu enforces
+  subscription limits and market entitlements. Exceeding them produces
+  dropped or refused data, not an error you would notice.
+* ❌ **Send a trade frame without validating lot size, tick size, and market
+  session.** The protocol will accept frames the exchange rejects, which
+  wastes the round trip and hides the real constraint.
+* ❌ **Assume an unknown message type is a protocol error.** OpenD versions
+  add messages. Tolerate and count unknown types rather than tearing down a
+  working session.
+
+### 7. Guardrails
+
+Before calling the SDK production-ready:
+
+1. **Verify protocol behaviour against Futu's published OpenAPI documentation**
+   (<https://www.futunn.com/en/openapi>) and record the OpenD version the
+   codec was verified against in `docs/compatibility-matrix.md`. Any field
+   layout taken from observation rather than documentation must be recorded
+   as unverified.
+2. **Prove the codec against golden frames.** Encode/decode round-trip tests
+   with endianness and length-prefix cases, plus fuzz targets on every frame
+   decoder. A codec bug corrupts orders, so this is a correctness gate, not
+   a coverage metric.
+3. **Prove the certificate path.** Test the approved self-signed certificate
+   succeeding, an unapproved certificate failing, and certificate rotation
+   mid-session. Assert that no code path can disable verification globally.
+4. **Prove serial correlation.** Reconnect mid-flight and assert serials
+   restart cleanly and never match a response to the wrong request.
+5. **Prove order safety under ambiguity.** Drop the connection immediately
+   after a trade frame and assert the client reconciles by order ID rather
+   than retrying the frame.
+6. **Prove the book is correct under loss.** Inject gaps, duplicates, and
+   out-of-order L2 updates and assert the client resnapshots rather than
+   applying a discontinuous book.
+7. **Prove OpenD-absent behaviour.** With OpenD stopped, assert a distinct
+   gateway-unavailable state, not an auth or protocol error.
+8. **Run the standard quality gates** — `go test -race ./...` clean,
+   `govulncheck`, `gosec`, bounded frame allocation on every decode path, and
+   redaction of session tokens and account values from logs and traces.
+9. **Default to paper or mock.** Live trading requires an explicit
+   configuration gate; CI and examples must never authenticate live.
+
+### 8. Documentation & Developer Experience (DX)
 * **GoDoc compliance:** Document every exported type, function, interface, option, error, and package, including connection ownership, frame lifecycle, push delivery, and order retry semantics.
 * **Architecture documentation:** Include `README.md` and `docs/` with OpenD installation/configuration, local versus remote deployment, certificate handling, protocol support matrix, market permissions, risk controls, and text-based architecture diagrams.
 * **Runnable examples:** Provide `/examples/` for secure OpenD connection, authentication, quote/L2 subscription, account and position queries, paper-order placement, cancellation, and post-reconnect reconciliation. Live trading must require explicit opt-in.
