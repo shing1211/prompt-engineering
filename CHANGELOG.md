@@ -5,10 +5,15 @@ All notable changes to this repository are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-The project had no releases before 0.1.0, so every change to date appears
-under that heading.
+0.1.0 was the first public release. 0.1.1 corrects vendor facts that shipped
+in it, so if you built an adapter from 0.1.0, read that section before
+trusting the values.
 
 ## [Unreleased]
+
+Nothing yet.
+
+## [0.1.1] - 2026-09-28
 
 ### Fixed
 
@@ -114,5 +119,6 @@ First public release. 38 prompts, a browsable site, and CI.
   issues, and a **Prompt idea** issue form replaces the scoping flow that
   CONTRIBUTING had promised Discussions would provide
 
-[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shing1211/prompt-engineering/releases/tag/v0.1.0
