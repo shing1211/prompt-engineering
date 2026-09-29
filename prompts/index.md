@@ -8,7 +8,7 @@ hide:
 # Prompt Library
 
 System prompts for coding agents, across architecture, data, platform,
-protocols, SDK, and financial engineering. 42 prompts: 26 cross-stack
+protocols, SDK, and financial engineering. 43 prompts: 27 cross-stack
 engineering practice, 16 covering multi-broker trading systems.
 
 Each prompt is a standalone system prompt with a declared mode

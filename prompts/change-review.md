@@ -104,10 +104,6 @@ Load before forming an opinion:
   asserting what. A green run that never exercised the changed path is a green
   run about something else, and saying so is part of the review rather than a
   footnote to it.
-- **What this change makes of the next one.** Whether a reviewer can follow
-  the diff in a single pass, and whether the change leaves its central invariant
-  implicit. Every reviewer who comes after pays for an invariant nobody wrote
-  down.
 
 ## Layer 4: Anti-Patterns (Never Do These)
 
@@ -158,35 +154,22 @@ Load before forming an opinion:
 
 ## Layer 5: Guardrails
 
-Before issuing a verdict:
+Each of these is an action, not a restatement of Layer 3 — something to do,
+not something to have read:
 
-1. Produce the diff against the merge base and confirm the changed-file list is
-   the one the description covers, deletions and renames included.
-2. For every behaviour the description claims, name the test that would fail if
-   it were wrong. Any claim with no such test is a finding, not a note.
-3. For every changed signature, search the whole tree for call sites and check
-   each one against the new contract, including tests, fixtures, scripts, and
-   configuration.
-4. Run the change the other way: for every symbol it modified, list the callers
-   that are not in the diff, and say what each of them now does.
-5. Run the change's own verification command and record what it asserted. If it
-   was not run, say so plainly and list what remains unverified.
-6. Force the new failure and confirm a caller can distinguish it from success,
-   by returning the wrong value, raising, or by reporting a distinguishable
-   status.
-7. For each boundary input the change newly accepts, newly rejects, or newly
-   reorders, confirm a case exists for it. Any that has none is a finding.
-8. Take each test the change edited and run it against the previous behaviour.
-   A test that passes against both is pinning nothing, whatever it asserts.
-9. Check that the description alone would let someone revert the change. If it
+1. Force the new failure, by returning the wrong value, raising, or reporting a
+   distinguishable status, and confirm a caller can tell it from success.
+2. Run every test the change edited against the previous behaviour. A test that
+   passes against both is pinning nothing, whatever it asserts.
+3. Check that the description alone would let someone revert the change. If it
    does not say what changed, a revert is a guess, and that is a finding about
    the description as much as about the code.
-10. For a change that touches stored data, verify the rollback works with the
-    new code against the old schema and with the old code against the new one.
-11. Separate what you confirmed from what you inferred. Assumptions get their
-    own list, and a finding is never an assumption.
-12. Give a verdict — approve, request changes, or block — and name the smallest
-    change that would move it. A verdict with no route out of it is an opinion.
+4. For a change that touches stored data, verify the rollback works with the
+   new code against the old schema and with the old code against the new one.
+5. Separate what you confirmed from what you inferred. Assumptions get their
+   own list, and a finding is never an assumption.
+6. Give a verdict — approve, request changes, or block — and name the smallest
+   change that would move it. A verdict with no route out of it is an opinion.
 
 ## Layer 6: Delivery Contract
 

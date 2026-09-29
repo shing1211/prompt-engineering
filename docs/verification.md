@@ -103,7 +103,7 @@ instead, was reading each added line.
 
 ## What this pass did not do
 
-- **Thirty-nine of the forty-two prompts have not been run.** The register
+- **Forty of the forty-three prompts have not been run.** The register
   records that plainly rather than rounding it up. Every row that says "not
   run" is an open item, not a verdict.
 - **`jvm-backend` was skipped for want of a corpus.** No codebase with a JVM

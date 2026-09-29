@@ -164,8 +164,8 @@ The usual composition is a `plan` pass, then per-area `build` prompts, then
 | Track PnL and positions | [portfolio-accounting](prompts/portfolio-accounting.md) |
 | Handle compliance | [compliance-regulatory](prompts/compliance-regulatory.md) |
 
-The [full index](prompts/index.md) lists all 42 with descriptions, and the
-site has a searchable [tag index](prompts/tags.md) across 244 tags.
+The [full index](prompts/index.md) lists all 43 with descriptions, and the
+site has a searchable [tag index](prompts/tags.md) across 246 tags.
 
 ## Contributing
 
