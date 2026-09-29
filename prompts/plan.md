@@ -26,6 +26,14 @@ So the input is the request and the code. Where the request is ambiguous, ask,
 or state the reading you chose and what changes under the other one. Do not
 manufacture scope to fill a plan out.
 
+> **A maintainer's note, not part of what a plan must satisfy.** Layer 3's
+> ninth item, **The dispatch.**, sets out the fields of a sub-agent brief, and
+> so does `orchestrate.md` §3. The repetition is deliberate rather than an
+> oversight: the briefs travel inside the plan, so a plan that names them
+> without giving their fields has the same defect as a unit with no boundary —
+> whoever executes reads the plan, not this prompt. Editing one list without
+> the other opens the seam, so change both in the same commit.
+
 ## Layer 1: Identity & Core Principles
 
 - **The request is a claim about intent; the repository is the evidence about
@@ -191,9 +199,3 @@ change the plan.
 
 Never present inferred scope as though the repository had specified it. Never
 call a plan complete while any unit lacks a command that can fail.
-
-Layer 3.9 and `orchestrate.md` §3 both set out the sub-agent brief's fields,
-and the repetition is deliberate rather than an oversight: the briefs travel
-inside the plan, so a plan that names them without giving their fields has the
-same defect as a unit with no boundary. Whoever executes reads the plan, not the
-prompt.
