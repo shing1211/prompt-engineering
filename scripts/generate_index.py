@@ -5,6 +5,14 @@ The region between the BEGIN/END GENERATED markers is rewritten from each
 prompt's frontmatter, so category listings and counts cannot drift out of
 sync with the files on disk. Everything outside the markers is preserved.
 
+The `Verified` column is not read from the prompts. It is read from
+docs/verification.md, which is the single place that records which prompts
+have been run against a real codebase, and the generator refuses to run if
+the two disagree. That direction is deliberate: a column derived from the
+prompts would have nothing to say "verified" from, and a column derived from
+a default would label a prompt unverified for the one reason that matters —
+that nobody recorded a run.
+
 Run from the repository root:
 
     python3 scripts/generate_index.py          # rewrite prompts/index.md
@@ -18,13 +26,35 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 PROMPTS = Path("prompts")
 INDEX = PROMPTS / "index.md"
+MKDOCS = Path("mkdocs.yml")
+VERIFICATION = Path("docs/verification.md")
 
 INDEX_PAGES = {"index", "tags"}
 
 BEGIN = "<!-- BEGIN GENERATED TABLES -->"
 END = "<!-- END GENERATED TABLES -->"
+
+# A row of the register in docs/verification.md: the prompt's file name, then
+# whether it has been run. The flag is captured as whatever is written rather
+# than as `yes|no`, so a row that says something else is reported as a
+# malformed row instead of quietly failing to match and being reported as a
+# missing one. Only the first two columns are read; the rest are prose for a
+# human and are deliberately not parsed, so the register's table can say more
+# than the generator needs without either drifting.
+REGISTER_ROW = re.compile(
+    r"^\|\s*`(?P<slug>[a-z0-9][a-z0-9-]*)`\s*\|\s*(?P<verified>[^|]*?)\s*\|"
+)
+REGISTER_FLAGS = {"yes": True, "no": False}
+
+# The cell for a prompt with no run. A literal rather than an empty cell: an
+# empty column is read as a rendering accident, and "not verified" is a
+# claim the library is prepared to make out loud.
+NOT_VERIFIED = "not verified"
+VERIFIED_CELL = "verified"
 
 CATEGORY_TITLES: dict[str, str] = {
     "orchestration": "Orchestration and Planning",
@@ -162,7 +192,110 @@ def esc(text: str) -> str:
     return text.replace("|", "\\|")
 
 
-def render(prompts: list[dict[str, object]]) -> str:
+def repository_url() -> str:
+    """The URL a rendered page can reach the register at.
+
+    Absolute, and derived from mkdocs.yml's own repo_url, for two reasons that
+    point the same way. The register is a repository document, not a site
+    page: mkdocs' docs_dir is prompts/ and this file is not under it, so a
+    relative link from a rendered page resolves in the working tree and
+    resolves to nothing in the built site. check_links.py cannot catch that,
+    because it resolves links against the working tree where the target does
+    exist. And the URL is read rather than repeated, so a fork or a rename
+    cannot leave a verified link in every row of the index pointing at a
+    repository that no longer exists.
+    """
+    if not MKDOCS.is_file():
+        raise SystemExit(f"error: {MKDOCS} not found; run from the repository root")
+
+    config = yaml.safe_load(MKDOCS.read_text(encoding="utf-8")) or {}
+    repo = str(config.get("repo_url") or "").strip()
+    if not repo:
+        raise SystemExit(
+            f"error: {MKDOCS} has no repo_url, so the Verified column has nowhere\n"
+            f"to point. Add repo_url, or point the column somewhere else."
+        )
+    return f"{repo.rstrip('/')}/blob/main/"
+
+
+def verification_register() -> dict[str, bool]:
+    """The prompt slug to verified mapping recorded in docs/verification.md.
+
+    Fails loudly in both directions, because the failure this guards against
+    is silent in the one place it matters. A prompt that drops out of the
+    register and is then rendered as "not verified" is indistinguishable from
+    a prompt somebody deliberately decided not to run, and a reader has no
+    way to tell which one they are looking at. So an absent row is an error
+    rather than a default, and a row naming a prompt that no longer exists is
+    an error too — that is a register that has drifted from the library, and
+    it fails at the moment it drifts rather than at the moment somebody
+    notices the table.
+    """
+    if not VERIFICATION.is_file():
+        raise SystemExit(
+            f"error: {VERIFICATION} not found; it is the source of the Verified\n"
+            f"column, and a column with no source is a guess."
+        )
+
+    register: dict[str, bool] = {}
+    for lineno, line in enumerate(VERIFICATION.read_text(encoding="utf-8").split("\n"), 1):
+        match = REGISTER_ROW.match(line)
+        if not match:
+            continue
+        slug = match.group("slug")
+        flag = match.group("verified").lower()
+        if flag not in REGISTER_FLAGS:
+            raise SystemExit(
+                f"error: {VERIFICATION}:{lineno}: {slug} has "
+                f"{match.group('verified').strip()!r} in its Verified column.\n"
+                f"Expected yes or no. Anything else is a claim the generator cannot\n"
+                f"act on, and guessing which way round it meant is how an unverified\n"
+                f"prompt ends up labelled verified."
+            )
+        if slug in register:
+            raise SystemExit(
+                f"error: {VERIFICATION}:{lineno}: {slug} is listed twice, so the\n"
+                f"register disagrees with itself about whether it was run."
+            )
+        register[slug] = REGISTER_FLAGS[flag]
+
+    on_disk = {p.stem for p in PROMPTS.glob("*.md")} - INDEX_PAGES
+
+    unknown = sorted(set(register) - on_disk)
+    if unknown:
+        raise SystemExit(
+            f"error: {VERIFICATION} names prompts that do not exist: "
+            f"{', '.join(unknown)}\n"
+            f"A prompt was renamed, merged or deleted and the register was not\n"
+            f"updated. Fix the register, not this script."
+        )
+
+    missing = sorted(on_disk - set(register))
+    if missing:
+        raise SystemExit(
+            f"error: {VERIFICATION} has no row for: {', '.join(missing)}\n"
+            f"Every prompt needs a row. A prompt with no row has not been run, and\n"
+            f"that has to be written down, because the alternative is a column that\n"
+            f"reports the same thing for a prompt nobody checked and a prompt\n"
+            f"somebody checked and found nothing."
+        )
+
+    return register
+
+
+def verified_cell(slug: str, register: dict[str, bool], url: str) -> str:
+    """The Verified cell for one prompt.
+
+    Two states and no third, because the third — a blank — is the one that
+    hides an error. Nothing here can return one: a slug that is neither
+    verified nor present has already stopped the run.
+    """
+    if not register[slug]:
+        return NOT_VERIFIED
+    return f"[{VERIFIED_CELL}]({url}{VERIFICATION.as_posix()})"
+
+
+def render(prompts: list[dict[str, object]], register: dict[str, bool], url: str) -> str:
     out: list[str] = [BEGIN, ""]
 
     by_category: dict[str, list[dict[str, object]]] = {}
@@ -179,13 +312,15 @@ def render(prompts: list[dict[str, object]]) -> str:
         out.append("")
         out.append(f"{CATEGORY_BLURB[category]} — {len(entries)} prompt(s).")
         out.append("")
-        out.append("| Prompt | Mode | Description |")
-        out.append("|---|---|---|")
+        out.append("| Prompt | Mode | Description | Verified |")
+        out.append("|---|---|---|---|")
         for entry in entries:
             title = entry["title"]
+            slug = str(entry["slug"])
             out.append(
-                f"| [`{entry['slug']}.md`]({entry['slug']}.md) — {esc(str(title))} "
-                f"| {entry['mode']} | {esc(str(entry['description']))} |"
+                f"| [`{slug}.md`]({slug}.md) — {esc(str(title))} "
+                f"| {entry['mode']} | {esc(str(entry['description']))} "
+                f"| {verified_cell(slug, register, url)} |"
             )
         out.append("")
 
@@ -264,6 +399,7 @@ def render(prompts: list[dict[str, object]]) -> str:
     unique_tags = {tag for p in prompts for tag in p["tags"]}  # type: ignore[union-attr]
     out.append(f"| **Distinct tags** | {len(unique_tags)} |")
     out.append(f"| **Language-agnostic** | {len(agnostic)} |")
+    out.append(f"| **Verified** | {sum(1 for was_run in register.values() if was_run)} |")
     for mode in sorted({str(p["mode"]) for p in prompts}):
         out.append(f"| **Mode: {mode}** | {sum(1 for p in prompts if p['mode'] == mode)} |")
     out.append("")
@@ -289,8 +425,16 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    # Read the register before doing anything else with the output, including
+    # under --check. A drift check that skipped this would report the index
+    # as current when the source it is generated from has names in it that
+    # the library does not have, which is the one disagreement worth being
+    # loud about.
+    register = verification_register()
+    url = repository_url()
+
     prompts = load()
-    generated = render(prompts)
+    generated = render(prompts, register, url)
     current = INDEX.read_text(encoding="utf-8")
     updated = splice(current, generated)
 
