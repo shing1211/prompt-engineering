@@ -31,3 +31,9 @@ node_modules/
 # Superpowers scratch: ledgers, task briefs, review packages. Holds raw
 # analysis of private codebases, so it must never be committed.
 .superpowers/
+
+# The corpus project name, read by scripts/check_no_fingerprint.py from
+# outside the repository. Configured the other way round -- CI sets the
+# CORPUS_NAME secret -- and never committed, because a name that reaches a
+# public file cannot be unpublished.
+.corpus-name

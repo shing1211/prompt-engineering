@@ -116,7 +116,7 @@ What each one catches:
 | `check_prompt_sections.py` | a prompt shipping without an anti-patterns or guardrails section |
 | `check_vendor_claims.py` | broker auth internals, endpoints, or capabilities stated as fact with no verification instruction; a broker-specific risk threshold presented as a universal rule |
 | `check_counts.py` | a hand-written count in `README.md` or `docs/strategy.md` that disagrees with the generated index |
-| `check_no_fingerprint.py` | a venue name the library already publishes, a home-directory path, the corpus project name, or a commit-hash-shaped token under `prompts/` |
+| `check_no_fingerprint.py` | a venue name the library already publishes, a home-directory path, the corpus project name (which has to be configured first — see below), or a commit-hash-shaped token under `prompts/` |
 | `check_links.py` | a broken relative link in the built site |
 | `test_checks.py` | a check that has quietly stopped rejecting the input it exists to reject |
 
@@ -203,6 +203,20 @@ It cannot catch a magnitude, because a count is not distinguishable from
 any other number a prompt legitimately uses; a check that banned counts
 would ban the library. **Counts are caught in review, so read your own
 diff for numbers, not only for names.**
+
+The corpus project name is the one rule that has to be configured before
+it can run, and configuring it is the interesting part: the name cannot
+be in this repository at all, not in plaintext and not encoded, because
+an encoding published next to its decoder publishes the name just as
+well. So the check reads it from outside — set `CORPUS_NAME` in the
+environment, or write it on the first non-comment line of a
+`.corpus-name` file at the repository root. Both are gitignored, and
+neither may be committed. **An unconfigured check fails rather than
+skipping**, because a check that reports success for a rule it did not
+run is worse than a build that stops and says why, so a fresh clone needs
+one of the two before `validate.sh` is green. CI sets the `CORPUS_NAME`
+repository secret — a secret rather than a variable, since a variable is
+readable by anyone who can read the repository.
 
 ## House rules
 

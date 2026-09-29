@@ -28,12 +28,16 @@ the repository root:
       repository already publishes. A venue name inside one of those file
       names is part of the library's catalogue, not a claim about
       anybody's codebase. The verification register is the fourth kind of
-      inventory and gets the same allowance, but only in its table rows:
-      a register that could not name the broker prompts would omit five
-      rows, and a register that could name a venue in prose would be a
-      document making a claim about a codebase, which is what this rule
-      exists to catch. All four allowances are load-bearing today, so
-      this check widens them and never narrows them. Prose only, because
+      inventory and gets the same allowance, but only in the slug cell of a
+      table row: a register that could not name the broker prompts would
+      omit five rows, and a register that could name a venue anywhere else
+      would be a document making a claim about a codebase, which is what
+      this rule exists to catch. The cell rather than the row is that
+      boundary, and the difference is the whole point -- the rest of a row
+      is prose, it is where a claim about what was run gets written, and an
+      allowance reaching that far is no allowance at all. All four
+      allowances are load-bearing today, so this check widens them and
+      never narrows them. Prose only, because
       prose is where a claim lives; a name in a fenced example, a diagram
       or a frontmatter description is the library describing its own
       published coverage. Markdown only, for the same reason: in a Python
@@ -65,14 +69,18 @@ the repository root:
      segment. A macOS path is exactly the fingerprint this is here to
      catch, so the pattern follows the docstring rather than the
      docstring following the pattern.
-  3. The corpus project name, in any case. It is not in this file, and
-     cannot be: a public file that carries the name in order to forbid
-     it publishes the name, and an encoding of it publishes it just as
-     effectively, because the decoder ships alongside it. So it is
-     configured outside the repository -- the CORPUS_NAME environment
-     variable, or a gitignored .corpus-name file at the root -- and read
-     from there. Unconfigured is not a pass: this check exits non-zero
-     rather than reporting success for a rule it did not run.
+   3. The corpus project name, in any case. It is not in this file, and
+      cannot be: a public file that carries the name in order to forbid
+      it publishes it, and an encoding of the name publishes it just as
+      effectively, because the decoder ships alongside it. So the name is
+      configured outside the repository instead -- the CORPUS_NAME
+      environment variable, or a gitignored .corpus-name file at the root
+      -- and read from there. Unconfigured is not a pass. The check exits
+      non-zero rather than reporting success for a rule it did not run,
+      because the alternative is a rule that a missing setting, or an edit
+      to this file, can turn off without anyone noticing. A run that does
+      have the name says that the rule was live and where it read the
+      name from, without printing the name.
   4. A commit-hash-shaped token in a prompt, at any depth under prompts/:
      seven or more consecutive hex characters containing at least one of
      a-f, minus the identifiers a prompt documents on purpose. Requiring a
@@ -115,6 +123,15 @@ What it cannot detect, and why:
   tarball. An untracked file in a scanned directory is therefore scanned
   too, which is the stricter direction.
 
+  One rule depends on configuration, and says so on the console. The
+  corpus project name is read from the environment or from a gitignored
+  file, so a checkout with neither cannot run that rule, and the check
+  reports that rather than a clean result. That is the intended direction:
+  a rule that reports success without running is worse than a build that
+  stops and explains itself. A run with the name configured says where it
+  read it from, so "the rule ran" is visible without the name becoming
+  the report.
+
 Exits 0 when clean, 1 on drift or on an unconfigured corpus name.
 """
 
@@ -147,7 +164,10 @@ VENDOR_TERMS = sorted(
     key=len,
     reverse=True,
 )
-VENUE = re.compile(r"\b(?:%s)\b" % "|".join(VENDOR_TERMS), re.I)
+# Escaped term by term rather than joined raw, so the set can grow a term
+# carrying regex syntax without this becoming a silent coupling between the
+# vocabulary and the pattern built from it.
+VENUE = re.compile(r"\b(?:%s)\b" % "|".join(re.escape(t) for t in VENDOR_TERMS), re.I)
 
 # The host of a cited URL, imported from check_vendor_claims.py as a
 # pattern string and compiled here case-insensitively, so that "this file
@@ -172,7 +192,7 @@ CITED_HOST = re.compile(CITED_HOST_PATTERN, re.I)
 # describing it, which is a rule that quietly stops catching bare home
 # directories the moment someone edits the sentence.
 #
-#   - This file, which names the pattern in order to document it. Today the
+#   - This check, which names the pattern in order to document it. Today the
 #     pattern as spelled does not match its own source, so that exemption
 #     is preventive rather than load-bearing; it is here because the first
 #     literal home path written into a comment here should not turn the
@@ -182,54 +202,28 @@ CITED_HOST = re.compile(CITED_HOST_PATTERN, re.I)
 #     exemption fails the suite's positive phase.
 #
 # Both reasons are about this library describing its own rule, not about
-# anything in the corpus.
+# anything in the corpus, and both are keyed by relative path like every
+# other table in this file, so a file added anywhere in the tree cannot
+# inherit an exemption by sharing a name with one that has it.
 HOME_PATH = re.compile(
     r"/(?:home|Users|root)(?:/[A-Za-z0-9._-]+)?(?![0-9A-Za-z])"
 )
-SELF_NAME = Path(__file__).name
-RULE_DOCS = {
+HOME_PATH_EXEMPT = {
+    "scripts/check_no_fingerprint.py": (
+        "this check, which names the pattern in order to document it"
+    ),
     "docs/superpowers/plans/2026-09-29-prompt-verification.md": (
         "the plan that specifies this check, which states the rule"
     ),
 }
 
-# The corpus project name, configured outside the repository rather than
-# stored here. See the docstring: a public file that carries the name in
-# order to forbid it publishes it, and so does an encoding of it.
+# The corpus project name is configured outside the repository, in this
+# order: the environment variable, then the gitignored file. Neither is
+# committed, and neither is required to exist for a reader to clone this
+# repository -- which is exactly why an absent one is an error rather than
+# a skip. See load_corpus_name() and the docstring.
 CORPUS_NAME_ENV = "CORPUS_NAME"
 CORPUS_NAME_FILE = Path(".corpus-name")
-
-
-def corpus_name() -> str:
-    """The corpus project name, from outside the repository.
-
-    The name is returned, never printed: a run reports that the rule was
-    live and where it read the name from, so the console shows the rule
-    ran without the report becoming the leak. Unconfigured is a hard
-    failure, because a check that reports success for a rule it did not
-    run is worse than a build that stops and says why.
-    """
-    configured = os.environ.get(CORPUS_NAME_ENV, "").strip()
-    if configured:
-        return configured
-
-    if CORPUS_NAME_FILE.is_file():
-        for line in CORPUS_NAME_FILE.read_text(encoding="utf-8").splitlines():
-            stripped = line.strip()
-            if stripped and not stripped.startswith("#"):
-                return stripped
-
-    raise SystemExit(
-        "error: the corpus project name is not configured, so the rule that\n"
-        "forbids it cannot run, and this check will not report success for a\n"
-        "rule it did not run.\n"
-        f"\nSet ${CORPUS_NAME_ENV} in the environment, or write the name on the\n"
-        f"first non-comment line of {CORPUS_NAME_FILE} at the repository root.\n"
-        "Both are gitignored, and neither may be committed."
-    )
-
-
-CORPUS_NAME_RE = re.compile(re.escape(corpus_name()), re.I)
 
 # A token that could be a short commit hash, bounded so it is a token and
 # not a slice of a longer identifier.
@@ -242,9 +236,10 @@ HEX_LETTER = re.compile(r"[a-f]", re.I)
 DOCUMENTED_IDENTIFIERS = {"C5AD17C747E3415A3642D57D77C6C491D6AC1D69"}
 
 # Files allowed to name venues, for a reason that is about this library
-# and not about the venue. Keyed by relative path, matching RULE_DOCS and
-# may_write_home_path, so a file added to a directory this does not list
-# cannot inherit an allowance by sharing a name with one that has it.
+# and not about the venue. Keyed by relative path, matching
+# HOME_PATH_EXEMPT and may_write_home_path, so a file added to a directory
+# this does not list cannot inherit an allowance by sharing a name with one
+# that has it.
 #
 # The first three are a file-wide allowance. The front door, the changelog
 # and the index name a broker because they list the library's own prompts.
@@ -261,21 +256,23 @@ LIBRARY_VENUE_FILES = {
     ),
 }
 
-# The verification register is allowed a venue name in its rows and nowhere
-# else. It lists every prompt by file name, so the broker prompts are in it
-# whether or not they have been run, and a register that could not list them
-# would be a register that quietly omitted five rows. That is an inventory,
-# and an inventory stops being one the moment the same document makes a claim
-# in prose -- so the allowance is keyed to the row lines rather than to the
-# file, and a venue claim written next to the table is reported like any
-# other. Scoped rather than widened because the register is the file most
-# likely to be hand-edited: a whole-file allowance there is an allowance
-# nobody is watching.
+# The verification register is allowed a venue name in the slug cell of its
+# rows and nowhere else. It lists every prompt by file name, so the broker
+# prompts are in it whether or not they have been run, and a register that
+# could not list them would be a register that quietly omitted five rows.
+# That is an inventory, and an inventory stops being one the moment the
+# same document makes a claim in prose -- so the allowance is keyed to the
+# cell that holds a file name, not to the file and not to the row, because
+# the cells after it are prose and are where a claim about what was run
+# would be written. Scoped rather than widened because the register is the
+# file most likely to be hand-edited: a whole-file allowance there is an
+# allowance nobody is watching.
 REGISTER_ALLOWANCE = {
     "docs/verification.md": (
         "the verification register, which lists every prompt by file name "
-        "and cannot do that without naming the broker prompts -- in its rows "
-        "only, not in its prose"
+        "and cannot do that without naming the broker prompts -- in the "
+        "slug cell of a row only, not in the rest of the row and not in "
+        "its prose"
     ),
 }
 
@@ -338,28 +335,59 @@ def prose_of(text: str) -> list[tuple[int, str]]:
     return kept
 
 
-def register_rows(text: str) -> set[int]:
-    """The line numbers of the register's own rows.
+def register_slug_cells(text: str) -> dict[int, int]:
+    """Where the slug cell ends on each register row, as line number -> offset.
 
-    An inventory is the rows and nothing else, so this is what separates a
-    prompt file name a register is obliged to write out from a venue claim a
-    register might choose to make.
+    An inventory is the file names and nothing else, so this is what
+    separates a prompt file name the register is obliged to write out from a
+    venue claim written in the same row. The boundary is the second pipe of
+    the line, which closes the first cell: REGISTER_ROW has already
+    established that cell holds a backticked prompt slug, and everything
+    after that pipe is prose whether or not the row is a table row.
     """
-    return {
-        number
-        for number, line in enumerate(text.split("\n"), 1)
-        if REGISTER_ROW.match(line)
-    }
+    cells: dict[int, int] = {}
+    for number, line in enumerate(text.split("\n"), 1):
+        if not REGISTER_ROW.match(line):
+            continue
+        first = line.index("|")
+        closing = line.find("|", first + 1)
+        cells[number] = len(line) if closing == -1 else closing
+    return cells
 
 
 def may_write_home_path(path: Path) -> bool:
     """Whether this file is allowed to write a home-directory path shape.
 
-    Keyed by file name for the check itself and by relative path for the
-    plan, both unique. Matching on name means the exemption cannot be
-    widened by adding a file to a directory it does not list.
+    Keyed by relative path, as every other allowance in this file is, so a
+    file added to a directory this does not list cannot inherit the
+    exemption by sharing a name with a file that has it.
     """
-    return path.name == SELF_NAME or path.as_posix() in RULE_DOCS
+    return path.as_posix() in HOME_PATH_EXEMPT
+
+
+def load_corpus_name() -> tuple[str | None, str]:
+    """The corpus project name, and where it was read from.
+
+    Two sources, both outside the repository: the CORPUS_NAME environment
+    variable, and a gitignored .corpus-name file at the root whose first
+    non-comment line is the name. The name is returned, never printed --
+    the source is what a run reports, so the console can show that the
+    rule was live without the report becoming the leak.
+
+    Returns (None, source) when neither is configured, and the caller is
+    expected to treat that as a failure rather than a skip.
+    """
+    configured = os.environ.get(CORPUS_NAME_ENV, "").strip()
+    if configured:
+        return configured, f"${CORPUS_NAME_ENV}"
+
+    if CORPUS_NAME_FILE.is_file():
+        for line in CORPUS_NAME_FILE.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped and not stripped.startswith("#"):
+                return stripped, CORPUS_NAME_FILE.as_posix()
+
+    return None, "nowhere"
 
 
 def scan_files() -> list[Path]:
@@ -380,7 +408,7 @@ def scan_files() -> list[Path]:
     return sorted(set(found))
 
 
-def check(path: Path) -> list[str]:
+def check(path: Path, corpus_name: re.Pattern[str]) -> list[str]:
     """The fingerprints in one file, one report line each."""
     text = path.read_text(encoding="utf-8")
     lines = text.split("\n")
@@ -391,11 +419,10 @@ def check(path: Path) -> list[str]:
     for number, line in enumerate(lines, 1):
         if not exempt_paths and HOME_PATH.search(line):
             problems.append(f"{path}:{number}: absolute home-directory path")
-        if CORPUS_NAME_RE.search(line):
+        if corpus_name.search(line):
             problems.append(
-                f"{path}:{number}: corpus project name, which is "
-                f"configured outside this repository and must not be "
-                f"written into it"
+                f"{path}:{number}: corpus project name, which is configured "
+                f"outside this repository and must not be written into it"
             )
 
     # 1 applies to Markdown prose, because prose is where a claim lives.
@@ -410,18 +437,20 @@ def check(path: Path) -> list[str]:
         may_name = provenance_terms(text)
         if key in LIBRARY_VENUE_FILES or key in CLAIM_PROMPT_PATHS:
             may_name = set(VENDOR_TERMS)
-        # The register's rows are an inventory; its prose is not. Only the
-        # rows get the file-wide vocabulary, and every other line in the file
-        # is judged by the same rule as any other document.
-        rows = register_rows(text) if key in REGISTER_ALLOWANCE else set()
+        # The register's slug cells are an inventory; the rest of each row
+        # and every line outside the table are not. Only the cell gets the
+        # file-wide vocabulary, and the other cells of a row are judged by
+        # the same rule as any other document's prose.
+        slug_cells = register_slug_cells(text) if key in REGISTER_ALLOWANCE else {}
         for number, line in prose_of(text):
-            allowed = VENDOR_TERMS if number in rows else may_name
+            boundary = slug_cells.get(number)
+            scanned = line if boundary is None else line[boundary:]
             # URLs are removed first, so a cited documentation link does
             # not satisfy the requirement to name the vendor in the text.
             # That is a defect check_vendor_claims.py already guards, kept
             # here so the two checks cannot disagree.
-            for match in VENUE.finditer(re.sub(r"https?://\S+", " ", line)):
-                if match.group(0).lower() in allowed:
+            for match in VENUE.finditer(re.sub(r"https?://\S+", " ", scanned)):
+                if match.group(0).lower() in may_name:
                     continue
                 problems.append(
                     f"{path}:{number}: venue name {match.group(0)!r} in "
@@ -455,15 +484,36 @@ def main() -> int:
         )
         return 1
 
+    name, source = load_corpus_name()
+    if name is None:
+        print(
+            "error: the corpus project name is not configured, so the rule\n"
+            "that forbids it cannot run, and this check will not report\n"
+            "success for a rule it did not run.\n"
+            f"\nSet ${CORPUS_NAME_ENV} in the environment, or write the name on\n"
+            f"the first non-comment line of {CORPUS_NAME_FILE} at the repository\n"
+            "root. Both are gitignored, and neither may be committed: a name in a\n"
+            "public file cannot be unpublished, which is the whole reason this\n"
+            "check reads it from outside. In CI, set the repository secret of the\n"
+            "same name and pass it into the validate step.",
+            file=sys.stderr,
+        )
+        return 1
+    corpus_name = re.compile(re.escape(name), re.I)
+
     files = scan_files()
     print(
         f"scanned {len(files)} Markdown and Python files "
         f"for corpus fingerprints"
     )
+    print(
+        f"corpus project name: rule active, read from {source} "
+        f"(the name itself is not printed)"
+    )
 
     problems: list[str] = []
     for path in files:
-        problems.extend(check(path))
+        problems.extend(check(path, corpus_name))
 
     for problem in problems:
         print(f"  {problem}")

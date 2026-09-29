@@ -45,6 +45,16 @@ jobs:
         run: mkdocs build --strict
 
       - name: Frontmatter schema, generator drift, line endings, links
+        # check_no_fingerprint.py forbids the corpus project name by name,
+        # so the name is configured here rather than in the repository: a
+        # secret, because a repository variable is readable by anyone with
+        # access to the repository. Unset is a red build, not a skip --
+        # the check exits non-zero when it cannot run that rule, so a
+        # missing secret cannot quietly turn a published name into a
+        # green one. Fork pull requests get no secrets, so they fail this
+        # step until a maintainer runs it for them.
+        env:
+          CORPUS_NAME: ${{ secrets.CORPUS_NAME }}
         run: scripts/validate.sh
 
       - name: Markdown lint

@@ -19,6 +19,7 @@ and its outcome.
 
 from __future__ import annotations
 
+import base64
 import os
 import re
 import shutil
@@ -28,6 +29,81 @@ import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+
+# The corpus project name, configured outside the repository exactly as
+# scripts/check_no_fingerprint.py expects it: the CORPUS_NAME environment
+# variable, or a gitignored .corpus-name file at the root. This suite needs
+# it twice -- to seed a prompt with the name and prove the check catches it,
+# and to scan the tree and prove no file carries it -- and it raises rather
+# than skipping when it is absent, because a case that could not run would
+# otherwise report as a case that passed.
+CORPUS_NAME_ENV = "CORPUS_NAME"
+CORPUS_NAME_FILE = ".corpus-name"
+
+# Paths that are never committed, so a name in one of them is not a leak:
+# git's own directory, the built site, bytecode, the scratch ledger, an
+# isolated worktree, and the one file the name is meant to live in.
+UNCOMMITTED = {
+    ".git",
+    "site",
+    "__pycache__",
+    ".superpowers",
+    ".worktrees",
+    CORPUS_NAME_FILE,
+}
+
+
+def corpus_name() -> str:
+    """The corpus project name, from outside the repository."""
+    configured = os.environ.get(CORPUS_NAME_ENV, "").strip()
+    if configured:
+        return configured
+
+    path = REPO / CORPUS_NAME_FILE
+    if path.is_file():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped and not stripped.startswith("#"):
+                return stripped
+
+    raise AssertionError(
+        f"the corpus project name is not configured: set ${CORPUS_NAME_ENV} "
+        f"or write it into {CORPUS_NAME_FILE} at the repository root, or the "
+        f"cases below cannot run"
+    )
+
+
+def find_corpus_name(where: Path) -> list[str]:
+    """Every file under `where` that carries the corpus name, in any encoding.
+
+    Plaintext, hex, and base64, of the name as written and of its upper-case
+    form, because the rule is that the name does not appear in a committed
+    file and an encoding of it publishes it just as effectively -- the check
+    once carried the name hex-encoded and the constraint was still broken.
+    Both sides of every comparison are lowercased, so a case variant of any
+    form is caught by the same comparison. The configuration file is
+    excluded: that is the one place the name is meant to be.
+    """
+    raw = corpus_name().encode("ascii")
+    forms = [
+        ("plaintext", raw.lower()),
+        ("hex", raw.hex().encode("ascii")),
+        ("base64", base64.b64encode(raw).lower()),
+        ("base64 of the upper-case name", base64.b64encode(raw.upper()).lower()),
+    ]
+    found: list[str] = []
+    for path in sorted(where.rglob("*")):
+        if not path.is_file():
+            continue
+        if set(path.relative_to(where).parts) & UNCOMMITTED:
+            continue
+        data = path.read_bytes().lower()
+        for encoding, form in forms:
+            if form in data:
+                found.append(
+                    f"{path.relative_to(where)}: corpus project name as {encoding}"
+                )
+    return found
 
 
 def run(check: str, cwd: Path) -> tuple[int, str]:
@@ -116,6 +192,22 @@ CASES: list[tuple[str, str, object, str]] = [
         "in prose, with no vendor documentation cited",
     ),
     (
+        # The register's allowance is the slug cell, not the row. A cell
+        # after the first is where a claim about a codebase is written, and
+        # the old line-scoped allowance let exactly that through. Seeding
+        # this inside a row rather than at end of file is the case the
+        # previous one was not.
+        "check_no_fingerprint: venue claim in a register row cell",
+        "check_no_fingerprint.py",
+        lambda r: _replace(
+            r / "docs/verification.md",
+            r"(?m)^\| `backend-services` \| yes \| Run against",
+            "| `backend-services` | yes | Run against production code "
+            "integrating the Futu and Webull APIs.",
+        ),
+        "in prose, with no vendor documentation cited",
+    ),
+    (
         "check_no_fingerprint: absolute home-directory path in a prompt",
         "check_no_fingerprint.py",
         lambda r: _seed_home_path(r / "prompts/api-design.md"),
@@ -158,6 +250,15 @@ MUST_STAY_CLEAN: list[tuple[str, str, object]] = [
         "check_no_fingerprint: a word starting with a home root is not a path",
         "check_no_fingerprint.py",
         lambda r: _seed_home_lookalike(r / "prompts/api-design.md"),
+    ),
+    (
+        # The other side of the register's cell boundary: a venue in the
+        # slug cell is the library naming its own prompt file, which the
+        # allowance exists for. Tightening the boundary to the cell must
+        # not have tightened it to nothing.
+        "check_no_fingerprint: a broker slug in the register's slug cell",
+        "check_no_fingerprint.py",
+        lambda r: _seed_register_slug(r / "docs/verification.md"),
     ),
 ]
 
@@ -218,16 +319,13 @@ def _seed_home_path(path: Path) -> None:
 def _seed_corpus_name(path: Path) -> None:
     """Seed the corpus project name, upper-cased to pin the case folding.
 
-    Read from the same configuration the check reads it from, so this
-    case and the check cannot end up testing different names, and so the
-    name is never written into a committed file.
+    The plaintext is read from the same configuration the check reads it
+    from -- the environment or the gitignored file -- and never written into
+    a committed file, which is the property this case and the check share.
+    Seeded with the name absent from the file being mutated, so the run can
+    only be red because the check found the name it introduced.
     """
-    name = os.environ.get("CORPUS_NAME", "").strip()
-    if not name:
-        config = path.parent.parent / ".corpus-name"
-        name = config.read_text(encoding="utf-8").strip() if config.is_file() else ""
-    if not name:
-        raise AssertionError("the corpus project name is not configured")
+    name = corpus_name()
     _append(path, f"- ❌ **Internal codename.** The service was called {name.upper()}.")
 
 
@@ -274,6 +372,17 @@ def _seed_home_lookalike(path: Path) -> None:
     )
 
 
+def _seed_register_slug(path: Path) -> None:
+    """Add a register row whose slug cell names one of the broker prompts.
+
+    The other side of the cell boundary: the register is obliged to list
+    every prompt this library publishes, broker prompts included, so the
+    slug cell is allowed to name a venue. Narrowing the allowance to the
+    cell must not have narrowed it to nothing.
+    """
+    _append(path, "| `broker-futu` | no | Not run. | — |")
+
+
 def _append(path: Path, line: str) -> None:
     text = path.read_text(encoding="utf-8")
     path.write_text(text.rstrip("\n") + "\n" + line + "\n", encoding="utf-8")
@@ -317,7 +426,22 @@ def main() -> int:
 
     failures: list[str] = []
 
-    print("  -- positive: checks pass on the repository as committed --")
+    print("\n  -- corpus name: in no file in the tree --")
+    try:
+        leaks = find_corpus_name(REPO)
+    except AssertionError as exc:
+        failures.append(f"corpus name scan: {exc}")
+        print(f"  UNCONFIGURED  {exc}")
+    else:
+        if leaks:
+            failures.extend(f"corpus name scan: {leak}" for leak in leaks)
+            print(f"  LEAK  {len(leaks)} file(s) carry the corpus project name")
+            for leak in leaks:
+                print(f"      {leak}")
+        else:
+            print("  clean  the corpus project name is in no committed file")
+
+    print("\n  -- positive: checks pass on the repository as committed --")
     with tempfile.TemporaryDirectory() as tmp:
         clean = Path(tmp) / "repo"
         shutil.copytree(
