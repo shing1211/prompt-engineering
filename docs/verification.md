@@ -66,7 +66,7 @@ One row per prompt, in alphabetical order by file name.
 | `observability-sre` | no | Not run. | — |
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
-| `plan` | no | Not run. | — |
+| `plan` | no | Not run. The prompt was rebuilt on the house structure in this pass, so its verification history resets: the text that was never run and the text here now are not the same prompt, and no run covers this one. | — |
 | `platform-engineering` | yes | Run against two existing Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
 | `quant-backtesting` | no | Not run. | — |

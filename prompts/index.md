@@ -42,7 +42,7 @@ Multi-phase sub-agent execution and project planning — 2 prompt(s).
 | Prompt | Mode | Description | Verified |
 |---|---|---|---|
 | [`orchestrate.md`](orchestrate.md) — Orchestrator | build | Orchestrate multi-phase implementation using sub-agents with specialist roles (backend, frontend, data, devops, security, tester, docs, reviewer, release, architect, planner) | not verified |
-| [`plan.md`](plan.md) — Planning | plan | Plan project phases, code enhancements, bug fixes, and architecture improvements using sub-agent driven analysis | not verified |
+| [`plan.md`](plan.md) — Planning | plan | Turn a change request into an ordered plan whose units each end in a check that can fail, and dispatch per-area sub-agents so the session holds a plan rather than a transcript | not verified |
 
 ### Architecture and Engineering
 
