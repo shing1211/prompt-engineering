@@ -12,6 +12,7 @@
 #   5. markdownlint, when available
 #   6. internal links resolve, when the site is built
 #   7. the checks still fail on a prompt that should fail
+#   8. no committed file fingerprints the corpus (scripts/check_no_fingerprint.py)
 #
 # Exits non-zero on the first failure.
 
@@ -243,6 +244,19 @@ if python3 scripts/test_checks.py; then
     ok "every check rejects a prompt it should reject"
 else
     fail "a check passed a defect it is supposed to catch"
+fi
+
+# ------------------------------------------------------ 8. no corpus fingerprint
+
+step "No corpus fingerprint in a public file"
+
+# The verification pass publishes findings from a private codebase in
+# generalised form. A venue name, an absolute path or a commit hash is the
+# evidence rather than the finding, and this is what keeps the evidence out.
+if python3 scripts/check_no_fingerprint.py; then
+    ok "no committed file names the corpus, its paths or its commits"
+else
+    fail "a committed file carries a name, path or commit from the corpus"
 fi
 
 # ------------------------------------------------------------------ summary

@@ -88,6 +88,19 @@ CASES: list[tuple[str, str, object, str]] = [
         lambda r: _unframe_thresholds(r / "prompts/trading-risk.md"),
         "trading-risk.md",
     ),
+    (
+        "check_no_fingerprint: venue name seeded into an anti-pattern",
+        "check_no_fingerprint.py",
+        lambda r: _replace(
+            r / "prompts/backend-services.md",
+            r"(?m)^## Layer 4: Anti-Patterns \(Never Do These\)$",
+            "## Layer 4: Anti-Patterns (Never Do These)\n\n"
+            "- ❌ **Per-venue divergence.** The Futu adapter and the Webull\n"
+            "  adapter disagreed about deadline handling; only one of the two\n"
+            "  ever derived a deadline from the caller's context.",
+        ),
+        "venue name",
+    ),
 ]
 
 
@@ -99,6 +112,7 @@ MUST_PASS: list[tuple[str, str]] = [
     ("check_vendor_claims.py", "vendor claims"),
     ("check_prompt_sections.py", "sections"),
     ("check_counts.py", "counts"),
+    ("check_no_fingerprint.py", "corpus fingerprint"),
     ("generate_index.py", "generated index"),
 ]
 
