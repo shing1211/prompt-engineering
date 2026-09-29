@@ -75,6 +75,7 @@ One row per prompt, in alphabetical order by file name.
 | `sdk-build` | no | Not run. | — |
 | `sdk-docs` | no | Not run. | — |
 | `security` | no | Not run. | — |
+| `test-review` | no | Not run. | — |
 | `testing` | no | Not run. | — |
 | `trading-bot` | no | Not run. | — |
 | `trading-risk` | no | Not run. | — |
@@ -104,7 +105,7 @@ instead, was reading each added line.
 
 ## What this pass did not do
 
-- **Forty-one of the forty-four prompts have not been run.** The register
+- **Forty-two of the forty-five prompts have not been run.** The register
   records that plainly rather than rounding it up. Every row that says "not
   run" is an open item, not a verdict.
 - **`jvm-backend` was skipped for want of a corpus.** No codebase with a JVM

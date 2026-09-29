@@ -93,6 +93,7 @@ nav:
       - Code Review: code-review.md
       - Change Review: change-review.md
       - Plan Review: plan-review.md
+      - Test Review: test-review.md
       - Testing: testing.md
       - Security: security.md
       - Performance: performance.md
