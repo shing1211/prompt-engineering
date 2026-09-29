@@ -105,7 +105,7 @@ for the four anti-patterns in the diff, and nothing else.
 
 What the run produced: four anti-patterns, offered as additions to the prompt's
 existing anti-patterns section. This is the output **as first drafted**, not as
-committed. Two of the four carried text a reviewer cut, and one of those cuts
+committed. Three of the four carried text a reviewer cut, and one of those cuts
 is the single most useful thing this example has to teach, so the drafts are
 shown with it.
 >
@@ -183,11 +183,13 @@ removed. Layer 4 was the only section touched.
 +  fan-out, and it needs an existing implementation to copy.
 ```
 
-Comparing the two sections is the whole point. Two sentences were cut and one
-entry was reworded, and the count of anti-patterns is unchanged, because a
-sentence is not a bullet. The committed text is the draft with the review applied — which
-is what any reader should assume about every entry in this library, including
-the ones that survived unchanged.
+Comparing the two sections is the whole point. Three of the four differ, and
+each differs for its own reason: the second lost a sentence, the third lost its
+scope clause, and the fourth lost a list from inside a sentence and was
+otherwise untouched. The count of anti-patterns is unchanged, because a
+sentence is not a bullet. The committed text is the draft with the review
+applied — which is what any reader should assume about every entry in this
+library, including the ones that survived unchanged.
 
 ## What the prompt got wrong
 
@@ -237,11 +239,10 @@ that the one entry that applies to them unconditionally does not describe
 them. A conditional warning is valuable; a conditional warning that is false is
 worse than none, because it sounds like a considered limit and gets believed.
 
-The other two fan-out clauses stayed, because for those two it is genuinely
-true: restating a contract by hand costs nothing when there is one place to
-restate it, and copying an implementation needs an implementation to copy. The
-distinction is not "some caveats are fine", it is *is this clause true, and for
-whom*.
+The other fan-out clauses stayed, because they are genuinely true: restating
+a contract by hand costs nothing when there is one place to restate it, and
+copying an implementation needs an implementation to copy. The distinction is
+not "some caveats are fine", it is *is this clause true, and for whom*.
 
 ### Two entries argued one point between them
 

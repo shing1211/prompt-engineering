@@ -97,11 +97,10 @@ Remaining work in this lane:
       `prompts/` as the prompt set then has to be told the difference —
       `check_nav.py`, `generate_index.py`'s on-disk set, and the frontmatter
       loop in `validate.sh`. A copy needs one source of truth removed from
-      it; a       symlink builds but degrades to a text file on a Windows checkout
+      it; a symlink builds but degrades to a text file on a Windows checkout
       without symlink support, which renders as a broken page. Until this is
       decided the default is off-site, and every repository document inherits
-      it, so decide it before the second such document lands rather than
-      after
+      it, so decide it before the second such document lands rather than after.
 - [ ] A short post per topic cluster, written where developers already read:
       r/algotrading and quant finance for the trading prompts, plus the
       engineering and AI-tooling venues for the rest.
