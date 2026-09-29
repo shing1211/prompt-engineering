@@ -115,9 +115,13 @@ Each prompt declares the mode it is meant to run in:
 | Track PnL and positions | [portfolio-accounting](prompts/portfolio-accounting.md) |
 | Handle compliance | [compliance-regulatory](prompts/compliance-regulatory.md) |
 | Design an API | [api-design](prompts/api-design.md) |
+| Design a service boundary | [backend-services](prompts/backend-services.md) |
 | Review code | [code-review](prompts/code-review.md) |
 | Security audit | [security](prompts/security.md) |
 | Set up CI/CD | [devops](prompts/devops.md) |
+| Run infrastructure on Kubernetes | [platform-engineering](prompts/platform-engineering.md) |
+| Build a data platform | [data-platforms](prompts/data-platforms.md) |
+| Build a JVM service | [jvm-backend](prompts/jvm-backend.md) |
 | Tune performance | [performance](prompts/performance.md) |
 
 The [full index](prompts/index.md) lists all 38 with descriptions, and the

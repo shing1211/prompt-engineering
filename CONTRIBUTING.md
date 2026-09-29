@@ -96,11 +96,39 @@ every pull request.
 scripts/validate.sh                        # everything below, in one go
 python3 scripts/generate_index.py --check  # index.md tables are current
 python3 scripts/check_nav.py               # every prompt is in the site nav
+python3 scripts/check_prompt_sections.py   # every prompt has both sections
+python3 scripts/check_vendor_claims.py     # vendor facts are marked unverified
+python3 scripts/check_counts.py            # prose counts match the index
 python3 scripts/check_links.py             # internal links in built/ site/
 ```
 
 `check_links.py` needs a built site: run `mkdocs build` first, and it skips
 itself if `site/` is absent.
+
+What each one catches:
+
+| Check | Catches |
+|---|---|
+| `generate_index.py --check` | `prompts/index.md` tables stale, so published counts disagree with the files |
+| `check_nav.py` | a prompt that builds and is reachable by URL but missing from the sidebar |
+| `check_prompt_sections.py` | a prompt shipping without an anti-patterns or guardrails section |
+| `check_vendor_claims.py` | broker auth internals, endpoints, or capabilities stated as fact with no verification instruction; a broker-specific risk threshold presented as a universal rule |
+| `check_counts.py` | a hand-written count in `README.md` or `docs/strategy.md` that disagrees with the generated index |
+| `check_links.py` | a broken relative link in the built site |
+
+**Every prompt needs both sections.** An anti-patterns section naming failures
+the subject can actually produce, and a guardrails section written as checks
+that can fail. The venue-independent gates live once in `sdk-build.md` under
+**Cross-Cutting Guardrails**; the venue-specific ones belong in the prompt.
+`check_prompt_sections.py` is structural — it asserts the sections exist, not
+that the content is good, and a prompt can pass it and still be filler.
+
+**Vendor specifics are hypotheses.** If a prompt states an endpoint, an auth
+header, a digest algorithm, or a capability for a real vendor, it must also
+tell the reader to verify it and cite where the documentation lives.
+`check_vendor_claims.py` enforces that, and it is how the four wrong vendor
+facts in 0.1.0 were caught. It cannot tell you a fact is *still* right, only
+that the claim is not presented without provenance.
 
 ### Adding a prompt
 
