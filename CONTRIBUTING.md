@@ -95,6 +95,7 @@ every pull request.
 ```bash
 scripts/validate.sh                        # everything below, in one go
 python3 scripts/generate_index.py --check  # index.md tables are current
+python3 scripts/generate_agents.py --check # harness agents are current
 python3 scripts/check_nav.py               # every prompt is in the site nav
 python3 scripts/check_prompt_sections.py   # every prompt has both sections
 python3 scripts/check_vendor_claims.py     # vendor facts are marked unverified
@@ -112,6 +113,7 @@ What each one catches:
 | Check | Catches |
 |---|---|
 | `generate_index.py --check` | `prompts/index.md` tables stale, so published counts disagree with the files |
+| `generate_agents.py --check` | a committed harness agent that no longer matches its prompt, an agent that was deleted without its file, a file left behind by a deleted prompt, or a prompt with no output in one of the three trees |
 | `check_nav.py` | a prompt that builds and is reachable by URL but missing from the sidebar |
 | `check_prompt_sections.py` | a prompt shipping without an anti-patterns or guardrails section |
 | `check_vendor_claims.py` | broker auth internals, endpoints, or capabilities stated as fact with no verification instruction; a broker-specific risk threshold presented as a universal rule |

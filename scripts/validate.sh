@@ -8,11 +8,12 @@
 #   1. frontmatter schema on every prompts/*.md
 #   2. generators are idempotent (no drift)
 #   3. generated tables in prompts/index.md are current
-#   4. no line-ending or whitespace-policy violations
-#   5. markdownlint, when available
-#   6. internal links resolve, when the site is built
-#   7. the checks still fail on a prompt that should fail
-#   8. no committed file fingerprints the corpus (scripts/check_no_fingerprint.py)
+#   4. generated harness agents are current
+#   5. no line-ending or whitespace-policy violations
+#   6. markdownlint, when available
+#   7. internal links resolve, when the site is built
+#   8. the checks still fail on a prompt that should fail
+#   9. no committed file fingerprints the corpus (scripts/check_no_fingerprint.py)
 #
 # Exits non-zero on the first failure.
 
@@ -142,6 +143,18 @@ if python3 scripts/generate_index.py --check; then
     ok "index.md tables are current"
 else
     fail "index.md tables are stale; run python3 scripts/generate_index.py"
+fi
+
+step "Generated agents are current"
+
+# The three harness trees are committed, so this is the gate that keeps them
+# equal to prompts/. It is a separate step from the index because it fails on
+# four conditions rather than one: a stale file, a missing file, an unexpected
+# file, and a prompt with no output at all. A diff would only see the first.
+if python3 scripts/generate_agents.py --check; then
+    ok "harness agents are current"
+else
+    fail "harness agents are stale; run python3 scripts/generate_agents.py"
 fi
 
 step "Site navigation"
