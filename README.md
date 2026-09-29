@@ -116,7 +116,11 @@ to do:
 | `review` | 4 | Read and critique existing work |
 
 `plan` and `review` are non-mutating: they analyse and report without editing.
-Anything in `build` is licensed to write code.
+A `plan` or `review` prompt may run the acceptance command, a test suite, or
+any other read-only check; it may not edit source, fixtures, or generated
+files. Running is allowed, writing is not — a review that changes the tree it
+was sent to read cannot be re-read, and the next reviewer cannot tell what it
+changed. Anything in `build` is licensed to write code.
 
 ### Composing several
 

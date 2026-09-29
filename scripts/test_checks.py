@@ -50,6 +50,12 @@ TOTAL = WANT["total"]
 STALE_FINANCIAL = WANT["financial"] + 3
 STALE_TOTAL = TOTAL + 1
 STALE_UNVERIFIED = WANT["unverified"] - 1
+# A figure the generated statistics do not carry, which is what makes a
+# scoped numerator unvouched: nothing says what it counts and no statistic
+# matches it. Derived rather than written down, because a literal would one
+# day collide with a category count and this case would go quiet for the
+# wrong reason.
+UNVOUCHED = next(n for n in range(3, 90) if n not in set(WANT.values()))
 
 # The corpus project name, configured outside the repository exactly as
 # scripts/check_no_fingerprint.py expects it: the CORPUS_NAME environment
@@ -206,6 +212,43 @@ CASES: list[tuple[str, str, object, str]] = [
             f"{check_counts.word(TOTAL)} prompts have not been run",
         ),
         f"unverified prompt count says {STALE_UNVERIFIED}",
+    ),
+    (
+        # The denominator of a scoped count used to need "prompts" or "rows"
+        # straight after it, so "29 of the 45 --" matched no pattern at all
+        # and a stale total there passed. The numerator moved with it, and is
+        # now reported as unvouched: a figure nothing says what it counts.
+        "check_counts: unvouched numerator in a scoped count",
+        "check_counts.py",
+        lambda r: _append(
+            r / "docs/strategy.md",
+            f"\n{UNVOUCHED} of the {TOTAL} prompts have no run behind them yet.",
+        ),
+        f"unvouched count {UNVOUCHED}",
+    ),
+    (
+        "check_counts: wrong denominator in a bare scoped count",
+        "check_counts.py",
+        lambda r: _replace(
+            r / "docs/strategy.md",
+            f"— {WANT['nonfinancial']} of the {TOTAL} —",
+            f"— {WANT['nonfinancial']} of the {STALE_TOTAL} —",
+        ),
+        f"library total, as the denominator of a scoped count says {STALE_TOTAL}",
+    ),
+    (
+        # A record of a figure this file deliberately does not check is only
+        # worth anything while it still describes the sentence it was written
+        # for. Reword the prose and the run has to fail, or the record
+        # becomes a comment that reads like a decision.
+        "check_counts: honoured skip that no longer matches the prose",
+        "check_counts.py",
+        lambda r: _replace(
+            r / "docs/strategy.md",
+            r"45-prompt library read\s+as a 16-prompt one",
+            "45 prompt library read as a 16 prompt one",
+        ),
+        "honoured skip no longer matches",
     ),
     (
         "check_vendor_claims: unverified vendor internals",

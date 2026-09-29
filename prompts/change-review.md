@@ -163,8 +163,11 @@ not something to have read:
    the check; do not force the failure yourself. A review that returns the
    wrong value, raises, or writes a status into the tree it was sent to read
    cannot be re-read, and the next reviewer cannot tell what this one changed.
-2. Run every test the change edited against the previous behaviour. A test that
-   passes against both is pinning nothing, whatever it asserts.
+2. Run every test the change edited against the previous behaviour, with
+   snapshot, fixture, and generated-file updating off, and say how you had
+   the previous behaviour to hand without editing the tree under review. A
+   test that passes against both is pinning nothing, whatever it asserts.
+   Running is allowed; writing is not.
 3. Check that the description alone would let someone revert the change. If it
    does not say what changed, a revert is a guess, and that is a finding about
    the description as much as about the code.
@@ -183,7 +186,7 @@ side; each behaviour the description did not mention; the contract items
 touched and the callers of each, inside and outside the repository; the error
 path and how a caller distinguishes failure from success; the test that pins
 each claimed behaviour, and the changed path with none; the boundary inputs
-that have no case; what was executed and what was not; the assumptions left
+that have no case; what was run and what was not; the assumptions left
 unverified; and a verdict of approve, request changes, or block, with the
 smallest change that would move it.
 

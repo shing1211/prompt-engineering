@@ -208,9 +208,9 @@ not something to have read:
    what it quarantined, and what it retried. A suite that is green because of
    a marker is a red suite with the message suppressed, and the difference is
    only visible from the run. Report anything the run wrote: a suite that
-   cannot be run without re-recording snapshots or fixtures is a finding to
-   report, not a flag to work around, because that run overwrites the
-   evidence you were sent to read.
+   cannot be run without re-recording snapshots or fixtures, or regenerating
+   a generated file, is a finding to report, not a flag to work around,
+   because that run overwrites the evidence you were sent to read.
 5. For each test whose name claims a boundary — empty, zero, one, the
    maximum, the negative, the malformed, the retried — find the input that
    actually exercises it and report the boundary as reached or not. Most

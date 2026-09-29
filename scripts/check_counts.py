@@ -15,6 +15,9 @@ scanned documents that disagrees. It checks:
 
   - the total prompt count, including the spelled-out and "N of the M"
     forms, and including the count as a denominator ("16 of the 45 prompts")
+  - the denominator of every scoped count whose denominator is a library
+    count, whatever follows it, and reports a numerator no pattern claims as
+    unvouched rather than leaving it invisible
   - the language-agnostic count
   - the combined financial-domain count, which sums two categories and so
     has no single generated row to compare against
@@ -39,7 +42,9 @@ Three things it deliberately does not do:
     16-prompt one" states the total and a subset in the same shape, and
     nothing in the sentence says which is which, so matching the form would
     report the subset as the total. Hyphenated figures stay unchecked; the
-    forms this file does match say which number is the library.
+    forms this file does match say which number is the library. Where a
+    document states one anyway, the decision is recorded in HONOURED_SKIP
+    rather than left as a gap nobody can see.
   - It cannot verify that a hand-written sentence is *true* about anything
     the index does not measure. It only prevents a number from diverging
     from the data it claims to summarise.
@@ -88,6 +93,23 @@ DOCUMENTS = [
     Path("docs/strategy.md"),
     Path("prompts/index.md"),
     Path("docs/verification.md"),
+]
+
+# Figures that are deliberately not checked, on the record rather than by
+# absence. A gap nobody can see is indistinguishable from a gap nobody
+# closed, so each entry is the document, a phrase that must still be there,
+# and why the figure inside it is left alone. The phrase is verified on every
+# run, so a record cannot outlive the sentence it was written for: reword the
+# prose and the check fails until someone decides again. What it does not do
+# is notice the figure itself going stale -- that is the trade, and the
+# alternative was reporting a subset as a stale total.
+HONOURED_SKIP = [
+    (
+        Path("docs/strategy.md"),
+        r"45-prompt library read\s+as a 16-prompt one",
+        "the library and a subset in one shape, with nothing in the sentence "
+        "to say which is which",
+    ),
 ]
 
 # Categories that make up the "financial trading" claim. Kept here rather
@@ -272,6 +294,28 @@ def expected(
 
 # ------------------------------------------------------- prose count shapes
 
+# The shape of a scoped count: a figure, and the library it is a share of.
+#
+# The denominator is the library total, and it is checked as one whether or
+# not a pattern also reads the sentence. The old form required "prompts" or
+# "rows" straight after it, so "29 of the 45 --" matched nothing at all and
+# the total went unchecked as silently as the subset did.
+#
+# The numerator is a subset. The forms that say *which* subset are what
+# PATTERNS is for, and a numerator no such pattern claims is a figure this
+# file has no expected value for -- so it is reported as unvouched rather
+# than left invisible. See unvouched().
+#
+# The denominator has to look like a library count: either the noun that
+# names one, or a bare figure followed by punctuation. That is what separates
+# "one of the three runs below", whose denominator is a corpus, from "sixteen
+# of the 45 prompts", whose is the library.
+SCOPED_SHAPE = re.compile(
+    rf"(?:\b(?P<n>{NUMBER})\s+)?\b(?:out\s+)?of\s+the\s+(?P<all>{NUMBER})"
+    rf"(?:\s+(?:prompts|rows)\b|\s*[^\w\s]|\s*$)",
+    re.I,
+)
+
 # (label, pattern, ((group, key), ...), guard). A pattern must capture the
 # whole count phrase rather than a fragment, and every number it captures
 # must be named against the figure it claims to be -- including the
@@ -286,10 +330,8 @@ PATTERNS: list[tuple[str, re.Pattern[str], tuple[tuple[str, str], ...], str | No
     ),
     (
         "library total, as the denominator of a scoped count",
-        re.compile(
-            rf"\b(?:of|out of)\s+the\s+(?P<n>{NUMBER})\s+(?:prompts|rows)\b", re.I
-        ),
-        (("n", "total"),),
+        SCOPED_SHAPE,
+        (("all", "total"),),
         None,
     ),
     (
@@ -355,8 +397,6 @@ PATTERNS: list[tuple[str, re.Pattern[str], tuple[tuple[str, str], ...], str | No
     ),
 ]
 
-DENOMINATOR = PATTERNS[1][1]
-
 # The subset patterns, so their numerators can be recognised as subsets. A
 # document that says "16 prompts cover multi-broker trading" and then
 # "16 of the 45 prompts cover multi-broker trading" has said what 16 is, and
@@ -371,6 +411,23 @@ SUBSET_LABELS = (
     "unverified prompt count",
 )
 SCOPED = [p for label, p, _g, _guard in PATTERNS if label in SUBSET_LABELS]
+
+
+def claimed_numerators(region: str) -> set[int]:
+    """The figures a pattern has said what they count, so they are subsets.
+
+    Only the subset patterns. A numerator in a scoped shape is included when
+    one of them claims it, which is the difference between "16 of the 45
+    prompts cover multi-broker trading" and a number this file has no expected
+    value for at all.
+    """
+    values: set[int] = set()
+    for pattern in SCOPED:
+        for match in pattern.finditer(region):
+            value = count(match.group("n"))
+            if value is not None:
+                values.add(value)
+    return values
 
 
 def scoped_numbers(region: str) -> set[int]:
@@ -394,15 +451,48 @@ def scoped_numbers(region: str) -> set[int]:
     Nothing is lost by yielding. Every figure in the set is checked by the
     scoped pattern that owns it, against its own expected value, and a
     paragraph has one total: a figure a paragraph calls a subset is not the
-    library anywhere else in that paragraph.
+    library anywhere else in that paragraph. A numerator no subset pattern
+    claims is not covered by that argument, and unvouched() is what covers it.
     """
-    values: set[int] = set()
-    for pattern in (DENOMINATOR, *SCOPED):
-        for match in pattern.finditer(region):
-            value = count(match.group("n"))
+    values = claimed_numerators(region)
+    for match in SCOPED_SHAPE.finditer(region):
+        for group in ("n", "all"):
+            token = match.groupdict().get(group)
+            if token is None:
+                continue
+            value = count(token)
             if value is not None:
                 values.add(value)
     return values
+
+
+def unvouched(region: str, figures: set[int]) -> list[tuple[int, int]]:
+    """Scoped numerators nothing vouches for, as (offset, value) in the region.
+
+    A numerator is vouched for by a pattern saying what it counts, or by
+    matching a figure the generated index carries. Neither says the number is
+    right; both mean this file holds an expected value for it and will fail
+    when it moves.
+
+    A numerator with neither was invisible. The scoped shape did not match it,
+    so the denominator went unchecked too, and the yield rule then hid the
+    numerator from the one pattern that would have read it as a stale total.
+    A number could go stale in a scanned document with nothing reporting it,
+    which is the false negative this reports: not "the document is wrong" but
+    "this file has nothing to check it against", with the cure -- one entry
+    in PATTERNS -- named rather than left to be guessed at.
+    """
+    claimed = claimed_numerators(region)
+    found: list[tuple[int, int]] = []
+    for match in SCOPED_SHAPE.finditer(region):
+        token = match.groupdict().get("n")
+        if token is None:
+            continue
+        value = count(token)
+        if value is None or value in claimed or value in figures:
+            continue
+        found.append((match.start("n"), value))
+    return found
 
 
 # ------------------------------------------------------- table count shapes
@@ -560,11 +650,53 @@ def report(
         problems.append(problem)
 
 
+def report_unvouched(problems: list[str], doc: Path, lineno: int, value: int) -> None:
+    """Say that a figure is unchecked, which is not the same as saying it is wrong.
+
+    The message names the document and the line and nothing about the truth
+    of the number, because this file has no expected value for it. What it
+    does have is a cure -- a pattern that says what the figure counts -- and
+    the failure guidance below says so, so nobody reads this as an
+    instruction to edit a correct document.
+    """
+    problem = (
+        f"{doc}:{lineno}: unvouched count {value}; nothing says what it "
+        f"counts and it matches no figure in {INDEX}"
+    )
+    if problem not in problems:
+        problems.append(problem)
+
+
 def agrees(stated: int, want: int, key: str) -> bool:
     step = ROUNDED.get(key)
     if step is None:
         return stated == want
     return stated // step == want // step
+
+
+def check_honoured_skips(problems: list[str]) -> None:
+    """Every deliberate non-check still describes a sentence that is there.
+
+    Two ways a record rots. The prose is reworded and the phrase is gone, so
+    the record is defending a figure that no longer exists. Or the document
+    is dropped from DOCUMENTS, so the record is defending something this file
+    never reads. Either is a decision that has to be taken again rather than
+    left in the file, so both fail the run.
+    """
+    for doc, phrase, _why in HONOURED_SKIP:
+        if doc not in DOCUMENTS:
+            problems.append(
+                f"{doc}: honoured skip names a document that is not scanned"
+            )
+            continue
+        if not doc.is_file():
+            continue
+        text = re.sub(r"\s+", " ", doc.read_text(encoding="utf-8"))
+        if not re.search(phrase, text):
+            problems.append(
+                f"{doc}: honoured skip no longer matches anything in the "
+                f"document: {phrase}"
+            )
 
 
 def main() -> int:
@@ -585,6 +717,7 @@ def main() -> int:
 
     labels = table_labels(stats)
     modes = {k.split(":", 1)[1] for k in want if k.startswith("mode:")}
+    figures = set(want.values())
 
     print(
         f"generated: {want.get('total')} prompts, "
@@ -608,7 +741,7 @@ def main() -> int:
             scoped = scoped_numbers(region)
             for label, pattern, groups, guard in PATTERNS:
                 for match in pattern.finditer(region):
-                    stated = count(match.group("n") if "n" in match.groupdict() else "")
+                    stated = count(match.group("n") or "")
                     if guard == "not-a-scoped-number" and stated in scoped:
                         continue
                     for group, key in groups:
@@ -625,9 +758,13 @@ def main() -> int:
                                 value,
                                 want_value,
                             )
+            for offset, value in unvouched(region, figures):
+                report_unvouched(problems, doc, owner[offset], value)
 
         for block in table_blocks(lines, skip):
             check_table(doc, block, labels, modes, want, problems)
+
+    check_honoured_skips(problems)
 
     print(f"checked {scanned} documents for hand-written counts")
 
@@ -638,7 +775,10 @@ def main() -> int:
         print(
             "\nHand-written counts must match the generated statistics in\n"
             f"{INDEX}, which is produced from frontmatter. Fix the prose, or\n"
-            "regenerate the index if the library itself has changed.",
+            "regenerate the index if the library itself has changed. A count\n"
+            "reported as unvouched is unchecked, not wrong: say what it counts\n"
+            "by adding an entry to PATTERNS in this file, or write the figure\n"
+            "as one the index carries.",
             file=sys.stderr,
         )
         return 1
