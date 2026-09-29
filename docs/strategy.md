@@ -213,8 +213,8 @@ material the library should absorb.
 - [ ] An event-contracts prompt. The `data-platforms` pass turned up two
       findings that prompt cannot honestly hold: a contract naming a version
       field that no producer writes, so a consumer mid-deploy cannot tell
-      which shape it received, and sibling consumers of one stream answering
-      an unparseable record three different ways. Both are message-schema
+      which shape it received, and sibling consumers of one stream each
+      answering an unparseable record in its own way. Both are message-schema
       properties rather than dataset properties, so both were rejected there
       and neither is published anywhere yet
 - [ ] A fails-open default, for `security.md` or `devops.md`. The service-layer

@@ -46,8 +46,8 @@ The test pinning each is added to the task that owns the code.
 
 1. **A finding is generalised away into uselessness.** An anti-pattern written
    so abstractly that a reader cannot recognise their own code. Expected: a
-   reader with three services should be able to tell whether it applies. Task 5
-   pins this.
+   reader running a handful of services should be able to tell whether it
+   applies. Task 5 pins this.
 2. **A fingerprint survives into a public file** — a venue name, a directory
    name, or a count slips into an anti-pattern while it is being written.
    Expected: Task 2's check fails the build. Task 2 owns the check.
@@ -126,7 +126,7 @@ Expected: `0`. If non-zero, stop and report — the corpus must not change.
 - [ ] **Step 3: Probe the adapter layer, read-only, and write raw findings to the scratch file**
 
 Probe for: a shared interface; whether auth is implemented once or per venue;
-timeout and context handling across the layer; error taxonomies; what a ninth
+timeout and context handling across the layer; error taxonomies; what a new
 integration would copy.
 
 Use only `git ls-files`, `git show`, `grep` over tracked text, and file
@@ -212,7 +212,7 @@ repo root. Fail on:
   `KNOWN_VENDOR_HOSTS` vocabulary rather than inventing a second list; the
   existing check permits a vendor name in a prompt that carries a verification
   instruction, and this check must not contradict it.
-- An absolute path beginning `/home/`.
+- An absolute path under a home directory: `/home`, `/Users` or `/root`.
 - The corpus's project name, in any case.
 - A `git log`-shaped hash in a prompt file: seven or more consecutive hex
   characters that are not a documented identifier.
@@ -316,7 +316,7 @@ what a new integration copies when no contract tells it what to implement.
 Generalise. No venue names, no counts, no directory names, and nothing that points
 at a specific codebase as the source.
 Where a finding only applies at high fan-out, say so in the entry, so a reader
-with three services knows it does not apply to them.
+with a handful of services knows it does not apply to them.
 
 - [ ] **Step 4: Run the fingerprint check to verify the generalisation held**
 
@@ -714,10 +714,10 @@ Part A and consumed by Part C and named in Part B's commit. The scratch paths
 are created in Task 1 and read in Tasks 3 and 4.
 
 **Review Focus.** Item 1 is pinned by Task 5 Part B Step 3, which requires the
-example to say what the prompt got wrong and requires a three-service reader to
-be able to tell whether an entry applies. Item 2 is pinned by Task 2. Item 3 is
-pinned by Task 4 Step 2, where a deferral is a valid outcome. Item 4 is pinned
-by the `validate.sh` gate in Tasks 3 and 4. Item 5 is pinned by Task 5 Part C
+example to say what the prompt got wrong and requires a reader with a handful of
+services to be able to tell whether an entry applies. Item 2 is pinned by Task 2.
+Item 3 is pinned by Task 4 Step 2, where a deferral is a valid outcome. Item 4 is
+pinned by the `validate.sh` gate in Tasks 3 and 4. Item 5 is pinned by Task 5 Part C
 Step 6, where the generator must fail loudly rather than mislabel.
 
 **Proportion.** The plan is longer than the two prompts it edits. That is

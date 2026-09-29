@@ -40,9 +40,11 @@ submissions put an unproven library in front of curators.
 A private multi-broker trading system, referenced below only as "the corpus" and
 not named here.
 
-- Large Go codebase, several hundred files.
-- Several broker adapters, varying in size by a wide margin.
-- A substantial stream and SQL surface, with several consumer entry points.
+- A Go codebase large enough that its layout, rather than any one file, is
+  where a reader has to start.
+- Broker adapters that vary in size by a wide margin.
+- A stream and SQL surface, with consumer entry points spread across the
+  codebase rather than concentrated in one place.
 - SQL migrations as the schema source of truth.
 
 ### Safety constraints
@@ -62,10 +64,10 @@ Published: the failure mode, stated so it generalises.
 
 The public repository is the constraint that shapes this work. A prompt
 improved by a private trading system is published for everyone to read, and a
-finding like "eight adapters have no shared interface" publishes an
-architectural fingerprint. The generalised form — "N integrations with no shared
-contract" — is both safer and more useful, since a reader with three services
-can act on it.
+finding that names how many integrations there are and what they share
+publishes an architectural fingerprint. The generalised form — "integrations
+with no shared contract" — is both safer and more useful, since a reader
+running a handful of services can act on it.
 
 **No secrets.** The corpus contains sealed secret manifests. Nothing in them is
 read, referenced, or paraphrased.
@@ -74,8 +76,8 @@ read, referenced, or paraphrased.
 
 | Prompt | Corpus fit | Decision |
 |---|---|---|
-| `backend-services` | Strong: eight adapters, a large Go codebase, several service entry points | Verify |
-| `data-platforms` | Adequate: roughly two dozen stream files, several dozen SQL files, five consumer entry points | Verify, with a deferral condition |
+| `backend-services` | Strong: an adapter layer of uneven size in a Go codebase, with service entry points in more than one service | Verify |
+| `data-platforms` | Adequate: a stream and SQL surface with consumers spread across services, and no lakehouse, warehouse or CDC layer to check | Verify, with a deferral condition |
 | `jvm-backend` | None: no Java, Kotlin, or Gradle files | **Drop from this pass** |
 
 `jvm-backend` has no corpus in the trading project. Verifying it requires a
@@ -105,7 +107,7 @@ Probe the adapter layer for:
 - Duplicated authentication. Is auth implemented once or per venue?
 - Inconsistent timeout and context handling across the layer.
 - Divergent error taxonomies that a caller cannot handle uniformly.
-- Whether a caller adding a ninth integration would copy an existing file or
+- Whether a developer adding an integration would copy an existing file or
   implement a contract.
 
 **Known gap, confirmed by pre-design probing.** The adapters vary in size by a
@@ -120,7 +122,7 @@ reimplements the contract because none is shared, the implementations diverge,
 and the divergence is invisible until a caller depends on the difference.*
 
 The divergence itself is evidence: a shared interface would have one place to
-state cancellation and error semantics; eight files cannot.
+state cancellation and error semantics; a layer of separate files cannot.
 
 ## Phase 2: `data-platforms`
 
@@ -130,7 +132,7 @@ Probe the stream and SQL surface for:
 - Schema evolution: are migrations the schema source of truth, or is the schema
   implied by application code?
 - Replay safety: what happens if a consumer re-reads from an earlier offset?
-- Offset and checkpoint handling across the five consumers.
+- Offset and checkpoint handling across the consumers.
 - Whether the data plane and the serving plane share a schema without a boundary.
 
 Findings are added as anti-patterns in the same generalised voice.
@@ -166,9 +168,10 @@ Prefer `backend-services`, since that phase has the most concrete material.
 Stated in the design rather than discovered later.
 
 **One corpus, one architecture.** A trading system is a real test and not a
-neutral one. An anti-pattern drawn from an eight-broker system may over-weight
-multi-venue concerns. Where a finding is specific to high-fan-out integrations,
-the prompt says so, so a reader with three services knows it does not apply.
+neutral one. An anti-pattern drawn from a heavily multi-venue system may
+over-weight multi-venue concerns. Where a finding is specific to high-fan-out
+integrations, the prompt says so, so a reader with a handful of services knows
+it does not apply.
 
 **Most prompts remain unverified.** After this pass, 2 of 42 are verified
 (`platform-engineering` previously, `backend-services` and possibly
