@@ -7,15 +7,20 @@ hide:
 
 # Prompt Library
 
-Agentic-AI prompts for software project delivery, built around **financial
-trading systems**, **Go backend development**, and **AWS cloud
-infrastructure**.
+System prompts for coding agents, across architecture, data, platform,
+protocols, SDK, and financial engineering. 42 prompts: 26 cross-stack
+engineering practice, 16 covering multi-broker trading systems.
 
 Each prompt is a standalone system prompt with a declared mode
 (`build`, `plan`, `review`, `all`) and a tag set. Copy one into your agent's
 configuration, or read it first: the structure is deliberately consistent
 across the library, so knowing one prompt tells you how the others are
 organised.
+
+`plan` and `review` prompts analyse without editing. `build` prompts are
+licensed to write code. For multi-area work, start with
+[orchestrate](orchestrate.md), which spawns a sub-agent per area so the main
+session holds a plan rather than a transcript.
 
 Browse the categories below, or jump to the [full tag index](tags.md).
 
@@ -32,7 +37,87 @@ Multi-phase sub-agent execution and project planning — 2 prompt(s).
 | [`orchestrate.md`](orchestrate.md) — Orchestrator | build | Orchestrate multi-phase implementation using sub-agents with specialist roles (backend, frontend, data, devops, security, tester, docs, reviewer, release, architect, planner) |
 | [`plan.md`](plan.md) — Planning | plan | Plan project phases, code enhancements, bug fixes, and architecture improvements using sub-agent driven analysis |
 
-### Financial Domain — Trading and Broking
+### Architecture and Engineering
+
+Cross-cutting engineering practice — 12 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling |
+| [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency |
+| [`backend-services.md`](backend-services.md) — Backend Services | all | Design backend services without a language assumption, covering boundaries, idempotency, consistency, versioning, and the failure modes of distributed systems |
+| [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages |
+| [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases |
+| [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) |
+| [`incident-response.md`](incident-response.md) — Incident Response | all | Design incident response runbooks, on-call procedures, postmortem templates, and alerting strategies for production systems |
+| [`migration.md`](migration.md) — Migration | build | Migration guide for zero-downtime database migrations with Flyway/Liquibase, monolith to microservices refactoring, language upgrades, Infrastructure as Code with Terraform, and blue-green deployments on AWS |
+| [`observability-sre.md`](observability-sre.md) — Observability and SRE | build | Design observability and SRE practices for financial platforms with OpenTelemetry, SLOs, incident response, capacity planning, and production diagnostics |
+| [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend |
+| [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python |
+| [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates |
+
+### Application Development
+
+Frontend, LLM, events, and data pipelines — 4 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`data-engineering.md`](data-engineering.md) — Data Engineering | build | Build data engineering pipelines with Apache Airflow/Prefect, Kafka/Flink streaming, Debezium CDC, dbt transformations, MSK/S3 data lake, Great Expectations data quality, and AWS Glue/Athena |
+| [`event-driven-architecture.md`](event-driven-architecture.md) — Event-Driven Architecture | build | Design event-driven financial systems with Kafka, schema evolution, CQRS, event sourcing, ordering, replay, deduplication, and resilient asynchronous workflows |
+| [`frontend-dev.md`](frontend-dev.md) — Frontend Development | build | Frontend development guide with React 18, Next.js 14 App Router, Zustand state management, shadcn/ui + Tailwind CSS, TanStack Query, Core Web Vitals, accessibility, and Vitest/Playwright testing |
+| [`llm-integration.md`](llm-integration.md) — LLM Integration | build | LLM integration guide with RAG architecture, vector databases (Pinecone/Milvus), prompt engineering, vLLM/Ollama local deployment, AI safety, RAG evaluation with RAGAS, and cloud API integration (OpenAI, Anthropic, Google Gemini) |
+
+### Platform and Infrastructure
+
+Kubernetes, packaging, delivery, and operability — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`platform-engineering.md`](platform-engineering.md) — Platform Engineering | build | Build and operate Kubernetes infrastructure with Helm, GitOps, Terraform, progressive delivery, and the failure modes of agent-written infrastructure |
+
+### API Protocols
+
+GraphQL and gRPC specifics — 2 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`graphql-development.md`](graphql-development.md) — GraphQL Development | build | GraphQL development guide with Apollo Server 4, DataLoader for N+1 problem, Apollo Federation for microservices, graphql-ws subscriptions, schema registry, and performance optimization (persisted queries, APQ) |
+| [`grpc-development.md`](grpc-development.md) — gRPC Development | build | gRPC development guide with Protobuf v3, buf CLI for modern protobuf tooling, Go grpc-go, gRPC-gateway for REST-to-gRPC, Envoy proxy, Istio service mesh, and streaming RPC patterns |
+
+### SDK Development
+
+Reusable patterns for building and documenting SDKs — 2 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`sdk-build.md`](sdk-build.md) — SDK Build | build | Build an enterprise-grade Go SDK for a financial broker (Account, Market Data, Trading, Positions) with phases covering infrastructure, domain models, WebSocket streaming, observability, and rigorous testing |
+| [`sdk-docs.md`](sdk-docs.md) — SDK Documentation | build | Improve all Markdown documentation in an API SDK repository |
+
+### Data Platforms
+
+Lakehouse, contracts, and data quality — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`data-platforms.md`](data-platforms.md) — Data Platforms | build | Build lakehouse and streaming data platforms with data contracts, late-arriving data handling, lineage, quality gates, and cost control |
+
+### JVM and Java
+
+Spring Boot, Quarkus, and the JVM — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`jvm-backend.md`](jvm-backend.md) — JVM Backend | build | Build JVM backend services with Spring Boot, Quarkus, or Micronaut compared against each other, covering persistence, concurrency, testing, and JVM-specific operational concerns |
+
+### Documentation
+
+Documentation workflows — 1 prompt(s).
+
+| Prompt | Mode | Description |
+|---|---|---|
+| [`financial-docs.md`](financial-docs.md) — Financial Platform Documentation | build | Improve all Markdown documentation in a unified multi-broker trading and portfolio management system |
+
+### Financial Engineering — Trading and Broking
 
 Trading systems, market data, risk, quant, and compliance — 9 prompt(s).
 
@@ -61,86 +146,6 @@ One prompt per broker, each a production Go SDK build — 7 prompt(s).
 | [`broker-tiger.md`](broker-tiger.md) — Tiger Trade SDK | build | Build a production-grade Go SDK for Tiger Trade OpenAPI (REST + WebSocket market data and trading events) with private-key authentication, order safety, CI/CD, fuzz testing, and enterprise hardening |
 | [`broker-vbroker.md`](broker-vbroker.md) — Hua Sing Tong vbroker SDK | build | Build a production-grade Go SDK for Hua Sing Tong vbroker Open API (HMAC REST + WebSocket market data and trading events) with HK market support, order safety, CI/CD, fuzz testing, and enterprise hardening |
 | [`broker-webull.md`](broker-webull.md) — Webull SDK | build | Build a production-grade Go SDK for the Webull OpenAPI (REST + MQTT market data + gRPC order pushes) with CI/CD, fuzz testing, and enterprise hardening |
-
-### SDK Development
-
-Reusable patterns for building and documenting SDKs — 2 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`sdk-build.md`](sdk-build.md) — SDK Build | build | Build an enterprise-grade Go SDK for a financial broker (Account, Market Data, Trading, Positions) with phases covering infrastructure, domain models, WebSocket streaming, observability, and rigorous testing |
-| [`sdk-docs.md`](sdk-docs.md) — SDK Documentation | build | Improve all Markdown documentation in an API SDK repository |
-
-### Architecture and Engineering
-
-Cross-cutting engineering practice — 12 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling |
-| [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency |
-| [`backend-services.md`](backend-services.md) — Backend Services | all | Design backend services without a language assumption, covering boundaries, idempotency, consistency, versioning, and the failure modes of distributed systems |
-| [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages |
-| [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases |
-| [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) |
-| [`incident-response.md`](incident-response.md) — Incident Response | all | Design incident response runbooks, on-call procedures, postmortem templates, and alerting strategies for production systems |
-| [`migration.md`](migration.md) — Migration | build | Migration guide for zero-downtime database migrations with Flyway/Liquibase, monolith to microservices refactoring, language upgrades, Infrastructure as Code with Terraform, and blue-green deployments on AWS |
-| [`observability-sre.md`](observability-sre.md) — Observability and SRE | build | Design observability and SRE practices for financial platforms with OpenTelemetry, SLOs, incident response, capacity planning, and production diagnostics |
-| [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend |
-| [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python |
-| [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates |
-
-### Platform and Infrastructure
-
-Kubernetes, packaging, delivery, and operability — 1 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`platform-engineering.md`](platform-engineering.md) — Platform Engineering | build | Build and operate Kubernetes infrastructure with Helm, GitOps, Terraform, progressive delivery, and the failure modes of agent-written infrastructure |
-
-### API Protocols
-
-GraphQL and gRPC specifics — 2 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`graphql-development.md`](graphql-development.md) — GraphQL Development | build | GraphQL development guide with Apollo Server 4, DataLoader for N+1 problem, Apollo Federation for microservices, graphql-ws subscriptions, schema registry, and performance optimization (persisted queries, APQ) |
-| [`grpc-development.md`](grpc-development.md) — gRPC Development | build | gRPC development guide with Protobuf v3, buf CLI for modern protobuf tooling, Go grpc-go, gRPC-gateway for REST-to-gRPC, Envoy proxy, Istio service mesh, and streaming RPC patterns |
-
-### Data Platforms
-
-Lakehouse, contracts, and data quality — 1 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`data-platforms.md`](data-platforms.md) — Data Platforms | build | Build lakehouse and streaming data platforms with data contracts, late-arriving data handling, lineage, quality gates, and cost control |
-
-### Application Development
-
-Frontend, LLM, events, and data pipelines — 4 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`data-engineering.md`](data-engineering.md) — Data Engineering | build | Build data engineering pipelines with Apache Airflow/Prefect, Kafka/Flink streaming, Debezium CDC, dbt transformations, MSK/S3 data lake, Great Expectations data quality, and AWS Glue/Athena |
-| [`event-driven-architecture.md`](event-driven-architecture.md) — Event-Driven Architecture | build | Design event-driven financial systems with Kafka, schema evolution, CQRS, event sourcing, ordering, replay, deduplication, and resilient asynchronous workflows |
-| [`frontend-dev.md`](frontend-dev.md) — Frontend Development | build | Frontend development guide with React 18, Next.js 14 App Router, Zustand state management, shadcn/ui + Tailwind CSS, TanStack Query, Core Web Vitals, accessibility, and Vitest/Playwright testing |
-| [`llm-integration.md`](llm-integration.md) — LLM Integration | build | LLM integration guide with RAG architecture, vector databases (Pinecone/Milvus), prompt engineering, vLLM/Ollama local deployment, AI safety, RAG evaluation with RAGAS, and cloud API integration (OpenAI, Anthropic, Google Gemini) |
-
-### JVM and Java
-
-Spring Boot, Quarkus, and the JVM — 1 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`jvm-backend.md`](jvm-backend.md) — JVM Backend | build | Build JVM backend services with Spring Boot, Quarkus, or Micronaut compared against each other, covering persistence, concurrency, testing, and JVM-specific operational concerns |
-
-### Documentation
-
-Documentation workflows — 1 prompt(s).
-
-| Prompt | Mode | Description |
-|---|---|---|
-| [`financial-docs.md`](financial-docs.md) — Financial Platform Documentation | build | Improve all Markdown documentation in a unified multi-broker trading and portfolio management system |
 
 ## Browse by Technology
 
@@ -207,16 +212,16 @@ Prompts written against a specific language's tooling. Everything not listed her
 |---|---|
 | **Total prompts** | 42 |
 | **Orchestration and Planning** | 2 |
-| **Financial Domain — Trading and Broking** | 9 |
-| **Broker SDKs** | 7 |
-| **SDK Development** | 2 |
 | **Architecture and Engineering** | 12 |
+| **Application Development** | 4 |
 | **Platform and Infrastructure** | 1 |
 | **API Protocols** | 2 |
+| **SDK Development** | 2 |
 | **Data Platforms** | 1 |
-| **Application Development** | 4 |
 | **JVM and Java** | 1 |
 | **Documentation** | 1 |
+| **Financial Engineering — Trading and Broking** | 9 |
+| **Broker SDKs** | 7 |
 | **Distinct tags** | 244 |
 | **Language-agnostic** | 18 |
 | **Mode: all** | 8 |

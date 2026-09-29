@@ -28,16 +28,16 @@ END = "<!-- END GENERATED TABLES -->"
 
 CATEGORY_TITLES: dict[str, str] = {
     "orchestration": "Orchestration and Planning",
-    "financial": "Financial Domain — Trading and Broking",
-    "broker-sdk": "Broker SDKs",
-    "sdk": "SDK Development",
     "architecture": "Architecture and Engineering",
+    "application": "Application Development",
     "platform": "Platform and Infrastructure",
     "protocols": "API Protocols",
+    "sdk": "SDK Development",
     "data": "Data Platforms",
-    "application": "Application Development",
     "java": "JVM and Java",
     "documentation": "Documentation",
+    "financial": "Financial Engineering — Trading and Broking",
+    "broker-sdk": "Broker SDKs",
 }
 
 CATEGORY_ORDER = list(CATEGORY_TITLES)
