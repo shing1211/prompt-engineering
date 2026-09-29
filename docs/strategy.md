@@ -24,7 +24,7 @@ And the large prompt collections, which compete on breadth rather than depth:
 `f/prompts.chat` (~140k), `x1xhlol/system-prompts-and-models-of-ai-tools`
 (~110k), `dair-ai/Prompt-Engineering-Guide` (~69k).
 
-**The gap.** Nineteen of the 38 prompts here cover multi-broker trading
+**The gap.** Sixteen of the 42 prompts here cover multi-broker trading
 systems. No repository in either list holds that ground. That is the asset.
 
 **The ceiling.** Generic prompts compete with lists that are two orders of

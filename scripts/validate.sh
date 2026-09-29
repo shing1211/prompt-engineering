@@ -166,6 +166,14 @@ else
     fail "a prompt is missing anti-patterns or guardrails"
 fi
 
+step "Hand-written counts match the generated index"
+
+if python3 scripts/check_counts.py; then
+    ok "prose counts agree with the generated statistics"
+else
+    fail "a hand-written count disagrees with prompts/index.md"
+fi
+
 # ------------------------------------------------------ 4. line endings + EOL
 
 step "Line endings and whitespace policy"

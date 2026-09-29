@@ -4,11 +4,11 @@ Agentic-AI prompts for software project delivery, built around **financial
 trading systems**, **Go backend development**, and **AWS cloud
 infrastructure**.
 
-**38 prompts. ~80,000 words. MIT licensed.**
+**42 prompts. ~86,000 words. MIT licensed.**
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
-16 of the 38 prompts are language-agnostic: they assume no language-specific
+18 of the 42 prompts are language-agnostic: they assume no language-specific
 tooling and apply as written, whichever stack you are on. The rest are written
 against a specific language, and the [language table](prompts/index.md#browse-by-language)
 tells you which is which.
@@ -43,10 +43,10 @@ you know how the rest are organised:
 ## What makes this library different
 
 Most prompt collections compete on breadth. This one has a **vertical
-wedge**: 19 of the 38 prompts cover multi-broker trading systems, and no
+wedge**: 16 of the 42 prompts cover multi-broker trading systems, and no
 other public library holds that ground.
 
-The other 19 are the cross-stack engineering practice that holds that domain
+The other 26 are the cross-cutting engineering practice that holds that domain
 work together, and they are deliberately not Go-specific. Architecture, API
 design, database design, code review, testing, security, performance, DevOps,
 migration, observability, incident response, event-driven design, and data
@@ -68,10 +68,6 @@ That means material you will not find in a generic collection:
   settlement, reconciliation.
 - **Regulation** — MiFID II best execution, trade surveillance, audit
   trails, retention across SFC, SEC, and FINRA.
-
-The remaining 19 prompts are the cross-cutting engineering practice that
-holds that domain work together: architecture, API design, testing,
-security, performance, observability, migration, incident response.
 
 ## Using a prompt
 
