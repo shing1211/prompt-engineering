@@ -22,8 +22,8 @@ been run, because a run against one codebase is evidence about that codebase
 and about nothing else.
 
 A prompt can be verified and still have no evidence behind much of what it
-covers. One of the five runs below is in that state — half of that prompt was
-run against a system the other half does not describe. Three more were run
+covers. One of the seven runs below is in that state — half of that prompt was
+run against a system the other half does not describe. Five more were run
 against a corpus of a different kind rather than an uncovered half: public
 repositories of a different shape from anything else in the register, which
 is a real run and a weaker one, and each says so in its own row. The caveats
@@ -67,7 +67,7 @@ One row per prompt, in alphabetical order by file name.
 | `observability-sre` | no | Not run. | — |
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
-| `plan` | no | Not run. The prompt was rebuilt on the house structure in this pass: no run covers this one, and nothing carries over from the text it replaced. | — |
+| `plan` | yes | Run against a public command-line application, the same one `change-review` was run against, given a change request the repository's own plans do not contain. Four anti-patterns added. | 2026-09-29 |
 | `plan-review` | yes | Run against a public command-line application, the same one `change-review` was run against. Four anti-patterns added. | 2026-09-29 |
 | `platform-engineering` | yes | Run against two existing public Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
@@ -76,13 +76,13 @@ One row per prompt, in alphabetical order by file name.
 | `sdk-build` | no | Not run. | — |
 | `sdk-docs` | no | Not run. | — |
 | `security` | no | Not run. | — |
-| `test-review` | no | Not run. | — |
+| `test-review` | yes | Run against a public command-line application with a deep commit history, against one commit that added a large test file and no production behaviour. Four anti-patterns added. | 2026-09-29 |
 | `testing` | no | Not run. | — |
 | `trading-bot` | no | Not run. | — |
 | `trading-risk` | no | Not run. | — |
 
-`platform-engineering` shipped its run in 0.3.1; the other four came out of
-0.4.0.
+`platform-engineering` shipped its run in 0.3.1; two more came out of 0.4.0
+and four out of 0.5.0.
 
 ## Why the published findings read the way they do
 
@@ -109,22 +109,21 @@ instead, was reading each added line.
 
 ## What this pass did not do
 
-- **Forty of the forty-five prompts have not been run.** The register
+- **Thirty-eight of the forty-five prompts have not been run.** The register
   records that plainly rather than rounding it up. Every row that says "not
   run" is an open item, not a verdict.
 - **`jvm-backend` was skipped for want of a corpus.** No codebase with a JVM
   service layer was available for this pass, so there was nothing to run it
   against, and the gap is not closable by editing the prompt.
-- **Three prompts were verified against a corpus of a different kind.**
+- **Five prompts were verified against a corpus of a different kind.**
   `platform-engineering` was run against two public Kubernetes repositories,
-  and `change-review` and `plan-review` against a public command-line
-  application, none of them the private codebase the other two rows came from.
-  These are real runs and they produced real findings, but they are not the
-  same evidence as the other two rows, which is why the column above says what
-  was run rather than only marking a tick. `change-review` and `plan-review`
-  share a corpus, so neither row is independent evidence for the other — a
-  single repository behind both, and a reader should take the pair as one
-  observation rather than two.
+  and `change-review`, `plan-review`, `plan` and `test-review` against a public
+  command-line application, none of them the private codebase the other two
+  rows came from. These are real runs and they produced real findings, but they
+  are not the same evidence as the other two rows, which is why the column above
+  says what was run rather than only marking a tick. Those four share a single
+  repository, so none of the four is independent evidence for the others — a
+  reader should take them as one observation, not four.
 - **A verified prompt can still have an unverified half.** `data-platforms` was
   run against a streaming system, so everything the prompt says about columnar
   storage, file formats and query planning has no evidence behind it and

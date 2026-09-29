@@ -332,5 +332,5 @@ None of this is institutionalisation, and none of it should be read as a
 process yet. A register, a worked example and a gate are three things somebody
 has to remember to do; a process is what happens when nobody has to. The
 useful claim is only that the practice has started, and that the register will
-say so honestly for as long as thirty-nine of the forty-two prompts have not
+say so honestly for as long as thirty-eight of the forty-five prompts have not
 been run.

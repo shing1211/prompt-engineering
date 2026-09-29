@@ -42,7 +42,7 @@ Multi-phase sub-agent execution and project planning — 2 prompt(s).
 | Prompt | Mode | Description | Verified |
 |---|---|---|---|
 | [`orchestrate.md`](orchestrate.md) — Orchestrator | build | Orchestrate multi-phase implementation using sub-agents with specialist roles (backend, frontend, data, devops, security, tester, docs, reviewer, release, architect, planner) | not verified |
-| [`plan.md`](plan.md) — Planning | plan | Turn a change request into an ordered plan whose units each end in a check that can fail, and dispatch per-area sub-agents so the session holds a plan rather than a transcript | not verified |
+| [`plan.md`](plan.md) — Planning | plan | Turn a change request into an ordered plan whose units each end in a check that can fail, and dispatch per-area sub-agents so the session holds a plan rather than a transcript | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
 
 ### Architecture and Engineering
 
@@ -63,7 +63,7 @@ Cross-cutting engineering practice — 15 prompt(s).
 | [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend | not verified |
 | [`plan-review.md`](plan-review.md) — Plan Review | review | Decide whether a plan is worth implementing, and whether doing what it says produces the thing that was asked for | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
 | [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python | not verified |
-| [`test-review.md`](test-review.md) — Test Review | review | Judge a suite by what it would catch — whether each test fails if the implementation were wrong, and whether a passing suite is evidence of anything | not verified |
+| [`test-review.md`](test-review.md) — Test Review | review | Judge a suite by what it would catch — whether each test fails if the implementation were wrong, and whether a passing suite is evidence of anything | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
 | [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates | not verified |
 
 ### Application Development
@@ -234,7 +234,7 @@ Prompts written against a specific language's tooling. Everything not listed her
 | **Broker SDKs** | 7 |
 | **Distinct tags** | 251 |
 | **Language-agnostic** | 21 |
-| **Verified** | 5 |
+| **Verified** | 7 |
 | **Mode: all** | 8 |
 | **Mode: build** | 32 |
 | **Mode: plan** | 1 |

@@ -225,6 +225,23 @@ CASES: list[tuple[str, str, object, str]] = [
         f"unverified prompt count says {STALE_UNVERIFIED}",
     ),
     (
+        # A worked example with quoted prose. It carried a figure that was
+        # already stale before the register reached its current size, and no
+        # gate read it, so the drift was invisible from the day it was
+        # written. Same class as the two documents above: a check that does
+        # not scan a document cannot notice that it is stale.
+        "check_counts: wrong tally in the worked example",
+        "check_counts.py",
+        lambda r: _replace(
+            r / "docs/worked-example.md",
+            rf"{check_counts.word(WANT['unverified'])} of the "
+            rf"{check_counts.word(TOTAL)} prompts have not",
+            f"{check_counts.word(STALE_UNVERIFIED)} of the "
+            f"{check_counts.word(TOTAL)} prompts have not",
+        ),
+        f"unverified prompt count says {STALE_UNVERIFIED}",
+    ),
+    (
         # The denominator of a scoped count used to need "prompts" or "rows"
         # straight after it, so "29 of the 45 —" matched no pattern at all
         # and a stale total there passed. The numerator moved with it, and is

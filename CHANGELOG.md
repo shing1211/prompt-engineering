@@ -13,6 +13,105 @@ trusting the values.
 
 Nothing yet.
 
+## [0.5.0] - 2026-09-29
+
+The library's four review lenses and its one planning prompt, all verified
+against real codebases, and the count gate widened to cover every document
+that states a number.
+
+### The four lenses
+
+Three new prompts and one rewritten:
+
+- **`change-review.md`** (new). Did the diff do what it said — the contract on
+  one side of a boundary, the thresholds quoted in the unit the code counts in,
+  the features that cancel each other and are described as two.
+- **`plan-review.md`** (new). Was the claim ever sound — the request behind the
+  plan, the units that end in a file path rather than a check, the fixes
+  specified as code and reviewed as prose.
+- **`test-review.md`** (new). Would the suite notice — the assertion that holds
+  whatever the code does, the evidence that the subject did not misbehave, the
+  condition that only fires when two things are both wrong.
+- **`plan.md`** (rewritten). The old text opened by branching on a
+  `pending phase` backlog, which a repository does not keep for you: the prompt
+  instructed the agent to go and find work so the plan would have something to
+  plan. It now takes the request and the code, and states that inferred scope
+  is inferred.
+
+The first three answer questions a codebase audit and a diff review do not
+reach: whether the tree is sound, whether the diff did what it claimed, whether
+the claim was ever sound, and whether the thing meant to catch the code would
+notice. All four can pass while a defect reaches production with a green build
+attached.
+
+### Mode counts
+
+| Mode | 0.4.0 | 0.5.0 |
+|---|---|---|
+| `build` | 32 | 32 |
+| `all` | 8 | 8 |
+| `plan` | 1 | 1 |
+| `review` | 1 | 4 |
+
+45 prompts: 29 cross-stack, 16 financial, 21 language-agnostic, 251 tags.
+
+### Verification state
+
+**Seven of the forty-five prompts have been verified. Thirty-eight have not
+been run, and every one of them is named individually in the register.** That
+is the number this release is judged on, not the four it added: a run against
+one codebase is evidence about that codebase, and four runs against two
+public repositories and one private system is a small sample of a
+forty-five-prompt library.
+
+The two runs in this release are the fourth and fifth against public
+repositories, and both used the same one — a public command-line application
+with a deep commit history. `change-review` and `plan-review` share it from
+0.4.0, and `plan` and `test-review` join them, so **four verified rows rest on
+two corpora.** They are not four independent observations, and the register
+says so where a reader will meet it.
+
+All four runs produced four anti-patterns each, none carrying a path, a file
+name, an identifier or a count. `plan`'s run is the case the rewrite was built
+for: a change request the repository's own plan documents do not contain, so
+the decomposition had to come from the code and the request. It surfaced that
+Layer 3's acceptance-command requirement has no answer for work that can only
+be shown wrong by running it somewhere the planning session cannot reach — the
+prompt's own rule, followed literally, produces a check nobody can fail.
+
+`jvm-backend` is unchanged and still skipped for want of a corpus.
+
+### The count gate
+
+`scripts/check_counts.py` now scans five documents rather than two, and its
+figures are derived from the generated index rather than written in the file —
+adding a prompt moves the expected value with it.
+
+- **`docs/verification.md` and `prompts/index.md`** were not scanned at all
+  until this pass, and both had drifted.
+- **`docs/worked-example.md`** is added here, and it had carried a stale tally
+  since it was written: the figure was wrong before this pass began, and
+  nothing could have noticed. That is the same class of gap the widening
+  exists to close — a document stating a number that no gate reads.
+- The gate now reports a **numerator it has no expected value for** as
+  unvouched rather than leaving it invisible, and reads a **denominator** even
+  where the noun is elided behind a dash. Scoped-pattern exclusions are pinned
+  by guards, and a check that has been weakened to always pass fails
+  `scripts/test_checks.py`.
+
+The worked example needed no new pattern and no suppression: both of its
+figures were caught by patterns the gate already had. The pattern that reports
+an unvouched figure names the cure rather than implying the document is wrong,
+because a figure this file has no expected value for is unchecked, not false.
+
+### Verification
+
+- 45 prompts, 45 register rows, 7 verified.
+- `bash scripts/validate.sh` → `All checks passed.`
+- `generate_index.py --check` exits 0; `test_checks.py` proves 20 negative
+  cases and 6 guards; `check_no_fingerprint.py` exits 0.
+- `npx markdownlint-cli@0.45.0` clean on every file touched.
+
 ## [0.4.0] - 2026-09-29
 
 Three of the forty-two prompts in this library have been run against a real
@@ -383,7 +482,8 @@ First public release. 38 prompts, a browsable site, and CI.
   issues, and a **Prompt idea** issue form replaces the scoping flow that
   CONTRIBUTING had promised Discussions would provide
 
-  [Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.4.0...HEAD
+  [Unreleased]: https://github.com/shing1211/prompt-engineering/compare/v0.5.0...HEAD
+  [0.5.0]: https://github.com/shing1211/prompt-engineering/compare/v0.4.0...v0.5.0
   [0.4.0]: https://github.com/shing1211/prompt-engineering/compare/v0.3.1...v0.4.0
   [0.3.1]: https://github.com/shing1211/prompt-engineering/compare/v0.3.0...v0.3.1
   [0.3.0]: https://github.com/shing1211/prompt-engineering/compare/v0.2.0...v0.3.0

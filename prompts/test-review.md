@@ -184,6 +184,32 @@ Load before forming an opinion:
   behaviours.** Three hundred cases and three behaviours pinned are not the
   same artefact as three hundred behaviours pinned, and only one of them
   survives a rename.
+- ❌ **Approve a test whose evidence is that the subject did not misbehave.**
+  "It exited non-zero", "it did not hang", "the call returned no error": the
+  assertion is real and the defect it was written for is real, and the
+  observable is the same for both. A process that refuses is indistinguishable
+  from one that panics before reaching the check, one that is killed, and one
+  that never started. An assertion on how a run *ended* is evidence that it
+  ended.
+- ❌ **Approve a condition that only fires when two things are both wrong.** A
+  check that joins a specific claim to a fallback — the content is absent *and*
+  the output is short — reports nothing until both halves fail, and each half
+  is individually too weak to carry the test. The author usually wrote it
+  because the specific claim kept failing and the fallback was a way to stop
+  looking.
+- ❌ **Approve a test that asserts the absence of an error where the behaviour
+  is an effect somewhere else.** A function that hands its work to another
+  process, a file, a socket or a database and returns nil has asserted nothing
+  about the work; where it then reads a value back, the value it reads is
+  whatever was already there, so the test passes on the old state and names it
+  as the new one. Deleting the work entirely leaves the suite green.
+- ❌ **Approve a test that would fail if the fix were applied.** A test whose
+  expected value was read off the behaviour rather than from what the behaviour
+  should be pins the defect as the specification, and the suite turns red the
+  moment someone corrects the code. This is the mirror of the existing
+  anti-pattern, not a variant of it: there the expected value was copied out of
+  the implementation, here it is copied out of the *bug*, and the test is the
+  last thing standing in the way of the fix.
 
 ## Layer 5: Guardrails
 

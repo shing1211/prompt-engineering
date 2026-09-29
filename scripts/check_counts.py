@@ -94,6 +94,7 @@ DOCUMENTS = [
     Path("docs/strategy.md"),
     Path("prompts/index.md"),
     Path("docs/verification.md"),
+    Path("docs/worked-example.md"),
 ]
 
 # Figures that are deliberately not checked, on the record rather than by

@@ -160,6 +160,31 @@ Load before decomposing anything:
 - ❌ **Implement while planning.** A pass that starts editing has stopped being
   checkable: the plan now describes work already done, and the result gets
   reviewed in a form nobody approved.
+- ❌ **Give a unit a check that cannot fail where the work is wrong.** Some work
+  can only be shown wrong by running it somewhere the planning session cannot
+  reach, and the honest answer is to say so in the plan rather than to hand over
+  a command that passes. A cross-compiled binary nobody has executed, a job
+  that only runs on merge, a platform this repository has never tested on: a
+  check standing in for one of those reports a green that means only that the
+  check ran, and it is the green a reader approves against.
+- ❌ **Cut the units along the file tree rather than along the change.** A unit
+  per package, because that is where the symptom appears, is not a unit per
+  package, because that is what has to change. Where one fix lands in several
+  places, a unit that makes it and units that reapply it are several units
+  writing the same helper, and the boundary between them is a fiction the
+  dispatch has to honour.
+- ❌ **Leave the unit that would have caught this out of the plan.** A change
+  that makes a class of defect detectable is usually the smallest unit in the
+  plan and the one with no check of its own, so it loses every comparison
+  against the units that are easier to write down. Delivered without it, the
+  rest of the work is invisible to whoever inherits it, and nobody downstream
+  finds out it was never covered.
+- ❌ **Cite the repository's own account of a defect as evidence for the
+  defect.** A comment, a changelog row, a skip marker, a test name: each states
+  what the code does, each is in a file, and each is the only account anyone
+  wrote. A plan that takes one as established fact is quoting the assertion
+  back, and the commit that made the change is usually the commit that wrote
+  the description of it.
 
 ## Layer 5: Guardrails
 
