@@ -8,6 +8,13 @@ infrastructure**.
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
+> **The site is frozen.** This repository is private, and GitHub Pages is
+> only available for private repositories on a paid plan. The deployed site
+> remains online and continues serving the last published build; the build
+> workflow still runs on every push and will fail it if the site is broken,
+> but it no longer deploys. Everything below is readable directly in the
+> repository.
+
 18 of the 42 prompts are language-agnostic: they assume no language-specific
 tooling and apply as written, whichever stack you are on. The rest are written
 against a specific language, and the [language table](prompts/index.md#browse-by-language)
