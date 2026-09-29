@@ -149,9 +149,26 @@ from check_vendor_claims import (
     KNOWN_VENDOR_HOSTS,
     VERIFY_PATTERNS,
 )
+from generate_agents import (
+    CLAUDE_AGENTS,
+    CODEX_SKILLS,
+    OPENCODE_AGENTS,
+)
+from generate_agents import PREFIX as AGENT_PREFIX
 
 PROMPTS = Path("prompts")
-SCAN_DIRS = (PROMPTS, Path("docs"), Path("scripts"))
+# The three committed harness trees, which are verbatim copies of the prompt
+# bodies. They carry the same text as prompts/ and so the same exposure, which
+# is why they are scanned: a check that reads the prompts but not the agents
+# would be satisfied by a corpus name appearing only in the copy a reader
+# installs. Named here rather than derived from generate_agents so that a
+# fourth harness is a deliberate addition to the list.
+AGENT_DIRS = (
+    Path(".opencode/agents"),
+    Path(".claude/agents"),
+    Path(".agents/skills"),
+)
+SCAN_DIRS = (PROMPTS, Path("docs"), Path("scripts")) + AGENT_DIRS
 SUFFIXES = (".md", ".py")
 
 # Venue terms the library already publishes, derived from the vendor hosts
@@ -285,7 +302,24 @@ REGISTER_ROW = re.compile(r"^\|\s*`[a-z0-9][a-z0-9-]*`\s*\|")
 # venue name in one of them is that script's business, not this one's. Keyed
 # by relative path for the same reason as above: a name-keyed list here is
 # a list a new file with the right name could walk into.
-CLAIM_PROMPT_PATHS = {path.as_posix() for path in CLAIM_PROMPTS}
+def agent_forms(prompt: Path) -> set[Path]:
+    """The three generated files a prompt produces, in their own directories.
+
+    The generated agent form of a claim prompt is the same text under a
+    different name, and it needs the same allowance: widening AGENT_DIRS
+    above without this reports thirty-six findings per tree in files that say
+    nothing the prompt does not already say. Derived from generate_agents'
+    own layout and prefix rather than written out here, so a fourth harness
+    or a renamed prefix moves this with it instead of quietly dropping out.
+    """
+    return {
+        directory / f"{AGENT_PREFIX}{prompt.stem}.md" for directory in AGENT_DIRS[:2]
+    } | {CODEX_SKILLS / f"{AGENT_PREFIX}{prompt.stem}" / "SKILL.md"}
+
+
+CLAIM_PROMPT_PATHS = {path.as_posix() for path in CLAIM_PROMPTS} | {
+    agent.as_posix() for path in CLAIM_PROMPTS for agent in agent_forms(path)
+}
 
 
 def provenance_terms(text: str) -> set[str]:
