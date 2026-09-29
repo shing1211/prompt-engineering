@@ -68,8 +68,8 @@ One row per prompt, in alphabetical order by file name.
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
 | `plan` | no | Not run. The prompt was rebuilt on the house structure in this pass: no run covers this one, and nothing carries over from the text it replaced. | — |
-| `plan-review` | yes | Run against the same corpus. Four anti-patterns added. | 2026-09-29 |
-| `platform-engineering` | yes | Run against two existing Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
+| `plan-review` | yes | Run against a public command-line application, the same one `change-review` was run against. Four anti-patterns added. | 2026-09-29 |
+| `platform-engineering` | yes | Run against two existing public Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
 | `quant-backtesting` | no | Not run. | — |
 | `realtime-analytics` | no | Not run. | — |
