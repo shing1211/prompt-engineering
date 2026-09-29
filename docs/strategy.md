@@ -105,23 +105,43 @@ Remaining work in this lane:
       r/algotrading and quant finance for the trading prompts, plus the
       engineering and AI-tooling venues for the rest.
 
-### B. Package for the harness — highest reach, largest effort
+### B. Package for the harness — done
 
 Right now a prompt is a Markdown file you copy. The repos above beat that
 by being installable.
 
-- [ ] Emit `.opencode/agent/*.md` so `git clone` into `~/.config/opencode/`
-      makes all 45 available as named subagents
-- [ ] Emit the Claude Code and Codex equivalents from the same source, so
-      one prompt set serves three harnesses
-- [ ] A `Makefile` or `install.sh` that regenerates and installs
-- [ ] Declare the source of truth clearly. The generator writes into a
-      build directory that is gitignored; `prompts/` stays canonical
+- [x] Emit `.opencode/agents/*.md` so the agents are available as named
+      subagents. The path is plural; `agent/` is what the strategy first
+      recorded, and OpenCode reads `agents/`
+- [x] Emit the Claude Code and Codex equivalents from the same source, so
+      one prompt set serves three harnesses. Codex's target is skills, not
+      custom prompts — `~/.codex/prompts/` is deprecated and local-only, and
+      the documentation says in so many words that a prompt living there
+      "is not shared through your repository"
+- [x] A `make`-free install: `generate_agents.py` writes the trees, and the
+      README documents copying or symlinking one directory per harness. No
+      installer script, because a clone plus one copy needs no runtime
+- [x] Declare the source of truth clearly. `prompts/*.md` is canonical and
+      hand-edited; the three harness trees are generated and committed, and
+      `generate_agents.py --check` in CI is what keeps them equal
 
 This is the difference between a document and a tool, and it is what the
 28-to-62 star repos are already attempting. It is also the single highest-leverage
 item here: it is the one change that makes the breadth claim true for a reader,
 because installation is how you discover what a library contains.
+
+**The committed output is a deliberate trade.** 135 generated files means
+roughly 2 MB of duplicated prompt text, kept honest by a gate that fails on
+four conditions rather than one — stale, missing, unexpected, and a prompt
+with no output at all. The alternative, a build directory and an install
+script, was rejected: it would put a runtime between a reader and the
+library, which is the opposite of the point.
+
+**The uneven enforcement is recorded rather than smoothed over.** `mode` is
+now a permission policy, and it is enforced on OpenCode, partly enforced on
+Claude Code (a tool allow-list cannot tell a read-only `bash` from one that
+writes), and prose-only on Codex, whose skills have no permission field. The
+README says exactly this rather than implying parity.
 
 **Order matters.** A. first, because it costs nothing and B is wasted if the
 positioning is unclear. B second, because it multiplies whatever A already
@@ -138,7 +158,7 @@ actually land on.
 
 | Target | Action | Status |
 |---|---|---|
-| `awesome-opencode/awesome-opencode` | The directory. Has a `contributing.md` and a machine-readable `data/` directory, so there is a defined entry format. ~10.4k stars, actively updated. | Not submitted. Needs the opencode-native form from track B first. |
+| `awesome-opencode/awesome-opencode` | The directory. Has a `contributing.md` and a machine-readable `data/` directory, so there is a defined entry format. ~10.4k stars, actively updated. | Not submitted. Track B is done, so the opencode-native form the entry format asks for now exists. |
 | `hesreallyhim/awesome-claude-code` | ~23k stars, curated, prunes dead entries. Has a CSV export. | Not submitted. |
 | `ComposioHQ/awesome-claude-skills` | ~33k stars, "contribute a new resource, fork then PR". | Not submitted. |
 | `f/prompts.chat` | The largest prompt library. Contribution model is stricter. | Worth an attempt once the library has a track record. |

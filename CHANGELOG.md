@@ -11,7 +11,35 @@ trusting the values.
 
 ## [Unreleased]
 
-Nothing yet.
+### Installable as agents
+
+Every prompt is now published as a named agent for OpenCode, Claude Code, and
+Codex, generated from `prompts/` and committed to the repository. Clone, copy
+one directory, and the whole set is invokable.
+
+- **`scripts/generate_agents.py`** (new). Renders the 45 prompts into
+  `.opencode/agents/`, `.claude/agents/`, and `.agents/skills/`. The bodies
+  are copied verbatim, so a generated agent and the prompt it came from can
+  never disagree, and copying one directory is enough to get a working set.
+- **The `mode` field is now enforced, not just documented.** `plan` and
+  `review` prompts generate with a write restriction: `permission: edit: deny`
+  on OpenCode, and a `tools` allow-list without Write or Edit on Claude Code.
+  Codex skills have no permission field, so the prompt's own guardrails remain
+  the only control there. The README states which is which.
+- **Agent names are namespaced** as `prompt-<file>`. Without the prefix,
+  `plan.md` would generate an agent named `plan`, replacing a built-in that
+  both OpenCode and Claude Code ship.
+- **`generate_agents.py --check`** in CI, failing on four conditions: a stale
+  file, a missing file, an unexpected file, and a prompt with no output. The
+  last two are what a plain diff would miss, and they are the reason a deleted
+  prompt cannot leave an agent behind.
+- **The corpus-fingerprint scan covers the generated trees.** They hold
+  verbatim copies of the prompt bodies, so they carry the same exposure; the
+  scan went from 74 files to 206.
+
+Two things this changes in the documented install paths, both of which were
+wrong before: the OpenCode directory is `agents/`, plural, and Codex's target
+is skills rather than `AGENTS.md` or the now-deprecated `~/.codex/prompts/`.
 
 ## [0.5.0] - 2026-09-29
 

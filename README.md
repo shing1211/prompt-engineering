@@ -91,17 +91,58 @@ system prompt sets the agent's identity and rules for the whole session, so
 pick the one that matches the task and start a session with it, rather than
 pasting it as a one-off question.
 
+### Install as agents
+
+Every prompt is also published as a **named agent** for the three harnesses
+that support them. Clone once, copy the directory your harness reads, and all
+of them are available to invoke:
+
 ```bash
 git clone https://github.com/shing1211/prompt-engineering.git
+cd prompt-engineering
 ```
 
-Then, depending on your harness:
+| Harness | Copy this into your project | Invoke one |
+|---|---|---|
+| OpenCode | `.opencode/agents/` | `@prompt-code-review` |
+| Claude Code | `.claude/agents/` | `prompt-code-review` |
+| Codex | `.agents/skills/` | `$prompt-code-review` |
+
+Use `cp -r` to copy the files, or `ln -s` to symlink the directory so a
+`git pull` updates your agents in place. Copying one directory is enough —
+the agents carry their full text and do not read from `prompts/` at runtime.
+
+Agent names are the prompt file name with a `prompt-` prefix:
+`prompts/broker-futu.md` is the agent `prompt-broker-futu` in all three
+harnesses. The prefix is a namespace, not decoration — without it
+`plan.md` would produce an agent called `plan`, and both OpenCode and Claude
+Code ship a built-in by that name, which the generated file would replace.
+
+**What the `mode` field does at install time.** `plan` and `review` prompts
+are generated with a write restriction rather than merely documented as
+non-mutating, and the strength of that restriction is not the same everywhere:
+
+| Harness | How the restriction is expressed |
+|---|---|
+| OpenCode | `permission: edit: deny` while `bash` stays available — enforced |
+| Claude Code | a `tools` allow-list without Write or Edit — enforced for file edits, but a shell command can still write, as with any Claude Code agent |
+| Codex | skills have no permission field, so the prompt's own guardrails are the only control |
+
+If you are on OpenCode 2.x rather than 1.x, the generated `permission:` block
+uses the 1.x syntax and will be ignored; the agents still load, they just do
+not carry the restriction until the generator is updated for 2.x.
+
+### Reading a prompt directly
+
+You do not have to install anything to use this library. `prompts/*.md` is the
+source these agents are generated from, and it is the canonical version: a
+generated agent is a verbatim copy, so the two never disagree.
 
 | Harness | Location |
 |---|---|
-| OpenCode | `~/.config/opencode/agent/` (or `AGENTS.md` in the target repo) |
+| OpenCode | `~/.config/opencode/agents/` (or `AGENTS.md` in the target repo) |
 | Claude Code | `.claude/agents/` in the target repo |
-| Codex | `AGENTS.md` in the target repo |
+| Codex | `AGENTS.md` in the target repo, or `.agents/skills/` for a named skill |
 
 ### Choosing one
 
