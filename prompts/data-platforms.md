@@ -96,6 +96,37 @@ Load before acting:
 - ❌ **Let a "temporary" table become permanent.** Temporary tables have no
   owner, no retention, and no cost attribution, so nobody removes them.
 - ❌ **Publish a number nobody can trace to its source events.**
+- ❌ **Commit the input position after a step that failed, or after a hand-off
+  whose own write is unchecked.** The position is the only durable claim that a
+  record was handled, so every step between reading and committing has to be one
+  that can fail loudly. A handler error that is discarded, and a quarantine
+  write that is merely logged, both end with the record gone from the source and
+  gone from the quarantine while the position moves on: a stated at-least-once
+  guarantee that is at-most-once for exactly the failures it was written to
+  protect. The commit is the last thing that happens, so make it conditional.
+- ❌ **Dedupe on a key the write assigns, or one the producer may omit.** An
+  upsert is idempotent only where the key is a property of the fact rather than
+  of the attempt. A surrogate key generated at insert time takes a new value on
+  every replay, so the conflict never fires and the clause reads as protection
+  while the row duplicates. A nullable key with a clause written to exclude the
+  null case is worse, because the records arriving without it are exactly the
+  ones that double-count, and the exclusion reads as care rather than as the
+  hole it is. Both survive review. Replay a known record and count the rows.
+- ❌ **Let the request path read the ingestion tables through the ingestion
+  types.** A boundary stated in terms of writers constrains only writers, so
+  nothing stops a reader binding to the write schema: no projection, no view, no
+  separate serving model. A column added for ingestion is then an API change, a
+  bug in a projection is a data bug, and no reader is prevented from depending
+  on a shape the pipeline is free to rewrite. A read model costs work to build
+  and nothing to regret.
+- ❌ **Treat a decision record as a description of the system.** A record that
+  documents a refusal is an answer, and a tool whose model assumes the thing
+  that was refused reads the absence as debt — this prompt assumes a warehouse,
+  and a system that weighed one and declined it is not missing it. The part of
+  such a record that describes something nobody has built is worse than nothing:
+  it is an intention, and a plan built on it is built on nothing. Reopen a
+  refusal when the condition the record names is met, not because the stack
+  looks thinner than the model expects.
 
 ## Layer 5: Guardrails
 
