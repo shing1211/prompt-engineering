@@ -88,6 +88,20 @@ Remaining work in this lane:
 - [ ] Broaden the non-trading set. The breadth claim is currently carried by
       the other 26 of 42; the honest way to firm it up is to add more areas,
       not to remove the financial ones.
+- [ ] Decide whether this repository's own documents belong on the site, and
+      if so, what they cost. `docs/verification.md` is a repository document
+      and a reader looking for it in the sidebar will not find it, which is
+      the gap the verification pass left open. The site's `docs_dir` is
+      `prompts/`, so putting a repo document on it is not a nav entry: the
+      file has to exist under `prompts/`, and every script that treats
+      `prompts/` as the prompt set then has to be told the difference —
+      `check_nav.py`, `generate_index.py`'s on-disk set, and the frontmatter
+      loop in `validate.sh`. A copy needs one source of truth removed from
+      it; a       symlink builds but degrades to a text file on a Windows checkout
+      without symlink support, which renders as a broken page. Until this is
+      decided the default is off-site, and every repository document inherits
+      it, so decide it before the second such document lands rather than
+      after
 - [ ] A short post per topic cluster, written where developers already read:
       r/algotrading and quant finance for the trading prompts, plus the
       engineering and AI-tooling venues for the rest.

@@ -4,3 +4,10 @@
 # break the site with no change to our own files.
 mkdocs-material==9.7.7
 mkdocs==1.6.1
+
+# A direct dependency, not a transitive one. check_nav.py and
+# generate_index.py both import yaml to read mkdocs.yml, and both run in CI
+# against this file. Relying on mkdocs to pull it in works until mkdocs drops
+# it or a transitive pin moves, and the failure then reads as a missing
+# module in a script that has nothing to do with YAML.
+PyYAML==6.0.3

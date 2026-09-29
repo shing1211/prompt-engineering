@@ -23,17 +23,22 @@ the repository root:
       carries that script's provenance rule -- verification wording plus a
       citation to that vendor's own documentation -- or when it is an
       inventory of this library's own prompt names, which is what
-      LIBRARY_VENUE_FILES below is: the front door, the changelog, the
-      generated index, and the verification register, each of which writes
-      out a file name this repository already publishes. A venue name
-      inside one of those file names is part of the library's catalogue,
-      not a claim about anybody's codebase. All three allowances are
-      load-bearing today, so this check widens them and never narrows
-      them. Prose only, because prose is where a claim lives; a name in a
-      fenced example, a diagram or a frontmatter description is the
-      library describing its own published coverage. Markdown only, for
-      the same reason: in a Python file a venue name is a slug in this
-      library's own prompt inventory, not a claim about a codebase.
+      LIBRARY_VENUE_FILES below is: the front door, the changelog, and
+      the generated index, each of which writes out a file name this
+      repository already publishes. A venue name inside one of those file
+      names is part of the library's catalogue, not a claim about
+      anybody's codebase. The verification register is the fourth kind of
+      inventory and gets the same allowance, but only in its table rows:
+      a register that could not name the broker prompts would omit five
+      rows, and a register that could name a venue in prose would be a
+      document making a claim about a codebase, which is what this rule
+      exists to catch. All four allowances are load-bearing today, so
+      this check widens them and never narrows them. Prose only, because
+      prose is where a claim lives; a name in a fenced example, a diagram
+      or a frontmatter description is the library describing its own
+      published coverage. Markdown only, for the same reason: in a Python
+      file a venue name is a slug in this library's own prompt inventory,
+      not a claim about a codebase.
 
 
   Every name, pattern and prefix this check matches a venue with comes
@@ -237,35 +242,53 @@ HEX_LETTER = re.compile(r"[a-f]", re.I)
 DOCUMENTED_IDENTIFIERS = {"C5AD17C747E3415A3642D57D77C6C491D6AC1D69"}
 
 # Files allowed to name venues, for a reason that is about this library
-# and not about the venue. Keyed by file name, which is unique for all
-# four.
+# and not about the venue. Keyed by relative path, matching RULE_DOCS and
+# may_write_home_path, so a file added to a directory this does not list
+# cannot inherit an allowance by sharing a name with one that has it.
 #
-# The last two are a different kind of allowance from the first. The front
-# door, the changelog and the index name a broker because they list the
-# library's own prompts, and the verification register names all forty-two
-# of them including the five whose file names contain a venue. An inventory
-# of this repository's own file names is not a claim about a codebase, and a
-# register that could not list the broker prompts would be a register that
-# quietly omitted five rows.
+# The first three are a file-wide allowance. The front door, the changelog
+# and the index name a broker because they list the library's own prompts.
+# The fourth is not: see REGISTER_ALLOWANCE below.
 LIBRARY_VENUE_FILES = {
     "README.md": "the front door lists this library's own Broker SDK prompts",
     "CHANGELOG.md": (
         "historical release notes, the same exclusion check_counts.py makes "
         "and states"
     ),
-    "index.md": (
+    "prompts/index.md": (
         "generated from frontmatter by generate_index.py, so the prompt is "
         "the file to check and this one only repeats it"
     ),
-    "verification.md": (
-        "the verification register, which lists every prompt by file name and "
-        "cannot do that without naming the five broker prompts"
+}
+
+# The verification register is allowed a venue name in its rows and nowhere
+# else. It lists every prompt by file name, so the broker prompts are in it
+# whether or not they have been run, and a register that could not list them
+# would be a register that quietly omitted five rows. That is an inventory,
+# and an inventory stops being one the moment the same document makes a claim
+# in prose -- so the allowance is keyed to the row lines rather than to the
+# file, and a venue claim written next to the table is reported like any
+# other. Scoped rather than widened because the register is the file most
+# likely to be hand-edited: a whole-file allowance there is an allowance
+# nobody is watching.
+REGISTER_ALLOWANCE = {
+    "docs/verification.md": (
+        "the verification register, which lists every prompt by file name "
+        "and cannot do that without naming the broker prompts -- in its rows "
+        "only, not in its prose"
     ),
 }
 
+# A register row: a table line whose first cell is a backticked prompt slug.
+# The generator reads the same shape, so a row that stops matching here is a
+# row the generator also cannot read.
+REGISTER_ROW = re.compile(r"^\|\s*`[a-z0-9][a-z0-9-]*`\s*\|")
+
 # The broker and SDK prompts check_vendor_claims.py already governs. A
-# venue name in one of them is that script's business, not this one's.
-CLAIM_PROMPT_NAMES = {path.name for path in CLAIM_PROMPTS}
+# venue name in one of them is that script's business, not this one's. Keyed
+# by relative path for the same reason as above: a name-keyed list here is
+# a list a new file with the right name could walk into.
+CLAIM_PROMPT_PATHS = {path.as_posix() for path in CLAIM_PROMPTS}
 
 
 def provenance_terms(text: str) -> set[str]:
@@ -313,6 +336,20 @@ def prose_of(text: str) -> list[tuple[int, str]]:
         if not fenced:
             kept.append((number, line))
     return kept
+
+
+def register_rows(text: str) -> set[int]:
+    """The line numbers of the register's own rows.
+
+    An inventory is the rows and nothing else, so this is what separates a
+    prompt file name a register is obliged to write out from a venue claim a
+    register might choose to make.
+    """
+    return {
+        number
+        for number, line in enumerate(text.split("\n"), 1)
+        if REGISTER_ROW.match(line)
+    }
 
 
 def may_write_home_path(path: Path) -> bool:
@@ -369,16 +406,22 @@ def check(path: Path) -> list[str]:
     # does not already publish, which is most of what a real fingerprint
     # would use; see the docstring.
     if path.suffix == ".md":
+        key = path.as_posix()
         may_name = provenance_terms(text)
-        if path.name in LIBRARY_VENUE_FILES or path.name in CLAIM_PROMPT_NAMES:
+        if key in LIBRARY_VENUE_FILES or key in CLAIM_PROMPT_PATHS:
             may_name = set(VENDOR_TERMS)
+        # The register's rows are an inventory; its prose is not. Only the
+        # rows get the file-wide vocabulary, and every other line in the file
+        # is judged by the same rule as any other document.
+        rows = register_rows(text) if key in REGISTER_ALLOWANCE else set()
         for number, line in prose_of(text):
+            allowed = VENDOR_TERMS if number in rows else may_name
             # URLs are removed first, so a cited documentation link does
             # not satisfy the requirement to name the vendor in the text.
             # That is a defect check_vendor_claims.py already guards, kept
             # here so the two checks cannot disagree.
             for match in VENUE.finditer(re.sub(r"https?://\S+", " ", line)):
-                if match.group(0).lower() in may_name:
+                if match.group(0).lower() in allowed:
                     continue
                 problems.append(
                     f"{path}:{number}: venue name {match.group(0)!r} in "

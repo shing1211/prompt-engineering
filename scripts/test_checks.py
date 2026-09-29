@@ -106,6 +106,16 @@ CASES: list[tuple[str, str, object, str]] = [
         "in prose, with no vendor documentation cited",
     ),
     (
+        "check_no_fingerprint: venue name in the register's prose",
+        "check_no_fingerprint.py",
+        lambda r: _append(
+            r / "docs/verification.md",
+            "\nThe Futu adapter disagreed with the Webull one, and that was "
+            "the finding.",
+        ),
+        "in prose, with no vendor documentation cited",
+    ),
+    (
         "check_no_fingerprint: absolute home-directory path in a prompt",
         "check_no_fingerprint.py",
         lambda r: _seed_home_path(r / "prompts/api-design.md"),

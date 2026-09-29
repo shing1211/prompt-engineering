@@ -21,9 +21,12 @@ found something. It does not claim the prompt is better than one that has not
 been run, because a run against one codebase is evidence about that codebase
 and about nothing else.
 
-A prompt can be verified and still have no evidence behind most of what it
-covers. Two of the three runs below did, and both say so in their own row. The
-caveats are the part of this file worth reading.
+A prompt can be verified and still have no evidence behind much of what it
+covers. One of the three runs below is in that state — half of that prompt was
+run against a system the other half does not describe. The third carries a
+different caveat again: a different kind of corpus rather than an uncovered
+half. Each says so in its own row, and the caveats are the part of this file
+worth reading.
 
 ## The register
 

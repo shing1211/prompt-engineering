@@ -205,8 +205,8 @@ per-component, so a reader following it carefully fixes the loops and leaves
 the cause in place, and the next implementation puts it back.
 
 That is the finding the run actually produced: not four new anti-patterns, but
-one design decision behind the four the prompt already had. It is the kind of
-thing only a run can surface, and the prompt now says it, but it is worth
+one design decision behind the three the prompt already named. It is the kind
+of thing only a run can surface, and the prompt now says it, but it is worth
 naming that the prompt was not wrong. It was incomplete at the layer above the
 one it was written at.
 
@@ -230,12 +230,12 @@ lifecycle per integration is affordable only while there are few enough to keep
 in your head.* Cut in review, and it is the most instructive failure here.
 
 The clause was a rationalisation, not a property. Unmodelled credential expiry
-is exactly as true of three integrations as of eight, because each one still
-invents its own refresh. What the clause did was tell a reader with a small
-fleet — which is most readers of this prompt — that the one entry that applies
-to them unconditionally does not describe them. A conditional warning is
-valuable; a conditional warning that is false is worse than none, because it
-sounds like a considered limit and gets believed.
+is as true of a small fleet as of a large one, because every integration
+invents its own refresh whatever the size of the fleet. What the clause did
+was tell a reader with a small fleet — which is most readers of this prompt —
+that the one entry that applies to them unconditionally does not describe
+them. A conditional warning is valuable; a conditional warning that is false is
+worse than none, because it sounds like a considered limit and gets believed.
 
 The other two fan-out clauses stayed, because for those two it is genuinely
 true: restating a contract by hand costs nothing when there is one place to
@@ -261,12 +261,14 @@ they are caught by a reader, not by a tool.
 ### A safety claim that was checked by assumption, and was wrong
 
 The run reported that it had checked the published file for corpus fingerprints
-and found none. That is true. What it also claimed — that none of the corpus's
-venue names were in the checker's vocabulary at all, so a leak of any of them
-would have passed silently — was false. Reading the checker's source rather than its imports
-showed the overlap was partial: some of the corpus's venue names were in the
-checker's vocabulary and some were not, and the library publishing a prompt
-about a venue does not put that venue in the vocabulary.
+and found none. That is true. What it also claimed — that the check could not
+have missed a name the library does not already publish, so its silence was
+proof that nothing had leaked — was false. Reading the checker's source rather
+than its imports showed the coverage is partial by construction: the vocabulary
+is the set of venue names this library already publishes, because naming a
+venue in order to forbid it would publish the name, so anything outside that
+set passes silently. The library publishing a prompt about a venue does not
+put that venue in the vocabulary.
 
 Nothing leaked. The claim was still wrong, and it was corrected in place rather
 than appended to, because a wrong safety claim left in a report is a claim
