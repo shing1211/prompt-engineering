@@ -1,8 +1,8 @@
 # Worked example: `backend-services`
 
-One prompt, one run, end to end. This is the process behind three of the rows
-in the [verification register](verification.md), written out in full so a
-reader can judge the process rather than take the register's word for it.
+One prompt, one run, end to end. It is the process behind the runs recorded in
+the [verification register](verification.md), written out in full so a reader
+can judge the process rather than take the register's word for it.
 
 The prompt is [`prompts/backend-services.md`](../prompts/backend-services.md),
 published in full, so it is not re-excerpted here. What follows is the rest of
@@ -16,10 +16,13 @@ not described anywhere in this repository, and nothing published here should be
 treated as a reference to it.
 
 Every example in this document is therefore generalised: identifiers, file and
-directory names, the language and module of the code, the subject matter of the
-individual implementations, the commit under analysis, and every count are all
-removed. What is left is the *shape* of the code, which is the part that
-generalises and the only part a reader in a different codebase can act on.
+directory names, the subject matter of the individual implementations, the
+commit under analysis, and every count are all removed. The code is also
+described in the abstract rather than in one language's vocabulary — a
+contract, an implementation, a package — so that nothing here reads as a
+quotation of the tree it came from. What is left is the *shape* of the code,
+which is the part that generalises and the only part a reader in a different
+codebase can act on.
 
 That is a deliberate constraint, not caution for its own sake. The failure mode
 outlives the codebase; the evidence does not help anybody outside it, and a
@@ -250,14 +253,11 @@ The taxonomy entry was drafted with two failure modes: implementations that
 never joined the shared taxonomy, and implementations that each wrote their own
 classifier so one physical failure gets several classifications. The second
 restates the first entry's mechanism — written per implementation rather than
-shared — inside the one entry whose distinct mechanism is membership. Cut.
+shared — inside the one entry whose distinct mechanism is membership. Cut,
+which is the "second lost a sentence" diff above seen close up.
 
-The same entry also listed the same three concepts — cancellation, error
-classification, timeout budget — that the first entry opens with, and a third
-entry repeated the list again. Three repetitions of one list weakens all three,
-so the list was stated once. Neither of these is a wrong answer; both are the
-ordinary failure of a run that has more to say than slots to say it in, and
-they are caught by a reader, not by a tool.
+That is not a wrong answer; it is the ordinary failure of a run that has more to
+say than slots to say it in, and it is caught by a reader, not by a tool.
 
 ### A safety claim that was checked by assumption, and was wrong
 

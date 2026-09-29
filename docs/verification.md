@@ -94,8 +94,8 @@ name that survives a generalisation is a pointer back to a codebase rather than
 a finding — and a pointer is worth keeping private. The register can honestly
 say a prompt was run and still refuse to say where.
 
-What the script catches, and the two things it cannot, is stated once for
-contributors in
+What `scripts/check_no_fingerprint.py` catches, and the three things it
+cannot, is stated once for contributors in
 [CONTRIBUTING.md](../CONTRIBUTING.md#findings-travel-generalised) rather
 than restated here. What no script could make, and what this pass did
 instead, was reading each added line.
