@@ -55,6 +55,17 @@ STALE_UNVERIFIED = WANT["unverified"] - 1
 # matches it. Derived rather than written down, because a literal would one
 # day collide with a category count and this case would go quiet for the
 # wrong reason.
+#
+# That collision is not hypothetical: it is the live condition of the one
+# scoped numerator the repository actually has. docs/strategy.md writes
+# "29 of the 45 --" and 29 is WANT['nonfinancial'], so check_counts never
+# reports it -- not because a pattern says what 29 counts (no pattern
+# claims it), but because unvouched() accepts a figure the index happens to
+# carry. That is a pass by value, not a vouch, and it would evaporate the
+# day the non-financial count moved off 29 and the sentence stayed put. The
+# derivation above is what keeps this case honest in the meantime: it cannot
+# settle on 29, so it still fails when the value that is genuinely
+# unvouched is seeded.
 UNVOUCHED = next(n for n in range(3, 90) if n not in set(WANT.values()))
 
 # The corpus project name, configured outside the repository exactly as

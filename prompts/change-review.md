@@ -167,7 +167,9 @@ not something to have read:
    snapshot, fixture, and generated-file updating off, and say how you had
    the previous behaviour to hand without editing the tree under review. A
    test that passes against both is pinning nothing, whatever it asserts.
-   Running is allowed; writing is not.
+   Running is allowed; writing is not — the same rule every `plan` and
+   `review` prompt is held to, restated here because a prompt is loaded on
+   its own, with none of the prose around it.
 3. Check that the description alone would let someone revert the change. If it
    does not say what changed, a revert is a guess, and that is a finding about
    the description as much as about the code.

@@ -15,9 +15,10 @@ scanned documents that disagrees. It checks:
 
   - the total prompt count, including the spelled-out and "N of the M"
     forms, and including the count as a denominator ("16 of the 45 prompts")
-  - the denominator of every scoped count whose denominator is a library
-    count, whatever follows it, and reports a numerator no pattern claims as
-    unvouched rather than leaving it invisible
+  - the denominator of every scoped count that names the library, whether by
+    the noun that counts prompts or by a dash where the noun is elided, and a
+    numerator no pattern claims reported as unvouched rather than left
+    invisible
   - the language-agnostic count
   - the combined financial-domain count, which sums two categories and so
     has no single generated row to compare against
@@ -306,13 +307,26 @@ def expected(
 # file has no expected value for -- so it is reported as unvouched rather
 # than left invisible. See unvouched().
 #
-# The denominator has to look like a library count: either the noun that
-# names one, or a bare figure followed by punctuation. That is what separates
-# "one of the three runs below", whose denominator is a corpus, from "sixteen
-# of the 45 prompts", whose is the library.
+# The denominator has to be *named* as a library count, and a writer names one
+# in one of two ways. The noun is one -- "the 45 prompts", "the forty-five
+# rows" -- and it says outright what is being counted. A dash is the other:
+# the noun is elided because the sentence is already about the library, as in
+# "the rest of the library -- 29 of the 45 --". Those two are the whole
+# allowance, and the narrowness is the point.
+#
+# It used to be any punctuation, or the end of the paragraph. Both are shapes
+# ordinary English prose takes without meaning the library at all: "One of the
+# three." ends a sentence about a corpus, and reading that three as the total
+# is a false positive on a correct document -- the failure this check has
+# paid for twice. A dash is the one piece of punctuation that opens a clause
+# instead of closing one, so it is the one that can stand in for a noun; a
+# full stop and a paragraph boundary both say the sentence is finished, which
+# is exactly when the count it ended on is about something else. Where a
+# document does mean the library and elides the noun another way, the cure is
+# to write the noun or to record the decision in HONOURED_SKIP.
 SCOPED_SHAPE = re.compile(
     rf"(?:\b(?P<n>{NUMBER})\s+)?\b(?:out\s+)?of\s+the\s+(?P<all>{NUMBER})"
-    rf"(?:\s+(?:prompts|rows)\b|\s*[^\w\s]|\s*$)",
+    rf"(?:\s+(?:prompts|rows)\b|\s*[—–])",
     re.I,
 )
 
@@ -682,11 +696,19 @@ def check_honoured_skips(problems: list[str]) -> None:
     is dropped from DOCUMENTS, so the record is defending something this file
     never reads. Either is a decision that has to be taken again rather than
     left in the file, so both fail the run.
+
+    Both messages carry the reason the record was written. The person who has
+    to decide again is the one who needs it, and it was the reason that made
+    the gap defensible in the first place -- a bare "this no longer matches"
+    asks them to re-derive the argument the record had already made. A field
+    nothing ever prints is a comment, and a comment cannot make a check fail.
     """
-    for doc, phrase, _why in HONOURED_SKIP:
+    for doc, phrase, why in HONOURED_SKIP:
         if doc not in DOCUMENTS:
             problems.append(
-                f"{doc}: honoured skip names a document that is not scanned"
+                f"{doc}: honoured skip names a document that is not scanned, "
+                f"so it can no longer be checking anything. It was recorded "
+                f"because {why}"
             )
             continue
         if not doc.is_file():
@@ -695,7 +717,7 @@ def check_honoured_skips(problems: list[str]) -> None:
         if not re.search(phrase, text):
             problems.append(
                 f"{doc}: honoured skip no longer matches anything in the "
-                f"document: {phrase}"
+                f"document: {phrase}. It was recorded because {why}"
             )
 
 
