@@ -163,15 +163,73 @@ def find_corpus_name(where: Path) -> list[str]:
     return found
 
 
+# Checks that verify rather than rewrite, and so take --check. A negative case
+# against one of these run bare would not fail: the check would regenerate the
+# very mutation it is supposed to catch, and the case would pass vacuously.
+# This is why the flag was an inline conditional at one call site and is a
+# table here, now that a second check needs it.
+CHECK_FLAGGED = {"generate_index.py", "generate_agents.py"}
+
+
+def argv(check: str) -> list[str]:
+    return [sys.executable, f"scripts/{check}"] + (
+        ["--check"] if check in CHECK_FLAGGED else []
+    )
+
+
 def run(check: str, cwd: Path) -> tuple[int, str]:
     proc = subprocess.run(
-        [sys.executable, f"scripts/{check}"],
+        argv(check),
         cwd=cwd,
         capture_output=True,
         text=True,
         check=False,
     )
     return proc.returncode, proc.stdout + proc.stderr
+
+
+# ---------------------------------------------------------- generated agents
+#
+# The mutation helpers below take a repository rather than a file, because the
+# drift they seed is spread across three trees and sometimes across a whole set
+# of prompts. Two of them run the generator to put the trees into a state the
+# check should then be run against, which is why they shell out where the other
+# mutations only edit text. They are defined above the case tables because those
+# tables name them at import time.
+
+
+def _regenerate(repo: Path) -> None:
+    """Rewrite the generated trees in place, past whatever drift is seeded."""
+    subprocess.run(
+        [sys.executable, "scripts/generate_agents.py"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _keep_only_prompt(repo: Path, keep: str = "api-design") -> None:
+    """Reduce the library to one prompt, then regenerate.
+
+    The single-prompt case, and the reason the pruning in generate_agents
+    matters: dropping 44 prompts has to take 132 generated files with them, or
+    the trees keep advertising agents whose prompts no longer exist. A check
+    that only ever sees the full library cannot tell that apart from correct,
+    which is what makes this a guard rather than a fifth case.
+    """
+    for path in sorted((repo / "prompts").glob("*.md")):
+        if path.stem not in {keep, "index", "tags"}:
+            path.unlink()
+    _regenerate(repo)
+
+
+def _drop_all_prompts(repo: Path) -> None:
+    """Leave the site scaffolding and no prompts at all."""
+    for path in sorted((repo / "prompts").glob("*.md")):
+        if path.stem not in {"index", "tags"}:
+            path.unlink()
+    _regenerate(repo)
 
 
 # (name, check script, mutation, substring expected in the failure output)
@@ -371,6 +429,95 @@ CASES: list[tuple[str, str, object, str]] = [
         lambda r: _seed_nested_prompt(r),
         "commit-hash-shaped token",
     ),
+    (
+        # A corpus name planted in a committed agent rather than in a prompt.
+        # The three trees hold verbatim copies of the prompt bodies, so they
+        # carry the same exposure, and widening the scan to include them is
+        # only worth anything if the scan reaches them. The other five cases
+        # prove the check runs; this one proves it runs where the new text
+        # lands, which is the half that a wrong path silently loses.
+        "check_no_fingerprint: corpus name in a generated agent",
+        "check_no_fingerprint.py",
+        lambda r: _append(
+            r / ".opencode/agents/prompt-api-design.md",
+            f"\nSee the {corpus_name()} repository for context.",
+        ),
+        "corpus project name",
+    ),
+    (
+        # A generated body edited by hand. This is the drift the whole
+        # committed-output decision trades against: 135 files are committed,
+        # so someone will eventually correct a wording in the copy rather than
+        # the prompt, and the fix is invisible until the next regeneration.
+        "generate_agents: generated body edited in place",
+        "generate_agents.py",
+        lambda r: _replace(
+            r / ".opencode/agents/prompt-api-design.md",
+            "versioning strategies",
+            "versioning strategies, hand-edited",
+        ),
+        "stale:   .opencode\\agents\\prompt-api-design.md",
+    ),
+    (
+        # A generated file deleted. A plain diff of the trees would call the
+        # remaining files current, because nothing in them is wrong; the agent
+        # is simply gone, and the reader who installed that tree finds one
+        # prompt missing with no indication why.
+        "generate_agents: generated file deleted",
+        "generate_agents.py",
+        lambda r: (r / ".claude/agents/prompt-security.md").unlink(),
+        "missing: .claude\\agents\\prompt-security.md",
+    ),
+    (
+        # The third tree, seeded for the same fault as the first. Three
+        # emitters sharing no case would let one of them rot unnoticed, and a
+        # Codex reader is the one who finds out.
+        "generate_agents: codex skill edited in place",
+        "generate_agents.py",
+        lambda r: _replace(
+            r / ".agents/skills/prompt-code-review/SKILL.md",
+            "principal software engineer",
+            "principal software engineer, hand-edited",
+        ),
+        "stale:   .agents\\skills\\prompt-code-review\\SKILL.md",
+    ),
+    (
+        # A hand-added agent in a tree this script owns. It is the drift a
+        # diff cannot see in the other direction: nothing is stale, every
+        # expected file is present, and an agent nobody generated is about to
+        # ship to everyone who installs the tree.
+        "generate_agents: unexpected agent added by hand",
+        "generate_agents.py",
+        lambda r: (r / ".opencode/agents/scratch-agent.md").write_text(
+            "---\ndescription: not generated\nmode: subagent\n---\n\nHand written.\n",
+            encoding="utf-8",
+        ),
+        "extra:   .opencode\\agents\\scratch-agent.md",
+    ),
+    (
+        # The same fault in the shape Codex uses. A prompt deleted from the
+        # library leaves its skill directory behind, and because the directory
+        # is the skill as far as Codex is concerned, an empty one still reads
+        # as a skill. Testing only the flat trees would miss the nesting.
+        "generate_agents: skill left behind by a deleted prompt",
+        "generate_agents.py",
+        lambda r: (r / ".agents/skills/prompt-retired").mkdir(parents=True)
+        or (r / ".agents/skills/prompt-retired/SKILL.md").write_text(
+            "---\nname: prompt-retired\ndescription: gone\n---\n\nGone.\n",
+            encoding="utf-8",
+        ),
+        "extra:   .agents\\skills\\prompt-retired\\SKILL.md",
+    ),
+    (
+        # The empty case. With no prompts there is nothing to generate, and the
+        # alternative is a green run over three empty trees that would pass in
+        # a repository where every prompt had been lost. It reports the
+        # absence rather than declaring an empty set of trees current.
+        "generate_agents: every prompt deleted",
+        "generate_agents.py",
+        _drop_all_prompts,
+        "no prompts found",
+    ),
 ]
 
 
@@ -381,6 +528,16 @@ CASES: list[tuple[str, str, object, str]] = [
 # stopped firing on the good input that guard protected. These are the cases
 # that catch that.
 MUST_STAY_CLEAN: list[tuple[str, str, object]] = [
+    (
+        # A library of exactly one prompt. The check has to pass once the 132
+        # generated files belonging to the other 44 are gone, which is the
+        # pruning half of the contract: `extra:` exists to catch a stale file,
+        # and without this the pruning that removes one would be
+        # indistinguishable from a check that cannot notice it.
+        "generate_agents: one prompt still populates all three trees",
+        "generate_agents.py",
+        _keep_only_prompt,
+    ),
     (
         "check_no_fingerprint: digit-only tokens are not commit hashes",
         "check_no_fingerprint.py",
@@ -450,6 +607,7 @@ MUST_PASS: list[tuple[str, str]] = [
     ("check_counts.py", "counts"),
     ("check_no_fingerprint.py", "corpus fingerprint"),
     ("generate_index.py", "generated index"),
+    ("generate_agents.py", "generated agents"),
 ]
 
 
@@ -711,16 +869,11 @@ def main() -> int:
         shutil.copytree(
             REPO,
             clean,
-            ignore=shutil.ignore_patterns(".git", "site", "__pycache__"),
+            ignore=shutil.ignore_patterns(".git", "site", "__pycache__", "node_modules"),
         )
         for check, label in MUST_PASS:
-            args = (
-                [sys.executable, "scripts/generate_index.py", "--check"]
-                if check == "generate_index.py"
-                else [sys.executable, f"scripts/{check}"]
-            )
             proc = subprocess.run(
-                args, cwd=clean, capture_output=True, text=True, check=False
+                argv(check), cwd=clean, capture_output=True, text=True, check=False
             )
             if proc.returncode == 0:
                 print(f"  passes    {label}")
@@ -749,7 +902,7 @@ def main() -> int:
             shutil.copytree(
                 REPO,
                 work,
-                ignore=shutil.ignore_patterns(".git", "site", "__pycache__"),
+                ignore=shutil.ignore_patterns(".git", "site", "__pycache__", "node_modules"),
             )
             try:
                 mutate(work)
@@ -784,7 +937,7 @@ def main() -> int:
             shutil.copytree(
                 REPO,
                 work,
-                ignore=shutil.ignore_patterns(".git", "site", "__pycache__"),
+                ignore=shutil.ignore_patterns(".git", "site", "__pycache__", "node_modules"),
             )
             try:
                 mutate(work)
