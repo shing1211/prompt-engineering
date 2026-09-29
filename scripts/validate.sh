@@ -11,6 +11,7 @@
 #   4. no line-ending or whitespace-policy violations
 #   5. markdownlint, when available
 #   6. internal links resolve, when the site is built
+#   7. the checks still fail on a prompt that should fail
 #
 # Exits non-zero on the first failure.
 
@@ -228,6 +229,20 @@ if [ -d site ]; then
     fi
 else
     printf 'skip  site/ not built; run mkdocs build to check links\n'
+fi
+
+# ---------------------------------------------------------- 7. the checks work
+
+step "The checks themselves still work"
+
+# A check that cannot fail is worse than no check, because it reports green
+# while the thing it guards drifts. This seeds each defect into a temp copy
+# and asserts the corresponding check catches it, so a check that has been
+# weakened to always pass fails here.
+if python3 scripts/test_checks.py; then
+    ok "every check rejects a prompt it should reject"
+else
+    fail "a check passed a defect it is supposed to catch"
 fi
 
 # ------------------------------------------------------------------ summary

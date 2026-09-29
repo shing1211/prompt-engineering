@@ -62,10 +62,9 @@ Coverage spans eight areas:
 
 ### The financial-engineering wedge
 
-A third of the library — 16 of 42 — covers multi-broker trading systems, and no
-other public library holds that ground. They are also the hardest prompts here
-to write, which makes them the best test of whether a prompt library is any
-good:
+16 of the 42 prompts cover multi-broker trading, and no other public library
+holds that ground. They are also the hardest prompts here to write, which
+makes them the best test of whether a prompt library is any good:
 
 - **Broker SDKs**, one prompt per venue — Longbridge, Tiger Trade, Webull,
   IBKR Client Portal, Futu OpenD, Hua Sing Tong vbroker, plus a generic HMAC

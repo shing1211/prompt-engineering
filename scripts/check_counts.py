@@ -40,7 +40,11 @@ DOCUMENTS = [Path("README.md"), Path("docs/strategy.md")]
 # Categories that make up the "financial trading" claim. Kept here rather
 # than hardcoded as a number, so the check follows the library instead of
 # freezing today's arithmetic.
-FINANCIAL_CATEGORIES = ("Financial Domain", "Broker SDKs")
+# These must match the category titles in generate_index.CATEGORY_TITLES.
+# They are matched by prefix, so a rename in the generator has to be reflected
+# here or the combined count silently becomes the single-category count and
+# every document claiming the real number fails.
+FINANCIAL_CATEGORIES = ("Financial Engineering", "Broker SDKs")
 
 
 def generated_stats() -> dict[str, int]:
