@@ -188,6 +188,17 @@ material the library should absorb.
       semantics, that belongs in the broker prompts
 - [ ] Real failure modes are what make the anti-patterns sections worth
       reading. Generic ones are not
+- [ ] An event-contracts prompt. The `data-platforms` pass turned up two
+      findings that prompt cannot honestly hold: a contract naming a version
+      field that no producer writes, so a consumer mid-deploy cannot tell
+      which shape it received, and sibling consumers of one stream answering
+      an unparseable record three different ways. Both are message-schema
+      properties rather than dataset properties, so both were rejected there
+      and neither is published anywhere yet
+- [ ] A fails-open default, for `security.md` or `devops.md`. The service-layer
+      pass found a configuration value that fell through to the live default
+      when unrecognised — the strongest general finding in that pass, and not
+      closable by editing the file it was found in
 
 The same loop runs for the rest of the library — 26 of the 42 — against any
 codebase worked on rather than the trading one. A prompt that has never been run

@@ -122,9 +122,7 @@ Load before acting:
 - ❌ **Treat a decision record as a description of the system.** A record that
   documents a refusal is an answer, and a tool whose model assumes the thing
   that was refused reads the absence as debt — this prompt assumes a warehouse,
-  and a system that weighed one and declined it is not missing it. The part of
-  such a record that describes something nobody has built is worse than nothing:
-  it is an intention, and a plan built on it is built on nothing. Reopen a
+  and a system that weighed one and declined it is not missing it. Reopen a
   refusal when the condition the record names is met, not because the stack
   looks thinner than the model expects.
 
