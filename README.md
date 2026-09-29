@@ -112,6 +112,12 @@ Use `cp -r` to copy the files, or `ln -s` to symlink the directory so a
 `git pull` updates your agents in place. Copying one directory is enough —
 the agents carry their full text and do not read from `prompts/` at runtime.
 
+On Windows, prefer the copy. Symlinks there need either Developer Mode or
+administrator rights, and without them `ln -s` writes a text file containing
+the target path, which a harness then reads as a broken prompt. `mkdocs` has
+the same trap for this repository's own documents, so it is a known shape
+rather than a new one.
+
 Agent names are the prompt file name with a `prompt-` prefix:
 `prompts/broker-futu.md` is the agent `prompt-broker-futu` in all three
 harnesses. The prefix is a namespace, not decoration — without it
