@@ -98,6 +98,22 @@ Load before acting:
   it, usually mid-incident, usually at the worst moment.
 - ❌ **Treat a successful apply as a successful deployment.** Applied, running,
   and healthy are three different states, and only the third one matters.
+- ❌ **Use imperative shell as the deployment system.** A script of
+  `kubectl apply` calls is not deployment infrastructure: there is no
+  recorded desired state, so nothing can reconcile against it and nothing can
+  be diffed when a component is unexpectedly absent. This is the root cause
+  that lets the other anti-patterns here accumulate unnoticed — a committed
+  secret, an unpinned image, and a missing network policy all hide in a
+  directory of hand-applied YAML.
+- ❌ **Deploy one manifest set to heterogeneous clusters with no overlay.**
+  The same YAML pushed to a single-node cluster, a multi-node cluster, and a
+  cluster-api environment is three different systems pretending to be one.
+  Environment differences belong in a Helm values file or a kustomize
+  overlay, not in a shell variable or a branch.
+- ❌ **Run `sudo kubectl` from a deploy script.** The script then executes as
+  root on the node with whatever credentials that implies, and every future
+  edit inherits that privilege. Use a service account scoped to exactly the
+  namespaces this deployment owns, and run the client unprivileged.
 
 ## Layer 5: Guardrails
 
@@ -106,28 +122,32 @@ Before declaring an infrastructure change complete:
 1. **Prove it is reproducible.** Rebuild a non-production environment from the
    repository alone, in a clean account or cluster, and diff the result. A
    change that cannot be rebuilt has not been delivered.
-2. **Verify no drift.** Run the GitOps controller in diff mode and confirm the
+2. **Reconcile before you mutate.** Record the running state — workloads,
+   images, and configuration — before the first apply, and keep that record.
+   Without a baseline there is nothing to diff against when a component turns
+   out to be missing, and "it was already broken" becomes unfalsifiable.
+3. **Verify no drift.** Run the GitOps controller in diff mode and confirm the
    desired state matches what is running.
-3. **Confirm rollback exists and has been rehearsed.** Execute it in a
+4. **Confirm rollback exists and has been rehearsed.** Execute it in a
    non-production environment and record the time it took. An untested
    rollback is not a rollback.
-4. **Check security context on every pod:** non-root, read-only root
+5. **Check security context on every pod:** non-root, read-only root
    filesystem where possible, capabilities dropped, no privilege escalation,
    and no host path mounts.
-5. **Test the policy, do not assume it.** Prove a workload is *denied* by
+6. **Test the policy, do not assume it.** Prove a workload is *denied* by
    network policy and by RBAC, not merely permitted. An untested control is
    unverified.
-6. **Verify the rollout ramp and its abort criteria** are configured before the
+7. **Verify the rollout ramp and its abort criteria** are configured before the
    first batch, and that the abort is automatic rather than requiring someone
    to be watching.
-7. **Confirm secrets are absent from the repository, the image layers, and the
+8. **Confirm secrets are absent from the repository, the image layers, and the
    rendered manifests**, and check the git history as well as the working tree.
-8. **State the blast radius** for this change: which workloads, which
+9. **State the blast radius** for this change: which workloads, which
    namespaces, and what breaks if it is wrong. For anything touching
    networking or RBAC, name the order of operations.
-9. **Record cost impact** for anything that scales with traffic or time, and
+10. **Record cost impact** for anything that scales with traffic or time, and
    the budget it now consumes.
-10. **Confirm the runbook exists and that a responder who did not build this
+11. **Confirm the runbook exists and that a responder who did not build this
     can follow it**, before shipping at 5pm on a Friday.
 
 ## Layer 6: Delivery Contract
