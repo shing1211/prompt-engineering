@@ -217,17 +217,22 @@ def main() -> int:
     problems: list[str] = []
     for path, text in wanted:
         if not path.is_file():
-            problems.append(f"missing: {path}")
+            problems.append(f"missing: {path.as_posix()}")
         elif path.read_text(encoding="utf-8") != text:
-            problems.append(f"stale:   {path}")
+            problems.append(f"stale:   {path.as_posix()}")
 
     # An extra file in an owned tree is drift in the other direction, and it is
     # the case a plain diff misses: a hand-added agent, or one left behind by a
     # prompt that has since been deleted. Both would otherwise ship silently.
+    #
+    # Paths are reported in posix form. The message is the part a reader and a
+    # CI log both match on, and str(Path) renders a separator that depends on
+    # the machine the check ran on, so a test asserting on it passes on one
+    # runner and fails on another.
     for root in OWNED:
         expected = {path.relative_to(root) for path, _ in wanted if path.is_relative_to(root)}
         for extra in sorted(existing(root) - expected):
-            problems.append(f"extra:   {root / extra}")
+            problems.append(f"extra:   {(root / extra).as_posix()}")
 
     if args.check:
         for problem in problems:

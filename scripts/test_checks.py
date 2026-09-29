@@ -456,7 +456,7 @@ CASES: list[tuple[str, str, object, str]] = [
             "versioning strategies",
             "versioning strategies, hand-edited",
         ),
-        "stale:   .opencode\\agents\\prompt-api-design.md",
+        "stale:   .opencode/agents/prompt-api-design.md",
     ),
     (
         # A generated file deleted. A plain diff of the trees would call the
@@ -466,7 +466,7 @@ CASES: list[tuple[str, str, object, str]] = [
         "generate_agents: generated file deleted",
         "generate_agents.py",
         lambda r: (r / ".claude/agents/prompt-security.md").unlink(),
-        "missing: .claude\\agents\\prompt-security.md",
+        "missing: .claude/agents/prompt-security.md",
     ),
     (
         # The third tree, seeded for the same fault as the first. Three
@@ -479,7 +479,7 @@ CASES: list[tuple[str, str, object, str]] = [
             "principal software engineer",
             "principal software engineer, hand-edited",
         ),
-        "stale:   .agents\\skills\\prompt-code-review\\SKILL.md",
+        "stale:   .agents/skills/prompt-code-review/SKILL.md",
     ),
     (
         # A hand-added agent in a tree this script owns. It is the drift a
@@ -492,7 +492,7 @@ CASES: list[tuple[str, str, object, str]] = [
             "---\ndescription: not generated\nmode: subagent\n---\n\nHand written.\n",
             encoding="utf-8",
         ),
-        "extra:   .opencode\\agents\\scratch-agent.md",
+        "extra:   .opencode/agents/scratch-agent.md",
     ),
     (
         # The same fault in the shape Codex uses. A prompt deleted from the
@@ -506,7 +506,7 @@ CASES: list[tuple[str, str, object, str]] = [
             "---\nname: prompt-retired\ndescription: gone\n---\n\nGone.\n",
             encoding="utf-8",
         ),
-        "extra:   .agents\\skills\\prompt-retired\\SKILL.md",
+        "extra:   .agents/skills/prompt-retired/SKILL.md",
     ),
     (
         # The empty case. With no prompts there is nothing to generate, and the
