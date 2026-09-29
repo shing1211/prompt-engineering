@@ -2,9 +2,9 @@
 """Check that hand-written counts agree with the generated index.
 
 The generated statistics block in prompts/index.md is authoritative: it is
-produced from frontmatter by scripts/generate_index.py. README.md,
-docs/strategy.md, prompts/index.md and docs/verification.md also state counts
-in prose and in tables, and those are hand-maintained.
+produced from frontmatter by scripts/generate_index.py. The documents scanned
+around it are listed in DOCUMENTS below, which is the one place that list
+lives; each states counts in prose and in tables that are hand-maintained.
 
 They drifted. README claimed 38 prompts and 19 covering multi-broker
 trading when the library held 42 and 16, and the "19" was wrong from the
@@ -335,7 +335,7 @@ def expected(
 # argument, not a discriminator, so it rules the common case out and cannot
 # tell a corpus from a library in the rest. The trade is acceptable because no
 # document this file scans is written that way, and the only dash-denominator
-# among the four is the real total in docs/strategy.md. Anyone widening this
+# among the five is the real total in docs/strategy.md. Anyone widening this
 # branch past the dash should know that they are reopening the false positive
 # rather than adding a case, and the two ways out are the same as above: write
 # the noun, or record the decision in HONOURED_SKIP.

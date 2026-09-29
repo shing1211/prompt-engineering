@@ -39,6 +39,25 @@ REPO = Path(__file__).resolve().parent.parent
 # leaves them alone. A case still asserts its specific message, because a
 # check that exits non-zero for the wrong reason is the failure this suite
 # exists to catch.
+#
+# One seed cannot be derived that way, and the coupling is stated here rather
+# than discovered. The honoured-skip case has to break a sentence, and the
+# sentence is a figure check_counts is recorded as deliberately *not* checking:
+# a hyphenated count in docs/strategy.md, which names the library and so moves
+# when a prompt is added. This suite is therefore coupled to that prose being
+# current. It reads the sentence out of the HONOURED_SKIP record rather than
+# copying it, so it follows the record wherever the record is corrected, and
+# when the record and the document have drifted apart it names that instead of
+# reporting a case that could not be written.
+#
+# That is the general shape of the trap, and the runner is built for it. A
+# check that is already red on the repository as committed confounds every
+# case and guard below it: the failures those report are the repository's, not
+# the mutation's, and "a count of three closed by a full stop was reported" says
+# nothing about the guard. The suite still exits non-zero -- the red baseline
+# is the finding -- but the line names the baseline that is producing it, and
+# the check's own output is printed under the positive phase where the drift
+# is stated in full.
 sys.path.insert(0, str(REPO / "scripts"))
 import check_counts  # noqa: E402
 
@@ -271,11 +290,7 @@ CASES: list[tuple[str, str, object, str]] = [
         # becomes a comment that reads like a decision.
         "check_counts: honoured skip that no longer matches the prose",
         "check_counts.py",
-        lambda r: _replace(
-            r / "docs/strategy.md",
-            r"45-prompt library read\s+as a 16-prompt one",
-            "45 prompt library read as a 16 prompt one",
-        ),
+        lambda r: _break_honoured_skip(r),
         "honoured skip no longer matches",
     ),
     (
@@ -465,6 +480,75 @@ def _replace(path: Path, pattern: str, replacement: str) -> None:
     path.write_text(new, encoding="utf-8")
 
 
+def _break_honoured_skip(repo: Path) -> None:
+    """Reword the sentence an HONOURED_SKIP record was written for.
+
+    The phrase to break is read out of the record itself rather than written
+    down here. The sentence names the library -- it is a hyphenated count in
+    docs/strategy.md, which is the one shape check_counts is recorded as not
+    reading -- so its numbers move when a prompt is added, and a literal on
+    this side was a second copy of a figure that moves, which is the thing the
+    seeds above were derived to stop being. Whatever the record says the
+    sentence is, this breaks exactly that.
+
+    It breaks it by dropping the hyphens from the match, which is the reword
+    the record is about and not an arbitrary one: the check cannot read a
+    hyphenated count, so the hyphen is the whole reason the record exists, and
+    without it the figures are ones the file claims.
+
+    A record that no longer describes a sentence in the document is a
+    different fault, and it is reported as that rather than allowed to surface
+    as a case that could not set up. The document and the record drifted, and
+    the run of check_counts that says so is on stderr before this suite
+    starts, so a bare "pattern did not match" here would name a problem with
+    this file when the problem is that nobody updated two places at once.
+    """
+    drift = AssertionError(
+        "the prose and the HONOURED_SKIP record have drifted apart, so the "
+        "case below cannot set up; check_counts is already red on the "
+        "unmodified repository for the same reason ('honoured skip no longer "
+        "matches'). Update the sentence in the document or the phrase in the "
+        "record, then re-run -- the record is only worth anything while it "
+        "still describes the sentence it was written for"
+    )
+
+    for doc, phrase, _why in check_counts.HONOURED_SKIP:
+        path = repo / doc
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        match = re.search(phrase, text)
+        if match is None:
+            continue
+        reworded = match.group(0).replace("-", " ")
+        path.write_text(
+            text[: match.start()] + reworded + text[match.end() :],
+            encoding="utf-8",
+        )
+        return
+
+    raise drift
+
+
+def _attribution(check: str, red_clean: set[str]) -> str:
+    """Name the red baseline a failure below belongs to, when there is one.
+
+    A case or guard that runs a check which is already failing on the
+    repository as committed is reporting that check's complaint about the
+    repository, not a verdict on the mutation. Left unlabelled, "reported
+    input that is not a finding" reads as a broken guard, and the person
+    adding the prompt -- the one who can fix it -- has no way to tell it from
+    a real one. Empty when the baseline is clean, which is every run on a
+    branch that is not mid-change.
+    """
+    if check not in red_clean:
+        return ""
+    return (
+        f"{check} is red on the repository as committed (FAILS-CLEAN above), "
+        "so this is that failure and not the mutation"
+    )
+
+
 def _seed_home_path(path: Path) -> None:
     """Seed an absolute path under a home directory.
 
@@ -618,6 +702,10 @@ def main() -> int:
             print("  clean  the corpus project name is in no committed file")
 
     print("\n  -- positive: checks pass on the repository as committed --")
+    # Checks already red here are the ones every case and guard below is
+    # measuring, not its own mutation, so they are named once and referred to
+    # afterwards. The suite still fails on them; only the attribution changes.
+    red_clean: set[str] = set()
     with tempfile.TemporaryDirectory() as tmp:
         clean = Path(tmp) / "repo"
         shutil.copytree(
@@ -637,10 +725,22 @@ def main() -> int:
             if proc.returncode == 0:
                 print(f"  passes    {label}")
             else:
+                red_clean.add(check)
                 failures.append(
                     f"{label}: exits non-zero on the unmodified repository"
                 )
                 print(f"  FAILS-CLEAN  {label}")
+                # The check says what is wrong with the repository, in full
+                # and in its own words. Without it the reader is left with a
+                # label, and the first guess they make is that this suite is
+                # broken rather than that the counts moved.
+                for line in (proc.stdout + proc.stderr).splitlines():
+                    if line.strip():
+                        print(f"      {line.rstrip()}")
+                print(
+                    f"      ^ {check} is red as committed, so its cases and "
+                    "guards below are measuring that and not their mutation"
+                )
 
     print("\n  -- negative: checks fail on deliberately broken input --")
     for name, check, mutate, expect in CASES:
@@ -654,7 +754,11 @@ def main() -> int:
             try:
                 mutate(work)
             except AssertionError as exc:
-                failures.append(f"{name}: could not set up - {exc}")
+                note = _attribution(check, red_clean)
+                failures.append(
+                    f"{name}: could not set up - {exc}"
+                    + (f"; {note}" if note else "")
+                )
                 print(f"  SETUP-FAIL  {name}")
                 continue
 
@@ -664,8 +768,10 @@ def main() -> int:
             failures.append(f"{name}: check exited 0 on broken input")
             print(f"  NOT-CAUGHT  {name}")
         elif expect not in output:
+            note = _attribution(check, red_clean)
             failures.append(
                 f"{name}: failed, but output did not mention {expect!r}"
+                + (f"; {note}" if note else "")
             )
             print(f"  WRONG-REASON  {name}")
         else:
@@ -683,7 +789,11 @@ def main() -> int:
             try:
                 mutate(work)
             except AssertionError as exc:
-                failures.append(f"{name}: could not set up - {exc}")
+                note = _attribution(check, red_clean)
+                failures.append(
+                    f"{name}: could not set up - {exc}"
+                    + (f"; {note}" if note else "")
+                )
                 print(f"  SETUP-FAIL  {name}")
                 continue
 
@@ -692,8 +802,14 @@ def main() -> int:
         if code == 0:
             print(f"  ignored   {name}")
         else:
-            failures.append(f"{name}: reported input that is not a finding")
+            note = _attribution(check, red_clean)
+            failures.append(
+                f"{name}: reported input that is not a finding"
+                + (f"; {note}" if note else "")
+            )
             print(f"  FALSE-POSITIVE  {name}")
+            if note:
+                print(f"      {note}")
             for line in output.splitlines():
                 if line.startswith("  "):
                     print(f"      {line.strip()}")
