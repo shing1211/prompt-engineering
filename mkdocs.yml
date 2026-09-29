@@ -91,6 +91,7 @@ nav:
       - API Design: api-design.md
       - Database Design: database-design.md
       - Code Review: code-review.md
+      - Change Review: change-review.md
       - Testing: testing.md
       - Security: security.md
       - Performance: performance.md

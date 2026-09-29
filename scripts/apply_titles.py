@@ -29,6 +29,7 @@ TITLES: dict[str, str] = {
     "broker-tiger": "Tiger Trade SDK",
     "broker-vbroker": "Hua Sing Tong vbroker SDK",
     "broker-webull": "Webull SDK",
+    "change-review": "Change Review",
     "code-review": "Code Review",
     "compliance-regulatory": "Compliance and Regulatory",
     "database-design": "Database Design",

@@ -46,6 +46,7 @@ One row per prompt, in alphabetical order by file name.
 | `broker-tiger` | no | Not run. | — |
 | `broker-vbroker` | no | Not run. | — |
 | `broker-webull` | no | Not run. | — |
+| `change-review` | no | Not run. | — |
 | `code-review` | no | Not run. | — |
 | `compliance-regulatory` | no | Not run. | — |
 | `data-engineering` | no | Not run. | — |

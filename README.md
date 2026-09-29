@@ -1,16 +1,16 @@
 # Prompt Engineering Library
 
-System prompts for coding agents. **42 prompts** across architecture, data,
+System prompts for coding agents. **43 prompts** across architecture, data,
 platform, protocols, SDK, documentation, and financial engineering — written to
 be dropped into a harness and run against a real repository.
 
-**42 prompts. ~86,000 words. MIT licensed.**
+**43 prompts. ~86,000 words. MIT licensed.**
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
 Built for anyone wiring an agent into a codebase: the prompts, the anti-patterns
-they exist to prevent, and the definition of done each one enforces. 18 of the
-42 are language-agnostic and apply as written on any stack; the rest name the
+they exist to prevent, and the definition of done each one enforces. 19 of the
+43 are language-agnostic and apply as written on any stack; the rest name the
 tooling they assume, and the [language table](prompts/index.md#browse-by-language)
 tells you which is which.
 
@@ -62,7 +62,7 @@ Coverage spans eight areas:
 
 ### The financial-engineering wedge
 
-16 of the 42 prompts cover multi-broker trading, and no other public library
+16 of the 43 prompts cover multi-broker trading, and no other public library
 holds that ground. They are also the hardest prompts here to write, which
 makes them the best test of whether a prompt library is any good:
 

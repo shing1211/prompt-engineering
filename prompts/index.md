@@ -46,13 +46,14 @@ Multi-phase sub-agent execution and project planning — 2 prompt(s).
 
 ### Architecture and Engineering
 
-Cross-cutting engineering practice — 12 prompt(s).
+Cross-cutting engineering practice — 13 prompt(s).
 
 | Prompt | Mode | Description | Verified |
 |---|---|---|---|
 | [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling | not verified |
 | [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency | not verified |
 | [`backend-services.md`](backend-services.md) — Backend Services | all | Design backend services without a language assumption, covering boundaries, idempotency, consistency, versioning, and the failure modes of distributed systems | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
+| [`change-review.md`](change-review.md) — Change Review | review | Review a single change against what it claims to do, what the diff actually does, and what its callers depend on | not verified |
 | [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages | not verified |
 | [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases | not verified |
 | [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) | not verified |
@@ -189,7 +190,7 @@ Prompts written against a specific language's tooling. Everything not listed her
 | Python | [data-engineering](data-engineering.md), [data-platforms](data-platforms.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
 | TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
 | Java / JVM | [jvm-backend](jvm-backend.md) |
-| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [backend-services](backend-services.md), [broker-certification](broker-certification.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [platform-engineering](platform-engineering.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
+| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [backend-services](backend-services.md), [broker-certification](broker-certification.md), [change-review](change-review.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [platform-engineering](platform-engineering.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
 
 ## Quick Reference
 
@@ -217,9 +218,9 @@ Prompts written against a specific language's tooling. Everything not listed her
 
 | Metric | Count |
 |---|---|
-| **Total prompts** | 42 |
+| **Total prompts** | 43 |
 | **Orchestration and Planning** | 2 |
-| **Architecture and Engineering** | 12 |
+| **Architecture and Engineering** | 13 |
 | **Application Development** | 4 |
 | **Platform and Infrastructure** | 1 |
 | **API Protocols** | 2 |
@@ -229,13 +230,13 @@ Prompts written against a specific language's tooling. Everything not listed her
 | **Documentation** | 1 |
 | **Financial Engineering — Trading and Broking** | 9 |
 | **Broker SDKs** | 7 |
-| **Distinct tags** | 244 |
-| **Language-agnostic** | 18 |
+| **Distinct tags** | 246 |
+| **Language-agnostic** | 19 |
 | **Verified** | 3 |
 | **Mode: all** | 8 |
 | **Mode: build** | 32 |
 | **Mode: plan** | 1 |
-| **Mode: review** | 1 |
+| **Mode: review** | 2 |
 
 <!-- END GENERATED TABLES -->
 

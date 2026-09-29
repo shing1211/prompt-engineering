@@ -42,6 +42,7 @@ CATEGORIES: dict[str, list[str]] = {
         "api-design",
         "database-design",
         "code-review",
+        "change-review",
         "testing",
         "security",
         "performance",

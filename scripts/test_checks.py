@@ -140,16 +140,16 @@ CASES: list[tuple[str, str, object, str]] = [
     (
         "check_counts: wrong total in README",
         "check_counts.py",
-        lambda r: _replace(r / "README.md", r"\*\*42 prompts\.", "**43 prompts."),
-        "total prompt count says 43",
+        lambda r: _replace(r / "README.md", r"\*\*43 prompts\.", "**44 prompts."),
+        "total prompt count says 44",
     ),
     (
         "check_counts: wrong financial count",
         "check_counts.py",
         lambda r: _replace(
             r / "README.md",
-            r"16 of the 42 prompts cover multi-broker",
-            "19 of the 42 prompts cover multi-broker",
+            r"16 of the 43 prompts cover multi-broker",
+            "19 of the 43 prompts cover multi-broker",
         ),
         "multi-broker trading count says 19",
     ),
