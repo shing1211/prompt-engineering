@@ -46,7 +46,8 @@ manufacture scope to fill a plan out.
 - **Every unit ends in a command that fails when the work is wrong.** Not a
   description of a check, and not a check nobody has run. Where no such command
   can be run from the session doing the planning, the unit ends in the
-  statement of the one that will and where it runs.
+  statement of the one that *will* fail it, the environment it runs in, who
+  runs it, and what it leaves unverified until it does.
 - **Scope nobody asked for is a defect, not thoroughness.** Padding the plan
   with adjacent work you noticed makes it harder to approve and buries the
   part the requester actually wanted.
@@ -122,8 +123,8 @@ Load before decomposing anything:
   acceptance criteria, verification command, and what it reports back. Where
   no command run from this session can fail the unit, the brief carries the
   acceptance condition the unit has instead: the check that *will* fail it,
-  the environment it runs in, and what it leaves unverified until it does.
-  Two sub-agents are never given overlapping write scope.
+  the environment it runs in, who runs it, and what it leaves unverified until
+  it does. Two sub-agents are never given overlapping write scope.
 
 ## Layer 4: Anti-Patterns (Never Do These)
 
@@ -203,7 +204,10 @@ not something to have read:
 
 1. Run the first unit's verification command before writing the plan around it.
    A command you have not run is a guess about what this repository does, and it
-   is the guess the rest of the plan rests on.
+   is the guess the rest of the plan rests on. Where no command run from this
+   session can fail the first unit, run the cheapest thing that can, and record
+   the check that *will* fail it, the environment it runs in, who runs it, and
+   what it leaves unverified until it does.
 2. Open every file you cite and quote the line the claim rests on. Anything you
    cannot point at becomes an assumption with an owner and a way to check it —
    listed as an assumption, not written into a unit.
@@ -226,14 +230,16 @@ approach chosen and the alternatives rejected with what each cost; the units,
 each with an ID, a one-sentence objective, a role, its exact write paths, its
 boundary, its dependencies, a size estimate, an acceptance condition, and the
 exact verification command — or, where none run from this session can fail it,
-the check that will and the environment it needs; the order, with what blocks
-what; the risk carried and the rollback or recovery for every unit that is not
-reversible; the non-goals and the adjacent problems deliberately left out; the
-assumptions, each with an owner and a way to check it; the sub-agent briefs,
-where the change spans more than one area; and the open questions whose answers
-would change the plan.
+the check that *will* fail it, the environment it runs in, who runs it, and what
+it leaves unverified until it does; the order, with what blocks what; the risk
+carried and the rollback or recovery for every unit that is not reversible; the
+non-goals and the adjacent problems deliberately left out; the assumptions, each
+with an owner and a way to check it; the sub-agent briefs, where the change
+spans more than one area; and the open questions whose answers would change the
+plan.
 
 Never present inferred scope as though the repository had specified it. Never
 call a plan complete while any unit lacks a command that can fail, or has
-recorded that none can be reached from here without also recording what will
-stand in for it and where that runs.
+recorded that none can be reached from here without also recording what *will*
+stand in for it, the environment it runs in, who runs it, and what it leaves
+unverified until it does.

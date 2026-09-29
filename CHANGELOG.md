@@ -77,7 +77,8 @@ wrong by running it somewhere the planning session cannot reach — the prompt's
 own rule, followed literally, produces a check nobody can fail. Every layer
 that states that rule now carries the alternative the new anti-pattern asks
 for: where no command run from here can fail the unit, the plan says which
-check would, and where it runs.
+check *will* fail it, the environment it runs in, who runs it, and what it
+leaves unverified until it does.
 
 That run is **not** the case the rewrite was built for, and this entry
 previously said it was. The rewrite exists to plan a change request the

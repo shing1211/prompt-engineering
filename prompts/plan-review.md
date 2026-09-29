@@ -84,7 +84,13 @@ Load before forming an opinion:
   asserts, and whether anyone has run it. A unit finished by inspection, by
   review, or by "looks right" is written in the imperative and not in fact.
   A command that was already green before the unit started is a check that
-  will report success whatever the executor does.
+  will report success whatever the executor does. Where no command run from
+  here can fail the unit, the substituted condition is what the unit ends in
+  instead, and the finding is a unit that names neither: a command, or the
+  four elements that make the substitute a condition rather than a note — the
+  check that *will* fail it, the environment it runs in, who runs it, and
+  what it leaves unverified until it does. A unit carrying those four is
+  specified; do not report it for the command it cannot reach.
 - **The unit boundary, and the revert boundary.** For each unit: what it
   creates, what it modifies, what it deliberately leaves alone, and whether
   it can be undone without undoing anything else. A schema change and the
@@ -162,8 +168,9 @@ Load before forming an opinion:
   and a reader checking a long unit list for internal consistency is not
   looking for a defect that only exists between the entries.
 - ❌ **Approve a plan whose units no second reader could execute.** An
-  objective with no paths, no boundary, and no command is a plan that works
-  only while its author still holds the analysis behind it.
+  objective with no paths, no boundary, and neither a command nor the
+  substituted condition is a plan that works only while its author still
+  holds the analysis behind it.
 - ❌ **Accept a claim about current behaviour with nothing behind it.** No
   file, no symbol, and no "verify" — an assumption written into a unit becomes
   a defect in whatever implements it.
@@ -188,7 +195,10 @@ not something to have read:
 1. Run the plan's first acceptance command on the repository as it stands and
    report what it actually asserted. A command nobody has run is a guess
    about this repository's tooling, and every unit above it inherits the
-   guess.
+   guess. Where no command run from here can fail that unit, run the cheapest
+   thing that can and report the check the plan names as the one that *will*
+   fail it, the environment it runs in, who runs it, and what it leaves
+   unverified until it does.
 2. Find the first step the plan leaves undecided, by reading the unit against
    the repository and, where the plan does not say, by putting the question to
    whoever wrote the request. Report that step. Do not execute the unit to
@@ -212,10 +222,13 @@ not something to have read:
 ## Layer 6: Delivery Contract
 
 Every plan review states: the request beside the plan's goal, in the words
-each was written in; for each unit, the command it ends in, whether that
-command has been run, and what it asserted; for each unit, its revert
-boundary and what it shares with every other unit's; the pairs the plan calls
-independent that the repository contradicts; the path from the current state
+each was written in; for each unit, the check it ends in, whether that check
+has been run, and what it asserted — its command where one is reachable from
+this review, and otherwise the check the plan names as the one that *will*
+fail it, the environment it runs in, who runs it, and what it leaves
+unverified until it does; for each unit, its revert boundary and what it
+shares with every other unit's; the pairs the plan calls independent that the
+repository contradicts; the path from the current state
 to the end state, and what the plan omits of it; the system state at every
 prefix of the order, and any prefix that is broken, degraded, or
 unrecognisable when it arrives; each claim about current behaviour with the
@@ -225,7 +238,11 @@ answer would invalidate the most; what was run during this review and
 what was not; and a verdict of implement as written, implement with these
 changes, or do not implement, with the smallest edit that would move it.
 
-Never approve a plan whose commands you did not run. Never report a defect in
+Never approve a plan whose reachable commands you did not run, and never
+report the substituted condition as that defect: a unit naming the check that
+*will* fail it, the environment it runs in, who runs it, and what it leaves
+unverified until it does has been specified, and the verdict turns on whether
+those four are there. Never report a defect in
 the repository as a finding about the plan — a whole-codebase audit is the job
 `code-review.md` already does, and a plan review that turns into one buries
 the finding about the document in front of it. Where the plan turns out to be

@@ -58,8 +58,8 @@ If any CONFIG field is unknown, discover it before planning and confirm.
 - Each task: ID, objective, role, inputs, outputs, dependencies, acceptance
   criteria, verification commands, estimated size (S/M/L). Where no command
   reachable from the run can fail the task, the verification commands are
-  replaced by the check that will, the environment it needs, and what it
-  leaves unverified until it runs.
+  replaced by the check that *will* fail it, the environment it runs in, who
+  runs it, and what it leaves unverified until it does.
 - Tasks must be small enough for one focused sub-agent session.
 - Summarize here (≤30 lines).
 - **PLAN mode**: stop here and wait for approval.
@@ -82,9 +82,10 @@ If any CONFIG field is unknown, discover it before planning and confirm.
   - Context and files to read
   - Files to create/modify (exact paths)
   - Constraints and boundaries (what NOT to touch)
-  - Acceptance criteria + exact verification commands, or the check that will
-    fill that field where no command reachable from the run can fail it, its
-    environment, and what it leaves unverified until it runs
+  - Acceptance criteria + exact verification commands, or, where no command
+    reachable from the run can fail the task, the check that *will* fail it,
+    the environment it runs in, who runs it, and what it leaves unverified
+    until it does
   - Required report: changes, files touched, commands run, blockers
 - Never code in this session. Never spawn a sub-agent without a brief.
 - Parallelize independent tasks with different specialists.
@@ -107,7 +108,10 @@ If any CONFIG field is unknown, discover it before planning and confirm.
 
 ## 4. VERIFY (BUILD mode only)
 
-- Run the task's verification commands (directly or via a `tester` sub-agent).
+- Run the check that can fail the task, directly or via a `tester` sub-agent:
+  its verification command where one is reachable from this run, and otherwise
+  the check the brief names as the one that *will* fail it, the environment it
+  runs in, who runs it, and what it leaves unverified until it does.
 - Check the sub-agent touched only the expected files.
 - On failure: re-brief the same specialist, or respawn with the correct role.
 - Only then update `<run>/todos.md` to `done` with a one-line summary.
@@ -190,7 +194,9 @@ In PLAN mode, produce the artifacts but do NOT execute writes, commits, or pushe
 - Treat sub-agent output as unverified until the orchestrator checks the changed-file scope, diagnostics, tests, and acceptance criteria.
 - Prefer the smallest reversible task that can disconfirm the current hypothesis before spawning broad implementation work.
 - Record assumptions, blocked dependencies, failed checks, and deferred risks in the run artifacts; do not silently downgrade acceptance criteria.
-- A task is not `done` until its verification command succeeds and the evidence is recorded in `<run>/todos.md`.
+- A task is not `done` until the check that can fail it has passed: its verification command where one is reachable from this run.
+- Where no command reachable from this run can fail the task, that check is the one the brief names as the one that *will* fail it, the environment it runs in, who runs it, and what it leaves unverified until it does.
+- The evidence of that check is recorded in `<run>/todos.md`.
 
 ## START
 
@@ -203,12 +209,18 @@ Confirm MODE and CONFIG, then begin Phase 1.
 - ❌ Implement in the orchestration session. The whole point of this prompt is
   that the main session stays small; coding in it defeats the design
 - ❌ Spawn a sub-agent without a brief. No objective, no file paths, no
-  acceptance criteria, no verification command. The agent will guess
+  acceptance criteria, and no verification command — nor, where none reachable
+  from the run can fail the task, the check that *will* fail it, the
+  environment it runs in, who runs it, and what it leaves unverified until it
+  does. The agent will guess
 - ❌ Spawn two agents editing the same files. Parallelise independent work,
   not concurrent writes to one package
-- ❌ Mark a task `done` before its verification command has passed. Treat
-  sub-agent output as unverified until you have checked the changed-file
-  scope, the diagnostics, and the acceptance criteria yourself
+- ❌ Mark a task `done` before the check that can fail it has passed — its
+  verification command where one is reachable from this run, and otherwise the
+  check the brief names as the one that *will* fail it, the environment it runs
+  in, who runs it, and what it leaves unverified until it does. Treat sub-agent
+  output as unverified until you have checked the changed-file scope, the
+  diagnostics, and the acceptance criteria yourself
 - ❌ Let `todos.md` drift from reality. It is the single source of truth; a
   stale tracker makes every downstream decision wrong
 - ❌ Continue past a failed verification. Re-brief the same specialist, or
@@ -237,9 +249,11 @@ Before each phase transition:
 3. **Check each sub-agent's changed-file scope against the brief.** A task
    that touched files it was not given is a failed task regardless of what it
    reports.
-4. **Run the task's verification command and record the result** in
-   `<run>/todos.md` before marking it `done`. Unverified work is not done
-   work.
+4. **Run the check that can fail the task and record the result** in
+   `<run>/todos.md` before marking it `done` — the verification command where
+   one is reachable from this run, and otherwise the check the brief names as
+   the one that *will* fail it, the environment it runs in, who runs it, and
+   what it leaves unverified until it does. Unverified work is not done work.
 5. **Prefer the smallest reversible check that could disconfirm the current
    hypothesis** before spawning broad implementation work.
 6. **Record assumptions, blocked dependencies, failed checks, and deferred

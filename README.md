@@ -4,7 +4,7 @@ System prompts for coding agents. **45 prompts** across architecture, data,
 platform, protocols, SDK, documentation, and financial engineering — written to
 be dropped into a harness and run against a real repository.
 
-**45 prompts. ~93,000 words. MIT licensed.**
+**45 prompts. ~94,000 words. MIT licensed.**
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
