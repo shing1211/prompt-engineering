@@ -24,3 +24,10 @@ uv.lock
 
 # Node
 node_modules/
+
+# Isolated worktrees for feature work
+.worktrees/
+
+# Superpowers scratch: ledgers, task briefs, review packages. Holds raw
+# analysis of private codebases, so it must never be committed.
+.superpowers/
