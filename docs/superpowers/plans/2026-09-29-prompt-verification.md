@@ -28,7 +28,7 @@ substance.
 - **No corpus fingerprint in this repository.** Findings are generalised into
   the library's voice. Not permitted in any committed file: venue names, adapter
   or directory names from the corpus, file counts, line counts, commit hashes,
-  or the phrase "the repo tested". The corpus path and the project name never
+  or phrasing that points at a specific codebase as the source. The corpus path and the project name never
   appear in a commit, a file, or a commit message.
 - **No secrets.** The corpus contains sealed secret manifests. Nothing in them
   is read, referenced, or paraphrased.
@@ -313,7 +313,8 @@ Other candidates, from the raw findings: duplicated authentication that must be
 correct N times; divergent error taxonomies a caller cannot handle uniformly;
 what a new integration copies when no contract tells it what to implement.
 
-Generalise. No venue names, no counts, no directory names, no "the repo tested".
+Generalise. No venue names, no counts, no directory names, and nothing that points
+at a specific codebase as the source.
 Where a finding only applies at high fan-out, say so in the entry, so a reader
 with three services knows it does not apply to them.
 

@@ -40,10 +40,10 @@ submissions put an unproven library in front of curators.
 A private multi-broker trading system, referenced below only as "the corpus" and
 not named here.
 
-- Large Go codebase, several hundred files, six-figure commit count.
-- Eight broker adapters ranging from roughly 450 to 2,700 lines each.
-- Roughly two dozen Kafka/stream/consumer files, five consumer entry points.
-- Several dozen SQL migration files.
+- Large Go codebase, several hundred files.
+- Several broker adapters, varying in size by a wide margin.
+- A substantial stream and SQL surface, with several consumer entry points.
+- SQL migrations as the schema source of truth.
 
 ### Safety constraints
 
@@ -57,7 +57,7 @@ positions. Any execution path that can reach a broker is out of scope.
 
 **No corpus fingerprint in the public repository.** Findings are generalised into
 the library's existing voice. Not published: venue names, adapter or directory
-names, file counts, line counts, or any phrasing of the form "the repo tested".
+names, file counts, line counts, or any phrasing that points at a specific codebase as the source.
 Published: the failure mode, stated so it generalises.
 
 The public repository is the constraint that shapes this work. A prompt
@@ -108,10 +108,10 @@ Probe the adapter layer for:
 - Whether a caller adding a ninth integration would copy an existing file or
   implement a contract.
 
-**Known gap, confirmed by pre-design probing.** The eight adapters range from
-roughly 450 to 2,700 lines and no shared interface exists anywhere in the corpus.
-The prompt's twelve existing anti-patterns — retry without budget, missing
-timeouts, timeout treated as failure, two services writing one dataset,
+**Known gap, confirmed by pre-design probing.** The adapters vary in size by a
+wide margin and no shared interface exists anywhere in the corpus. The prompt's
+twelve existing anti-patterns — retry without budget, missing timeouts, timeout
+treated as failure, two services writing one dataset,
 unversioned contract breaks, partial-success as 200, distributed transactions,
 ignored graceful shutdown, unwatched circuit breakers — do not cover this.
 
