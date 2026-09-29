@@ -50,6 +50,7 @@ TITLES: dict[str, str] = {
     "orchestrate": "Orchestrator",
     "performance": "Performance",
     "plan": "Planning",
+    "plan-review": "Plan Review",
     "platform-engineering": "Platform Engineering",
     "portfolio-accounting": "Portfolio Accounting",
     "quant-backtesting": "Quant Backtesting",

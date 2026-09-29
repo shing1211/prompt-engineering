@@ -92,6 +92,7 @@ nav:
       - Database Design: database-design.md
       - Code Review: code-review.md
       - Change Review: change-review.md
+      - Plan Review: plan-review.md
       - Testing: testing.md
       - Security: security.md
       - Performance: performance.md

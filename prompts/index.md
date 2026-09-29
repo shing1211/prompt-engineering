@@ -8,7 +8,7 @@ hide:
 # Prompt Library
 
 System prompts for coding agents, across architecture, data, platform,
-protocols, SDK, and financial engineering. 43 prompts: 27 cross-stack
+protocols, SDK, and financial engineering. 44 prompts: 28 cross-stack
 engineering practice, 16 covering multi-broker trading systems.
 
 Each prompt is a standalone system prompt with a declared mode
@@ -46,7 +46,7 @@ Multi-phase sub-agent execution and project planning — 2 prompt(s).
 
 ### Architecture and Engineering
 
-Cross-cutting engineering practice — 13 prompt(s).
+Cross-cutting engineering practice — 14 prompt(s).
 
 | Prompt | Mode | Description | Verified |
 |---|---|---|---|
@@ -61,6 +61,7 @@ Cross-cutting engineering practice — 13 prompt(s).
 | [`migration.md`](migration.md) — Migration | build | Migration guide for zero-downtime database migrations with Flyway/Liquibase, monolith to microservices refactoring, language upgrades, Infrastructure as Code with Terraform, and blue-green deployments on AWS | not verified |
 | [`observability-sre.md`](observability-sre.md) — Observability and SRE | build | Design observability and SRE practices for financial platforms with OpenTelemetry, SLOs, incident response, capacity planning, and production diagnostics | not verified |
 | [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend | not verified |
+| [`plan-review.md`](plan-review.md) — Plan Review | review | Decide whether a plan is worth implementing, and whether doing what it says produces the thing that was asked for | not verified |
 | [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python | not verified |
 | [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates | not verified |
 
@@ -190,7 +191,7 @@ Prompts written against a specific language's tooling. Everything not listed her
 | Python | [data-engineering](data-engineering.md), [data-platforms](data-platforms.md), [llm-integration](llm-integration.md), [market-data-pipeline](market-data-pipeline.md), [performance](performance.md), [quant-backtesting](quant-backtesting.md), [realtime-analytics](realtime-analytics.md), [security](security.md) |
 | TypeScript | [frontend-dev](frontend-dev.md), [graphql-development](graphql-development.md) |
 | Java / JVM | [jvm-backend](jvm-backend.md) |
-| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [backend-services](backend-services.md), [broker-certification](broker-certification.md), [change-review](change-review.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [platform-engineering](platform-engineering.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
+| **Any stack** | [api-design](api-design.md), [architecture](architecture.md), [backend-services](backend-services.md), [broker-certification](broker-certification.md), [change-review](change-review.md), [code-review](code-review.md), [compliance-regulatory](compliance-regulatory.md), [database-design](database-design.md), [devops](devops.md), [event-driven-architecture](event-driven-architecture.md), [financial-docs](financial-docs.md), [incident-response](incident-response.md), [migration](migration.md), [observability-sre](observability-sre.md), [orchestrate](orchestrate.md), [plan](plan.md), [plan-review](plan-review.md), [platform-engineering](platform-engineering.md), [sdk-docs](sdk-docs.md), [testing](testing.md) |
 
 ## Quick Reference
 
@@ -218,9 +219,9 @@ Prompts written against a specific language's tooling. Everything not listed her
 
 | Metric | Count |
 |---|---|
-| **Total prompts** | 43 |
+| **Total prompts** | 44 |
 | **Orchestration and Planning** | 2 |
-| **Architecture and Engineering** | 13 |
+| **Architecture and Engineering** | 14 |
 | **Application Development** | 4 |
 | **Platform and Infrastructure** | 1 |
 | **API Protocols** | 2 |
@@ -230,13 +231,13 @@ Prompts written against a specific language's tooling. Everything not listed her
 | **Documentation** | 1 |
 | **Financial Engineering — Trading and Broking** | 9 |
 | **Broker SDKs** | 7 |
-| **Distinct tags** | 245 |
-| **Language-agnostic** | 19 |
+| **Distinct tags** | 248 |
+| **Language-agnostic** | 20 |
 | **Verified** | 3 |
 | **Mode: all** | 8 |
 | **Mode: build** | 32 |
 | **Mode: plan** | 1 |
-| **Mode: review** | 2 |
+| **Mode: review** | 3 |
 
 <!-- END GENERATED TABLES -->
 

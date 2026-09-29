@@ -1,16 +1,16 @@
 # Prompt Engineering Library
 
-System prompts for coding agents. **43 prompts** across architecture, data,
+System prompts for coding agents. **44 prompts** across architecture, data,
 platform, protocols, SDK, documentation, and financial engineering — written to
 be dropped into a harness and run against a real repository.
 
-**43 prompts. ~86,000 words. MIT licensed.**
+**44 prompts. ~89,000 words. MIT licensed.**
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
 Built for anyone wiring an agent into a codebase: the prompts, the anti-patterns
-they exist to prevent, and the definition of done each one enforces. 19 of the
-43 are language-agnostic and apply as written on any stack; the rest name the
+they exist to prevent, and the definition of done each one enforces. 20 of the
+44 are language-agnostic and apply as written on any stack; the rest name the
 tooling they assume, and the [language table](prompts/index.md#browse-by-language)
 tells you which is which.
 
@@ -53,7 +53,7 @@ Coverage spans eight areas:
 
 | Area | Prompts | Examples |
 |---|---|---|
-| Architecture and engineering | 13 | service boundaries, API design, database design, testing, security, performance |
+| Architecture and engineering | 14 | service boundaries, API design, database design, testing, security, performance |
 | Application development | 4 | event-driven design, frontend, data engineering, LLM integration |
 | Protocols | 2 | gRPC, GraphQL |
 | SDK authoring | 2 | building a client library, documenting one |
@@ -62,7 +62,7 @@ Coverage spans eight areas:
 
 ### The financial-engineering wedge
 
-16 of the 43 prompts cover multi-broker trading, and no other public library
+16 of the 44 prompts cover multi-broker trading, and no other public library
 holds that ground. They are also the hardest prompts here to write, which
 makes them the best test of whether a prompt library is any good:
 
@@ -113,7 +113,7 @@ to do:
 | `build` | 32 | Implementation, configuration, generation |
 | `all` | 8 | Usable in any mode |
 | `plan` | 1 | Planning and analysis only |
-| `review` | 1 | Read and critique existing work |
+| `review` | 3 | Read and critique existing work |
 
 `plan` and `review` are non-mutating: they analyse and report without editing.
 Anything in `build` is licensed to write code.
@@ -164,8 +164,8 @@ The usual composition is a `plan` pass, then per-area `build` prompts, then
 | Track PnL and positions | [portfolio-accounting](prompts/portfolio-accounting.md) |
 | Handle compliance | [compliance-regulatory](prompts/compliance-regulatory.md) |
 
-The [full index](prompts/index.md) lists all 43 with descriptions, and the
-site has a searchable [tag index](prompts/tags.md) across 245 tags.
+The [full index](prompts/index.md) lists all 44 with descriptions, and the
+site has a searchable [tag index](prompts/tags.md) across 248 tags.
 
 ## Contributing
 

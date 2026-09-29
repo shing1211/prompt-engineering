@@ -67,6 +67,7 @@ One row per prompt, in alphabetical order by file name.
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
 | `plan` | no | Not run. The prompt was rebuilt on the house structure in this pass: no run covers this one, and nothing carries over from the text it replaced. | — |
+| `plan-review` | no | Not run. | — |
 | `platform-engineering` | yes | Run against two existing Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
 | `quant-backtesting` | no | Not run. | — |
@@ -103,7 +104,7 @@ instead, was reading each added line.
 
 ## What this pass did not do
 
-- **Forty of the forty-three prompts have not been run.** The register
+- **Forty-one of the forty-four prompts have not been run.** The register
   records that plainly rather than rounding it up. Every row that says "not
   run" is an open item, not a verdict.
 - **`jvm-backend` was skipped for want of a corpus.** No codebase with a JVM

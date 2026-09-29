@@ -26,7 +26,7 @@ And the large prompt collections, which compete on breadth rather than depth:
 
 **The gap.** Two gaps, and they pull in opposite directions.
 
-*The narrow one.* Sixteen of the 43 prompts cover multi-broker trading
+*The narrow one.* Sixteen of the 44 prompts cover multi-broker trading
 systems. No repository in either list holds that ground. Generic prompts
 compete with lists two orders of magnitude larger — `api-design.md` alone will
 never be found by someone searching for API design. It is only reachable as
@@ -49,7 +49,7 @@ trading prompts are the evidence.
 This reverses an earlier decision. The README previously led with the trading
 wedge and the nav led with the financial categories, on the reasoning that a
 narrow wedge is easier to be known for. That reasoning was sound for a
-single-domain library and wrong for this one — it made a 43-prompt library read
+single-domain library and wrong for this one — it made a 44-prompt library read
 as a 16-prompt one.
 
 ---
@@ -82,11 +82,11 @@ Remaining work in this lane:
 - [x] A verification register: one row per prompt recording whether it has
       been run against a real codebase, generated into a Verified column in
       the index so a reader can see the shape of the evidence without opening
-      anything. Forty of the forty-three rows say no, and that is the finding
+      anything. Forty-one of the forty-four rows say no, and that is the finding
       rather than a shortfall in it: the result of the pass is that most of this
       library is still a guess, and the register is where that is stated
 - [ ] Broaden the non-trading set. The breadth claim is currently carried by
-      the other 27 of 43; the honest way to firm it up is to add more areas,
+      the other 28 of 44; the honest way to firm it up is to add more areas,
       not to remove the financial ones.
 - [ ] Decide whether this repository's own documents belong on the site, and
       if so, what they cost. `docs/verification.md` is a repository document
@@ -111,7 +111,7 @@ Right now a prompt is a Markdown file you copy. The repos above beat that
 by being installable.
 
 - [ ] Emit `.opencode/agent/*.md` so `git clone` into `~/.config/opencode/`
-      makes all 43 available as named subagents
+      makes all 44 available as named subagents
 - [ ] Emit the Claude Code and Codex equivalents from the same source, so
       one prompt set serves three harnesses
 - [ ] A `Makefile` or `install.sh` that regenerates and installs
@@ -227,7 +227,7 @@ material the library should absorb.
       listed here rather than left out so it is not mistaken for a prompt
       nobody has got round to yet — it needs a different corpus, not more time
 
-The same loop runs for the rest of the library — 27 of the 43 — against any
+The same loop runs for the rest of the library — 28 of the 44 — against any
 codebase worked on rather than the trading one. A prompt that has never been run
 against a real repository is a guess, and the `platform-engineering` pass
 proved it: running that prompt against real Kubernetes repositories turned up
