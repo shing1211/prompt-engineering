@@ -299,8 +299,12 @@ def expected(
 #
 # The denominator is the library total, and it is checked as one whether or
 # not a pattern also reads the sentence. The old form required "prompts" or
-# "rows" straight after it, so "29 of the 45 --" matched nothing at all and
+# "rows" straight after it, so "29 of the 45 —" matched nothing at all and
 # the total went unchecked as silently as the subset did.
+#
+# The dashes inside the quoted shapes below are em dashes, and they have to
+# be: the pattern matches [—–] and not an ASCII hyphen, so a quotation written
+# with hyphens would illustrate a shape this file does not read.
 #
 # The numerator is a subset. The forms that say *which* subset are what
 # PATTERNS is for, and a numerator no such pattern claims is a figure this
@@ -311,7 +315,7 @@ def expected(
 # in one of two ways. The noun is one -- "the 45 prompts", "the forty-five
 # rows" -- and it says outright what is being counted. A dash is the other:
 # the noun is elided because the sentence is already about the library, as in
-# "the rest of the library -- 29 of the 45 --". Those two are the whole
+# "the rest of the library — 29 of the 45 —". Those two are the whole
 # allowance, and the narrowness is the point.
 #
 # It used to be any punctuation, or the end of the paragraph. Both are shapes
@@ -321,9 +325,19 @@ def expected(
 # paid for twice. A dash is the one piece of punctuation that opens a clause
 # instead of closing one, so it is the one that can stand in for a noun; a
 # full stop and a paragraph boundary both say the sentence is finished, which
-# is exactly when the count it ended on is about something else. Where a
-# document does mean the library and elides the noun another way, the cure is
-# to write the noun or to record the decision in HONOURED_SKIP.
+# is exactly when the count it ended on is about something else.
+#
+# The class is narrowed, not closed, and that is the honest description. A
+# dash after a bare count does not imply the library: "one of the three — the
+# other two are unrun" and "20 of the 30 —" both match, and both report their
+# denominator as the library total. The argument above is a plausibility
+# argument, not a discriminator, so it rules the common case out and cannot
+# tell a corpus from a library in the rest. The trade is acceptable because no
+# document this file scans is written that way, and the only dash-denominator
+# among the four is the real total in docs/strategy.md. Anyone widening this
+# branch past the dash should know that they are reopening the false positive
+# rather than adding a case, and the two ways out are the same as above: write
+# the noun, or record the decision in HONOURED_SKIP.
 SCOPED_SHAPE = re.compile(
     rf"(?:\b(?P<n>{NUMBER})\s+)?\b(?:out\s+)?of\s+the\s+(?P<all>{NUMBER})"
     rf"(?:\s+(?:prompts|rows)\b|\s*[—–])",

@@ -58,7 +58,7 @@ STALE_UNVERIFIED = WANT["unverified"] - 1
 #
 # That collision is not hypothetical: it is the live condition of the one
 # scoped numerator the repository actually has. docs/strategy.md writes
-# "29 of the 45 --" and 29 is WANT['nonfinancial'], so check_counts never
+# "29 of the 45 —" and 29 is WANT['nonfinancial'], so check_counts never
 # reports it -- not because a pattern says what 29 counts (no pattern
 # claims it), but because unvouched() accepts a figure the index happens to
 # carry. That is a pass by value, not a vouch, and it would evaporate the
@@ -226,7 +226,7 @@ CASES: list[tuple[str, str, object, str]] = [
     ),
     (
         # The denominator of a scoped count used to need "prompts" or "rows"
-        # straight after it, so "29 of the 45 --" matched no pattern at all
+        # straight after it, so "29 of the 45 —" matched no pattern at all
         # and a stale total there passed. The numerator moved with it, and is
         # now reported as unvouched: a figure nothing says what it counts.
         "check_counts: unvouched numerator in a scoped count",
@@ -342,12 +342,12 @@ CASES: list[tuple[str, str, object, str]] = [
 ]
 
 
-# Input that looks like a fingerprint and must not be reported. A guard
-# exists to keep a rule off legitimate content, and a guard removed to quiet
-# a false positive is invisible from the negative cases alone: the rule it
-# belonged to still fires on its own bad input, so the suite stays green
-# while it has stopped firing on the good input that guard protected. These
-# are the cases that catch that.
+# Input that looks like a finding and must not be reported. A guard exists to
+# keep a rule off legitimate content, and a guard removed to quiet a false
+# positive is invisible from the negative cases alone: the rule it belonged to
+# still fires on its own bad input, so the suite stays green while it has
+# stopped firing on the good input that guard protected. These are the cases
+# that catch that.
 MUST_STAY_CLEAN: list[tuple[str, str, object]] = [
     (
         "check_no_fingerprint: digit-only tokens are not commit hashes",
@@ -367,6 +367,43 @@ MUST_STAY_CLEAN: list[tuple[str, str, object]] = [
         "check_no_fingerprint: a broker slug in the register's slug cell",
         "check_no_fingerprint.py",
         lambda r: _seed_register_slug(r / "docs/verification.md"),
+    ),
+    (
+        # The punctuation branch SCOPED_SHAPE takes for a bare denominator
+        # used to count a full stop, and "One of the three." is the sentence it
+        # counted: the three are the runs below it, and reading them as the
+        # library total was a false positive on a correct document. The
+        # branch was narrowed to a dash to fix that, and nothing pinned the
+        # narrowing, so a later widening would have reopened it silently and
+        # surfaced as a confusing failure on a document nobody had broken.
+        "check_counts: a count of three closed by a full stop",
+        "check_counts.py",
+        lambda r: _seed_corpus_of_three(r / "README.md", "One of the three."),
+    ),
+    (
+        # The same exclusion one word along: no noun and no dash immediately
+        # after the figure. This is the wording that sat one word from
+        # docs/verification.md:25 being reported under the full-stop rule.
+        "check_counts: a count of three with words after it and no noun",
+        "check_counts.py",
+        lambda r: _seed_corpus_of_three(
+            r / "README.md", "One of the three is in that state."
+        ),
+    ),
+    (
+        # And the sentence that shape lives in, which carries a dash and must
+        # still not match: the noun "runs" sits between the figure and the
+        # punctuation, and a dash further along the sentence says nothing
+        # about the three. Seeded here as well as living in
+        # docs/verification.md, so the pin outlives a reword of that line.
+        "check_counts: a count of three with the dash further along",
+        "check_counts.py",
+        lambda r: _seed_corpus_of_three(
+            r / "README.md",
+            "One of the three runs below is in that state — half of that "
+            "prompt was run against a system the other half does not "
+            "describe.",
+        ),
     ),
 ]
 
@@ -489,6 +526,20 @@ def _seed_register_slug(path: Path) -> None:
     cell must not have narrowed it to nothing.
     """
     _append(path, "| `broker-futu` | no | Not run. | — |")
+
+
+def _seed_corpus_of_three(path: Path, sentence: str) -> None:
+    """Seed a scoped count whose denominator is a corpus, not the library.
+
+    "One of the three" is the shape check_counts used to report wrongly, and
+    it is a guard rather than a negative case because the document is correct:
+    the three are three of something named in the sentence, so the check has
+    no business reading them as a stale total. Appended as its own paragraph,
+    because a paragraph is the unit the scan joins over and a seeded figure
+    sharing one with the counts already there would be testing the yield rule
+    instead of the exclusion.
+    """
+    _append(path, f"\n{sentence}")
 
 
 def _append(path: Path, line: str) -> None:
@@ -624,7 +675,7 @@ def main() -> int:
         if code == 0:
             print(f"  ignored   {name}")
         else:
-            failures.append(f"{name}: reported input that is not a fingerprint")
+            failures.append(f"{name}: reported input that is not a finding")
             print(f"  FALSE-POSITIVE  {name}")
             for line in output.splitlines():
                 if line.startswith("  "):
