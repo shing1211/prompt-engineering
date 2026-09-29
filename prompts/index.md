@@ -230,7 +230,7 @@ Prompts written against a specific language's tooling. Everything not listed her
 | **Documentation** | 1 |
 | **Financial Engineering — Trading and Broking** | 9 |
 | **Broker SDKs** | 7 |
-| **Distinct tags** | 246 |
+| **Distinct tags** | 245 |
 | **Language-agnostic** | 19 |
 | **Verified** | 3 |
 | **Mode: all** | 8 |

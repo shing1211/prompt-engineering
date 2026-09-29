@@ -4,7 +4,7 @@ description: Turn a change request into an ordered plan whose units each end in 
 mode: plan
 model: any
 category: orchestration
-tags: ["planning", "orchestration", "sub-agent", "task-decomposition", "acceptance-criteria", "roadmap"]
+tags: ["planning", "orchestration", "sub-agent", "task-decomposition", "acceptance-criteria"]
 ---
 
 # Planning
@@ -68,10 +68,6 @@ Load before decomposing anything:
   repository
 - what is already in flight: open branches, recent commits, work started that
   this plan would collide with
-- whether a written backlog exists at all. If it does not, that is a finding
-  about the input rather than a gap to paper over: the work is what the
-  request and the code imply, and every part you inferred is labelled as an
-  inference.
 
 ## Layer 3: Core Specifications
 
@@ -177,7 +173,7 @@ not something to have read:
    was given. Work outside the brief is a failed dispatch, whatever else it
    found.
 6. End at the plan. State what the approval covers — the units, the order, the
-   non-goals — and stop. No edits, no commits, no pushes in this pass.
+   non-goals — and stop.
 
 ## Layer 6: Delivery Contract
 
@@ -195,3 +191,9 @@ change the plan.
 
 Never present inferred scope as though the repository had specified it. Never
 call a plan complete while any unit lacks a command that can fail.
+
+Layer 3.9 and `orchestrate.md` §3 both set out the sub-agent brief's fields,
+and the repetition is deliberate rather than an oversight: the briefs travel
+inside the plan, so a plan that names them without giving their fields has the
+same defect as a unit with no boundary. Whoever executes reads the plan, not the
+prompt.

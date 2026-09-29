@@ -165,7 +165,7 @@ The usual composition is a `plan` pass, then per-area `build` prompts, then
 | Handle compliance | [compliance-regulatory](prompts/compliance-regulatory.md) |
 
 The [full index](prompts/index.md) lists all 43 with descriptions, and the
-site has a searchable [tag index](prompts/tags.md) across 246 tags.
+site has a searchable [tag index](prompts/tags.md) across 245 tags.
 
 ## Contributing
 
