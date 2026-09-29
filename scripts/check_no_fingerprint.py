@@ -14,20 +14,27 @@ first time somebody pastes a real line number into an anti-pattern.
 Four rules, over Markdown and Python under prompts/, docs/, scripts/ and
 the repository root:
 
-  1. A venue name in prose that the file is not allowed to name. The
-     vocabulary is check_vendor_claims.KNOWN_VENDOR_HOSTS, imported from
-     the check that already owns it rather than copied, because a second
-     list of venue names is a list that drifts from the first, and the
-     drift is silent. A file may name a venue when it is one of the
-     broker or SDK prompts that check already governs, or when it
-     carries that script's provenance rule: verification wording plus a
-     citation to that vendor's own documentation. Both allowances are
-     load-bearing today, so this check widens them and never narrows
-     them. Prose only, because prose is where a claim lives; a name in a
-     fenced example, a diagram or a frontmatter description is the
-     library describing its own published coverage. Markdown only, for
-     the same reason: in a Python file a venue name is a slug in this
-     library's own prompt inventory, not a claim about a codebase.
+   1. A venue name in prose that the file is not allowed to name. The
+      vocabulary is check_vendor_claims.KNOWN_VENDOR_HOSTS, imported from
+      the check that already owns it rather than copied, because a second
+      list of venue names is a list that drifts from the first, and the
+      drift is silent. A file may name a venue when it is one of the
+      broker or SDK prompts that check already governs, when it
+      carries that script's provenance rule -- verification wording plus a
+      citation to that vendor's own documentation -- or when it is an
+      inventory of this library's own prompt names, which is what
+      LIBRARY_VENUE_FILES below is: the front door, the changelog, the
+      generated index, and the verification register, each of which writes
+      out a file name this repository already publishes. A venue name
+      inside one of those file names is part of the library's catalogue,
+      not a claim about anybody's codebase. All three allowances are
+      load-bearing today, so this check widens them and never narrows
+      them. Prose only, because prose is where a claim lives; a name in a
+      fenced example, a diagram or a frontmatter description is the
+      library describing its own published coverage. Markdown only, for
+      the same reason: in a Python file a venue name is a slug in this
+      library's own prompt inventory, not a claim about a codebase.
+
 
   Every name, pattern and prefix this check matches a venue with comes
   from check_vendor_claims.py by import: the vocabulary
@@ -231,7 +238,15 @@ DOCUMENTED_IDENTIFIERS = {"C5AD17C747E3415A3642D57D77C6C491D6AC1D69"}
 
 # Files allowed to name venues, for a reason that is about this library
 # and not about the venue. Keyed by file name, which is unique for all
-# three.
+# four.
+#
+# The last two are a different kind of allowance from the first. The front
+# door, the changelog and the index name a broker because they list the
+# library's own prompts, and the verification register names all forty-two
+# of them including the five whose file names contain a venue. An inventory
+# of this repository's own file names is not a claim about a codebase, and a
+# register that could not list the broker prompts would be a register that
+# quietly omitted five rows.
 LIBRARY_VENUE_FILES = {
     "README.md": "the front door lists this library's own Broker SDK prompts",
     "CHANGELOG.md": (
@@ -241,6 +256,10 @@ LIBRARY_VENUE_FILES = {
     "index.md": (
         "generated from frontmatter by generate_index.py, so the prompt is "
         "the file to check and this one only repeats it"
+    ),
+    "verification.md": (
+        "the verification register, which lists every prompt by file name and "
+        "cannot do that without naming the five broker prompts"
     ),
 }
 
