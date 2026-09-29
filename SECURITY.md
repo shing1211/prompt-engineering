@@ -44,8 +44,14 @@ any pinned version in the Pages build.
 ## Reporting
 
 Report privately through
-[GitHub's private vulnerability reporting][report], which is enabled on this
-repository. Please do not open a public issue for a vulnerability.
+[GitHub's private vulnerability reporting][report]: on this repository, use
+**Security → Report a vulnerability**.
+
+If that page is unavailable, the feature may be disabled. In that case email
+the maintainer at the address in the repository's public commits, or open a
+discussion in a non-public channel of your choosing. **Do not open a public
+issue for a vulnerability** — an issue is visible to everyone immediately,
+including before a maintainer has read it.
 
 Include:
 
@@ -73,7 +79,18 @@ confidentiality constraint.
 
 Because these files are instructions rather than code, traditional SAST and
 dependency scanning will not surface most of what matters in scope above.
-This is reviewed by hand. If a prompt you rely on reads as if it would
-exceed its stated purpose, treat that as a finding and report it.
+
+Part of it is now automated. `scripts/check_vendor_claims.py` runs in CI and
+fails a prompt that states a broker's auth internals, endpoint, or capability
+as fact without an instruction to verify it, and fails one that presents a
+broker-specific risk threshold as a universal rule. That check exists because
+four vendor facts in this library were wrong when first published, and the
+check cannot tell you a fact is *still* right — it only catches the pattern of
+asserting without provenance.
+
+The judgement about whether a claim is actually correct is still human. If a
+prompt you rely on reads as if it would exceed its stated purpose, or states
+something specific about a vendor you have reason to doubt, treat it as a
+finding and report it.
 
 [report]: https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam
