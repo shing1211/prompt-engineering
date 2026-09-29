@@ -73,9 +73,18 @@ Remaining work in this lane:
 - [x] One-line description carries the count and the audience, not the wedge
 - [x] System-prompt framing: how to pick a prompt by mode, and how to compose
       several for multi-area work
-- [ ] A worked example: one prompt, end to end, in a real repo, with output.
-      This is the highest-value single artifact still missing. A reader who
-      sees it work has a reason to believe the other 41 work.
+- [x] A worked example: one prompt, end to end, in a real repo, with output.
+      Now `docs/worked-example.md`, generalised, and ending on a section
+      about what the prompt got wrong. The value was never the anti-patterns
+      it ends with — it was showing the process, review cutting what the run
+      produced included, because an example that shows only successes is not
+      believed and teaches nothing
+- [x] A verification register: one row per prompt recording whether it has
+      been run against a real codebase, generated into a Verified column in
+      the index so a reader can see the shape of the evidence without opening
+      anything. Thirty-nine of the forty-two rows say no, and that is the finding
+      rather than a shortfall in it: the result of the pass is that most of this
+      library is still a guess, and the register is where that is stated
 - [ ] Broaden the non-trading set. The breadth claim is currently carried by
       the other 26 of 42; the honest way to firm it up is to add more areas,
       not to remove the financial ones.
@@ -199,6 +208,11 @@ material the library should absorb.
       pass found a configuration value that fell through to the live default
       when unrecognised — the strongest general finding in that pass, and not
       closable by editing the file it was found in
+- [ ] `jvm-backend` is the one prompt the verification pass could not move.
+      No corpus with a JVM service layer was available to run it against, so
+      the register records it as unverified with that reason attached. It is
+      listed here rather than left out so it is not mistaken for a prompt
+      nobody has got round to yet — it needs a different corpus, not more time
 
 The same loop runs for the rest of the library — 26 of the 42 — against any
 codebase worked on rather than the trading one. A prompt that has never been run
@@ -207,6 +221,11 @@ proved it: running that prompt against real Kubernetes repositories turned up
 three anti-patterns it did not previously name. Every prompt here should get
 that treatment, and the financial prompts are simply the ones that have had it
 most often.
+
+`docs/verification.md` is the current answer to which of them have, for all of
+them, and it is written to be argued with rather than trusted. A run that finds
+nothing is a row that says so, and so is a run that finds the prompt was wrong
+about something it claimed.
 
 This is the honest reason the vertical prompts are better than generic
 ones, and it is sustainable only if the loop is closed — which is also the

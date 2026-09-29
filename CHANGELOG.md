@@ -13,6 +13,93 @@ trusting the values.
 
 Nothing yet.
 
+## [0.4.0] - 2026-09-29
+
+Three of the forty-two prompts in this library have been run against a real
+codebase. That number is now on every row of the generated index, and this
+release publishes the process behind it — including the parts of the process
+that went wrong.
+
+### Verification state
+
+`docs/verification.md` is a new register with one row per prompt, recording
+whether the prompt has been run against a real codebase and what came of it.
+"Verified" means exactly that: the run produced anti-patterns the prompt did
+not already contain. It is not a score, and a prompt nobody has run is not a
+suspect one.
+
+Three prompts are verified:
+
+- `platform-engineering` — run against two existing Kubernetes repositories in
+  an earlier pass and published in 0.3.1. Three anti-patterns, one guardrail.
+- `backend-services` — run against production code in which many services
+  implement a single contract. Four anti-patterns.
+- `data-platforms` — run against a private production system whose data path is
+  an operational streaming plane rather than a warehouse. Four anti-patterns.
+
+**The other thirty-nine have not been run.** Each is named individually in the
+register, so the absence is on the record rather than inferred from a summary.
+`jvm-backend` is the one that is not simply waiting on time: no codebase with a
+JVM service layer was available to run it against, and the row says that
+instead of leaving it indistinguishable from a prompt nobody has got round to.
+
+Two of the three verified rows carry a caveat worth more than the tick.
+`data-platforms` was run against a streaming system, so the warehouse half of
+that prompt — columnar storage, file formats, compaction, query plans,
+per-dataset cost — has no evidence behind it and nothing was written about it.
+The absence of findings there is not coverage. And `platform-engineering`'s
+corpus was public rather than private, which is a different kind of evidence,
+and is the reason the register records what was run and not only whether.
+
+The register is a repository document rather than a site page, because
+`mkdocs.yml` builds from `prompts/`. The site's front page links to it, and so
+does the `Verified` column on every verified row.
+
+### The findings
+
+Four anti-patterns in `backend-services.md` and four in `data-platforms.md`,
+appended to the existing sections; nothing already published was edited or
+removed. The generalisable result is that both prompts named symptoms and
+missed the design decision behind them — duplicated retry loops, a shared error
+taxonomy that is not shared, and per-implementation timeouts are all what you
+get when a shared definition is written out by hand again in each place that
+needs it.
+
+The findings were read out of a private codebase and are published in
+generalised form. The failure mode goes out, the evidence stays in: no
+identifier, path, commit, count or product name from that codebase appears in
+any file in this repository. That is a constraint rather than a style
+preference. A public file cannot be unpublished, and a name that survives a
+generalisation is a pointer back to one codebase rather than a finding anyone
+else can use.
+
+### The worked example
+
+`docs/worked-example.md` takes one prompt end to end: what it was given, what
+it produced, the diff that was actually committed, and then what the prompt got
+wrong. That last section is the longest one in the file, and it is the one
+worth reading. It records a scope caveat that told the smallest reader to skip
+the one entry that applies to them unconditionally; a safety claim about the
+fingerprint check that was checked by reading its imports rather than its
+source, and was wrong; a leak in a commit message rather than in a file; and
+the two strongest findings in the report, neither of which fitted the prompt it
+was found in.
+
+### Verification
+
+- `scripts/check_no_fingerprint.py`, new. Fails on a venue name in prose, an
+  absolute home-directory path, the corpus project name, and a
+  commit-hash-shaped token in a prompt. Its own docstring is explicit about
+  what it cannot catch — counts and product names — because a count is not
+  distinguishable from any other number a prompt legitimately uses. Both passes
+  in this release were cleared for those by reading, not by the script.
+- `generate_index.py` reads the register and emits the `Verified` column, and
+  refuses to run when the two disagree. A prompt with no row is an error rather
+  than a default, because a prompt rendered "not verified" for want of a row is
+  indistinguishable from one somebody decided not to run.
+- 42 prompts, 44 pages, 2816 internal links resolve.
+  `generate_index.py --check` exits 0; `mkdocs build --strict` succeeds.
+
 ## [0.3.1] - 2026-09-29
 
 Maintenance, and a repositioning.
