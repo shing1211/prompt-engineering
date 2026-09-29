@@ -371,8 +371,12 @@ The total rises to 45. Add a browse row for each of the three new prompts, keepi
 existing ordering: the code rows first, then the financial ones.
 
 Expected: `grep -c 'prompts/change-review.md\|prompts/plan-review.md\|prompts/test-review.md'`
-README.md` returns 3, and the browse table's rows are 26 in total, matching the 45 prompts
-minus the 16 financial ones and the 3 that the table does not list individually.
+README.md` returns 3. The browse table has 30 prompt rows and rises to 33. It is a curated
+"looking for / start here" table, not a mirror of the library: it lists 33 of the 45 prompts,
+and the financial ones are listed individually rather than as one cluster, so its row count
+cannot be derived from the prompt total by subtraction. The numbers that matter are the prompt
+total and the mode table, both of which `check_counts.py` gates — the browse rows are not gated,
+so this grep is the only thing checking them. Run it.
 
 - [ ] **Step 4: Update `docs/strategy.md`**
 

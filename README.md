@@ -143,6 +143,9 @@ The usual composition is a `plan` pass, then per-area `build` prompts, then
 | Design a service boundary | [backend-services](prompts/backend-services.md) |
 | Design a schema | [database-design](prompts/database-design.md) |
 | Review code | [code-review](prompts/code-review.md) |
+| Review a change | [change-review](prompts/change-review.md) |
+| Review a plan | [plan-review](prompts/plan-review.md) |
+| Review tests | [test-review](prompts/test-review.md) |
 | Write tests | [testing](prompts/testing.md) |
 | Security audit | [security](prompts/security.md) |
 | Tune performance | [performance](prompts/performance.md) |
