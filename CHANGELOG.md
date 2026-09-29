@@ -66,12 +66,27 @@ get when a shared definition is written out by hand again in each place that
 needs it.
 
 The findings were read out of a private codebase and are published in
-generalised form. The failure mode goes out, the evidence stays in: no
-identifier, path, commit, count or product name from that codebase appears in
-any file in this repository. That is a constraint rather than a style
-preference. A public file cannot be unpublished, and a name that survives a
-generalisation is a pointer back to one codebase rather than a finding anyone
-else can use.
+generalised form. The failure mode goes out, the evidence stays in. That
+is a constraint rather than a style preference: a public file cannot be
+unpublished, and a name that survives a generalisation is a pointer back
+to one codebase rather than a finding anyone else can use.
+
+What that means here is specific rather than absolute, and it is worth
+being exact about which part a check can hold and which part a reader has
+to hold. The check scans the Markdown and Python in this repository, and
+it holds this: no venue name this library already publishes appears in
+Markdown prose, no absolute home-directory path appears anywhere, no
+commit-hash-shaped token appears in a prompt, and the corpus project name
+appears in none of it — not in plaintext, and not encoded, which is why
+that rule reads the name from outside the repository and exits non-zero
+when it is not configured rather than reporting success for a rule it did
+not run. Two classes no check here can hold, because holding them would
+mean publishing them: a magnitude, since a count is not distinguishable
+from any other number a prompt legitimately uses, and the corpus's own
+vocabulary — the venues and product names this library does not already
+publish. Both were removed by reading, and both are caught in review
+rather than by a build. The claim is therefore about the specific classes
+above, and not about "nothing private" in the abstract.
 
 ### The worked example
 
@@ -93,6 +108,12 @@ was found in.
   what it cannot catch — counts and product names — because a count is not
   distinguishable from any other number a prompt legitimately uses. Both passes
   in this release were cleared for those by reading, not by the script.
+  Two details are worth a line each. The corpus name is configured outside
+  the repository, and the check exits non-zero when it is not, so the rule
+  that forbids the name cannot be turned off by leaving it out. And the
+  verification register's venue allowance is keyed to the slug cell of a row,
+  which is where a prompt file name goes, and not to the row: the other cells
+  are prose, and a claim about what was run is written there.
 - `generate_index.py` reads the register and emits the `Verified` column, and
   refuses to run when the two disagree. A prompt with no row is an error rather
   than a default, because a prompt rendered "not verified" for want of a row is
