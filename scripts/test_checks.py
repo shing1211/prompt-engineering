@@ -545,7 +545,7 @@ def _attribution(check: str, red_clean: set[str]) -> str:
         return ""
     return (
         f"{check} is red on the repository as committed (FAILS-CLEAN above), "
-        "so this is that failure and not the mutation"
+        "so this failure cannot be attributed to the mutation"
     )
 
 
