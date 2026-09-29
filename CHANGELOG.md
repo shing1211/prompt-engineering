@@ -60,9 +60,8 @@ attached.
 **Seven of the forty-five prompts have been verified. Thirty-eight have not
 been run, and every one of them is named individually in the register.** That
 is the number this release is judged on, not the four it added: a run against
-one codebase is evidence about that codebase, and four runs against two
-public repositories and one private system is a small sample of a
-forty-five-prompt library.
+one codebase is evidence about that codebase, and four runs against a single
+public repository are a small sample of a forty-five-prompt library.
 
 The two runs in this release are the fourth and fifth against public
 repositories, and both used the same one — a public command-line application
@@ -75,10 +74,10 @@ All four runs produced four anti-patterns each, none carrying a path, a file
 name, an identifier or a count. `plan`'s run surfaced that Layer 3's
 acceptance-command requirement has no answer for work that can only be shown
 wrong by running it somewhere the planning session cannot reach — the prompt's
-own rule, followed literally, produces a check nobody can fail. Layer 3, the
-Delivery Contract and the closing line now carry the alternative the new
-anti-pattern asks for: where no command run from here can fail the unit, the
-plan says which check would, and where it runs.
+own rule, followed literally, produces a check nobody can fail. Every layer
+that states that rule now carries the alternative the new anti-pattern asks
+for: where no command run from here can fail the unit, the plan says which
+check would, and where it runs.
 
 That run is **not** the case the rewrite was built for, and this entry
 previously said it was. The rewrite exists to plan a change request the
@@ -87,7 +86,7 @@ the code rather than from a backlog. The request used was cross-platform CI
 testing, and the corpus's own plans already cover that ground. The two
 anti-patterns that exist for a request nobody has planned for were therefore
 never exercised, and whether they stay quiet on one is **unestablished**. The
-null is withdrawn rather than published, and this release does not claim the
+null is published here and withdrawn here. The release does not claim the
 rewrite's central case is covered.
 
 `jvm-backend` is unchanged and still skipped for want of a corpus.

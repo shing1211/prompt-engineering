@@ -119,8 +119,11 @@ Load before decomposing anything:
   is undone, and which way round two deploys have to go.
 - **The dispatch.** Where the change spans more than one area, the brief per
   sub-agent: area, objective, paths to read, paths it may write, boundaries,
-  acceptance criteria, verification command, and what it reports back. Two
-  sub-agents are never given overlapping write scope.
+  acceptance criteria, verification command, and what it reports back. Where
+  no command run from this session can fail the unit, the brief carries the
+  acceptance condition the unit has instead: the check that *will* fail it,
+  the environment it runs in, and what it leaves unverified until it does.
+  Two sub-agents are never given overlapping write scope.
 
 ## Layer 4: Anti-Patterns (Never Do These)
 

@@ -56,7 +56,10 @@ If any CONFIG field is unknown, discover it before planning and confirm.
 - Write `<run>/plan.md`: goal, scope, assumptions, approach (2–3 alternatives
   with a justified pick), task breakdown, risks, order of work.
 - Each task: ID, objective, role, inputs, outputs, dependencies, acceptance
-  criteria, verification commands, estimated size (S/M/L).
+  criteria, verification commands, estimated size (S/M/L). Where no command
+  reachable from the run can fail the task, the verification commands are
+  replaced by the check that will, the environment it needs, and what it
+  leaves unverified until it runs.
 - Tasks must be small enough for one focused sub-agent session.
 - Summarize here (≤30 lines).
 - **PLAN mode**: stop here and wait for approval.
@@ -79,7 +82,9 @@ If any CONFIG field is unknown, discover it before planning and confirm.
   - Context and files to read
   - Files to create/modify (exact paths)
   - Constraints and boundaries (what NOT to touch)
-  - Acceptance criteria + exact verification commands
+  - Acceptance criteria + exact verification commands, or the check that will
+    fill that field where no command reachable from the run can fail it, its
+    environment, and what it leaves unverified until it runs
   - Required report: changes, files touched, commands run, blockers
 - Never code in this session. Never spawn a sub-agent without a brief.
 - Parallelize independent tasks with different specialists.
