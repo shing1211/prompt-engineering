@@ -13,6 +13,71 @@ trusting the values.
 
 Nothing yet.
 
+## [0.3.1] - 2026-09-29
+
+Maintenance, and a repositioning.
+
+### The library is no longer presented as a trading library
+
+26 of the 42 prompts are non-trading, across eight areas, and the audience is
+anyone wiring an agent into a codebase. The README led with "built around
+financial trading systems", the site nav led with the financial categories,
+and the site's own front page did the same. A 42-prompt library was reading as
+a 16-prompt one.
+
+- README leads with the count, the eight areas, and the agent-tool audience
+- Nav leads with architecture and application; Financial Engineering moves last
+- The site front page (`prompts/index.md`) was the real front door and had been
+  missed by the first pass, so it is repositioned too
+- New framing for what these are: system prompts rather than user prompts, how
+  to pick one by mode, and how to compose several for multi-area work
+- Generated category tables reordered to match the nav
+- `docs/strategy.md` argued for the opposite and won. The reversal is recorded
+  there rather than deleted, because the original reasoning was sound for a
+  single-domain library
+
+The financial prompts are unchanged and still the depth differentiator, which
+is what no other public library has. Only the framing moved.
+
+### A confidential name removed from all history
+
+A project name was in 2,016 file instances across 4 commits, in 3 commit
+messages, and in one filename. The current tree was cleaned in `0.3.0`; this
+release finishes the job. The name is not written out here, for the same
+reason it is not written out anywhere else.
+
+`git filter-repo` rewrote all 5 affected commits and 4 tags. The interesting
+part is what a text replace alone would have missed:
+
+- **Commit messages.** `--replace-text` does not touch them. Three messages
+  still carried the name.
+- **The filename.** The prompt's own filename carried the name and needed a
+  path rewrite, done via a `fast-export`/`fast-import` pass.
+- **A prefix collision.** Renaming the `DocSmith-Fin` persona to
+  `DocSmith-FinOps` also matched the two pre-existing `DocSmith-FinOps`,
+  producing `DocSmith-FinOpsOps`. Needed a placeholder and
+  longest-match-first ordering.
+
+Verified zero occurrences across every commit, message, path, and tag. The four
+release notes were already clean. All 42 prompts, 2,816 links, and
+`mkdocs build --strict` verified after the rewrite.
+
+### Corrections
+
+- Mode table said 30 `build` / 7 `all` against an actual 32 / 8
+- The browse section still said 38 prompts, a figure wrong in every release
+  since `0.1.0`
+- Tag count said 222 against an actual 244
+- Repository description said "19 cross-stack, 19 finance/trading" — the
+  old 38-prompt split, with the financial half never right
+- Topics rebalanced toward the agent-tooling audience
+
+### CI
+
+- The Pages guard added while the repository was private has been removed. It
+  probed the Pages API with the workflow's `GITHUB_TOKEN`, which cannot read
+  that endpoint, so it reported a green run for a deploy that never happened
+
 ## [0.3.0] - 2026-09-28
 
 Broadens the library. Four new prompts, three new categories, and metadata
@@ -215,3 +280,5 @@ First public release. 38 prompts, a browsable site, and CI.
 [0.2.0]: https://github.com/shing1211/prompt-engineering/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/shing1211/prompt-engineering/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shing1211/prompt-engineering/releases/tag/v0.1.0
+
+[0.3.1]: https://github.com/shing1211/prompt-engineering/compare/v0.3.0...v0.3.1
