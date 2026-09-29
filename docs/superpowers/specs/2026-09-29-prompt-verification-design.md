@@ -86,7 +86,11 @@ profile. It is dropped rather than verified against a substitute, and it is
 explicitly labelled unverified.
 ### Deferral condition for `data-platforms`
 
-The corpus has no top-level data platform directory. Data lives inside services.
+**As hypothesised before the work:** the corpus has no top-level data platform
+directory, and data lives inside services. That hypothesis was wrong. The probe
+found a data platform — a message log and a time-series store, with consumers, a
+dead-letter mechanism, and an outbox. The platform was simply not named or
+shaped the way this section expected to find it.
 
 A prompt about data *platforms* applied to a codebase with no data platform may
 find that its subject does not exist. That is a legitimate result and is reported
@@ -165,7 +169,8 @@ Prefer `backend-services`, since that phase has the most concrete material.
 
 ## Known limits
 
-Stated in the design rather than discovered later.
+Stated in the design rather than discovered later — with one exception, recorded
+in place below.
 
 **One corpus, one architecture.** A trading system is a real test and not a
 neutral one. An anti-pattern drawn from a heavily multi-venue system may
@@ -173,10 +178,18 @@ over-weight multi-venue concerns. Where a finding is specific to high-fan-out
 integrations, the prompt says so, so a reader with a handful of services knows
 it does not apply.
 
-**Most prompts remain unverified.** After this pass, 2 of 42 are verified
-(`platform-engineering` previously, `backend-services` and possibly
-`data-platforms` here) and `jvm-backend` has no available corpus. The remainder
-are unverified. That is recorded rather than hidden.
+**Most prompts remain unverified.** *As designed:* 2 of 42 were to be verified
+after this pass — `platform-engineering` from the earlier pass, plus
+`backend-services`, plus `data-platforms` only if its corpus held a data
+platform to evaluate against. *As delivered:* **3 of 42**, because
+`data-platforms` did have one, and the deferral condition was not met.
+`jvm-backend` was skipped for want of a corpus. The remaining 39 are
+unverified, each named individually in `docs/verification.md` so the absence
+is on the record rather than inferred from a count.
+
+This is the one limit above that did not survive contact with the work, so it
+is the one worth reading twice: the design made a conditional bet on the corpus,
+and the corpus answered. The other three held as written.
 
 **A single run is not a benchmark.** This establishes that the prompts produce
 good output, not that they produce good output reliably. The platform-engineering
