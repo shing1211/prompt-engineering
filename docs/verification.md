@@ -23,7 +23,7 @@ and about nothing else.
 
 A prompt can be verified and still have no evidence behind much of what it
 covers. One of the five runs below is in that state — half of that prompt was
-run against a system the other half does not describe. Two more were run
+run against a system the other half does not describe. Three more were run
 against a corpus of a different kind rather than an uncovered half: public
 repositories of a different shape from anything else in the register, which
 is a real run and a weaker one, and each says so in its own row. The caveats
@@ -47,7 +47,7 @@ One row per prompt, in alphabetical order by file name.
 | `broker-tiger` | no | Not run. | — |
 | `broker-vbroker` | no | Not run. | — |
 | `broker-webull` | no | Not run. | — |
-| `change-review` | yes | Run against a repository with a deep commit history. Four anti-patterns added. | 2026-09-29 |
+| `change-review` | yes | Run against a public command-line application with a deep commit history. Four anti-patterns added. | 2026-09-29 |
 | `code-review` | no | Not run. | — |
 | `compliance-regulatory` | no | Not run. | — |
 | `data-engineering` | no | Not run. | — |
