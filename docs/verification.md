@@ -76,7 +76,7 @@ One row per prompt, in alphabetical order by file name.
 | `sdk-build` | no | Not run. | — |
 | `sdk-docs` | no | Not run. | — |
 | `security` | no | Not run. | — |
-| `test-review` | yes | Run against a public command-line application with a deep commit history, against one commit that added a large test file and no production behaviour. Four anti-patterns added. | 2026-09-29 |
+| `test-review` | yes | Run against a public command-line application with a deep commit history, the same one `change-review` was run against, against one commit that added a large test file and no production behaviour. Four anti-patterns added. | 2026-09-29 |
 | `testing` | no | Not run. | — |
 | `trading-bot` | no | Not run. | — |
 | `trading-risk` | no | Not run. | — |

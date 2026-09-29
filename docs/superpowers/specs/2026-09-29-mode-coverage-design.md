@@ -175,6 +175,19 @@ the strongest available claim without building an evaluator.
 
 - Verifying the remaining unverified prompts from the library's existing set.
 - Adding prompts in any mode other than `plan` and `review`.
-- Changing `code-review.md` or `orchestrate.md`.
+- Changing `code-review.md`.
 - An automated quality evaluator.
 - Any change to how the site builds or what it publishes.
+
+`orchestrate.md` was out of scope here and was changed anyway. Running `plan.md`
+against a real codebase found a defect in the rule `plan.md` itself states: it
+demanded a command that fails when the work is wrong, and no such command exists
+for work that can only be shown by running it somewhere the session cannot reach.
+The fix is a four-element alternative — name the substituted condition, the
+environment, who runs it, what stays unverified until it does — and every layer
+that states the rule has to carry it. `plan.md` and `orchestrate.md` state it in
+each of their own layers, and `plan.md` names `orchestrate.md` as its partner.
+Fixing one and not the other would have left the library self-contradicting, so
+the paired edit was made deliberately. See `plan.md:29-35` for the contract and
+`.superpowers/sdd/2026-09-29-mode-coverage/progress.md` at `0bcbb13` for the
+ruling. `code-review.md` remained untouched.
