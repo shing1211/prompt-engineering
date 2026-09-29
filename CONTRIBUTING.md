@@ -99,6 +99,7 @@ python3 scripts/check_nav.py               # every prompt is in the site nav
 python3 scripts/check_prompt_sections.py   # every prompt has both sections
 python3 scripts/check_vendor_claims.py     # vendor facts are marked unverified
 python3 scripts/check_counts.py            # prose counts match the index
+python3 scripts/check_no_fingerprint.py     # no private codebase named
 python3 scripts/check_links.py             # internal links in built/ site/
 ```
 
@@ -114,6 +115,7 @@ What each one catches:
 | `check_prompt_sections.py` | a prompt shipping without an anti-patterns or guardrails section |
 | `check_vendor_claims.py` | broker auth internals, endpoints, or capabilities stated as fact with no verification instruction; a broker-specific risk threshold presented as a universal rule |
 | `check_counts.py` | a hand-written count in `README.md` or `docs/strategy.md` that disagrees with the generated index |
+| `check_no_fingerprint.py` | a venue name, home-directory path, corpus project name or commit hash from a private codebase, in a public file |
 | `check_links.py` | a broken relative link in the built site |
 
 **Every prompt needs both sections.** An anti-patterns section naming failures
@@ -166,6 +168,32 @@ A pull request is ready when:
 - [ ] The delivery contract is checkable
 - [ ] Technical claims are sourced or flagged for verification
 - [ ] No credentials, account identifiers, or private endpoints
+- [ ] Findings read from a private codebase are generalised
+
+### Findings travel generalised
+
+Some prompts here were written by running them against a codebase that is
+not public, and cannot be made public by publishing about it. A finding
+therefore ships as the failure mode with the evidence left in.
+
+Generalising is the useful half, not a tax on the work. An anti-pattern
+that names the defect is the part a reader on a different system can
+still act on; the codebase it was found in is the part that is noise to
+them and a pointer back to someone else's system to everyone.
+
+So state the failure mode in general terms, and leave out three things: a
+private codebase by name, a venue the prompt is not about, and a magnitude
+from either — a line count, a file count, a service count, or one of those
+written out in words. Write the shape rather than the measurement. "A
+threshold duplicated across the service" is reusable; "2,400 lines in one
+file" is a fingerprint and would have to be unpublished.
+
+[scripts/check_no_fingerprint.py](scripts/check_no_fingerprint.py) enforces
+the name-and-path half — venue names, home-directory paths, the corpus
+project name, commit hashes. It cannot catch a magnitude, because a count
+is not distinguishable from any other number a prompt legitimately uses;
+a check that banned counts would ban the library. **Counts are caught in
+review, so read your own diff for numbers, not only for names.**
 
 ## House rules
 
