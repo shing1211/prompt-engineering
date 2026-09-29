@@ -24,13 +24,33 @@ And the large prompt collections, which compete on breadth rather than depth:
 `f/prompts.chat` (~140k), `x1xhlol/system-prompts-and-models-of-ai-tools`
 (~110k), `dair-ai/Prompt-Engineering-Guide` (~69k).
 
-**The gap.** Sixteen of the 42 prompts here cover multi-broker trading
-systems. No repository in either list holds that ground. That is the asset.
+**The gap.** Two gaps, and they pull in opposite directions.
 
-**The ceiling.** Generic prompts compete with lists that are two orders of
-magnitude larger. `api-design.md` on its own will never be found by someone
-searching for API design. It is only reachable as part of a coherent
-whole.
+*The narrow one.* Sixteen of the 42 prompts cover multi-broker trading
+systems. No repository in either list holds that ground. Generic prompts
+compete with lists two orders of magnitude larger — `api-design.md` alone will
+never be found by someone searching for API design. It is only reachable as
+part of a coherent whole. That is what the financial prompts are for: they are
+the part nobody else has.
+
+*The one that decides the whole strategy.* This library aims at people building
+agent tools and coding agents, across many topics. That audience is larger and
+better served by breadth than by a vertical wedge, and a library that claims
+both has to earn both. A third of the library is one domain; a reader who wants
+a Go gRPC prompt is not a trading developer and should not feel like they have
+landed in the wrong place.
+
+**The resolution.** Lead with breadth and the agent-tool audience, because
+that is who the library is for. Keep the financial prompts as the depth
+differentiator rather than the front door, and let them be the proof that the
+prompt structure works on genuinely hard problems. Breadth is the claim; the
+trading prompts are the evidence.
+
+This reverses an earlier decision. The README previously led with the trading
+wedge and the nav led with the financial categories, on the reasoning that a
+narrow wedge is easier to be known for. That reasoning was sound for a
+single-domain library and wrong for this one — it made a 42-prompt library read
+as a 16-prompt one.
 
 ---
 
@@ -38,25 +58,30 @@ whole.
 
 They are not alternatives. They run in sequence.
 
-### A. Own the vertical — do this first, it is already mostly done
+### A. Lead with breadth, earn the depth — mostly done
 
-The positioning decision is made: the README leads with financial trading,
-not with the prompt count. The site nav leads with the financial categories.
+The positioning decision is made: the README leads with the prompt count and
+the agent-tool audience, and the site nav leads with architecture and
+application development. The financial prompts sit under Financial
+Engineering, near the end, as the differentiator rather than the frame.
 
 Remaining work in this lane:
 
-- [x] README leads with the wedge
-- [x] Site nav puts the financial domain first
-- [x] One-line description carries the vertical, not the generic noun
+- [x] README leads with breadth and the agent-tool audience
+- [x] Site nav leads with architecture and application, not the financial
+      categories
+- [x] One-line description carries the count and the audience, not the wedge
+- [x] System-prompt framing: how to pick a prompt by mode, and how to compose
+      several for multi-area work
 - [ ] A worked example: one prompt, end to end, in a real repo, with output.
       This is the highest-value single artifact still missing. A reader who
-      sees it work has a reason to believe the other 37 work.
-- [ ] A short post per vertical cluster, written where trading developers
-      already read. The audience is small and reachable: r/algotrading,
-      quant finance communities, Hummingbot and Freqtrade Discord, fintech
-      engineering blogs.
-
-Expect a few hundred stars, from the right people. That is the goal.
+      sees it work has a reason to believe the other 41 work.
+- [ ] Broaden the non-trading set. The breadth claim is currently carried by
+      the other 26 of 42; the honest way to firm it up is to add more areas,
+      not to remove the financial ones.
+- [ ] A short post per topic cluster, written where developers already read:
+      r/algotrading and quant finance for the trading prompts, plus the
+      engineering and AI-tooling venues for the rest.
 
 ### B. Package for the harness — highest reach, largest effort
 
@@ -64,7 +89,7 @@ Right now a prompt is a Markdown file you copy. The repos above beat that
 by being installable.
 
 - [ ] Emit `.opencode/agent/*.md` so `git clone` into `~/.config/opencode/`
-      makes all 38 available as named subagents
+      makes all 42 available as named subagents
 - [ ] Emit the Claude Code and Codex equivalents from the same source, so
       one prompt set serves three harnesses
 - [ ] A `Makefile` or `install.sh` that regenerates and installs
@@ -72,12 +97,15 @@ by being installable.
       build directory that is gitignored; `prompts/` stays canonical
 
 This is the difference between a document and a tool, and it is what the
-28-to-62 star repos are already attempting. Doing it properly, with the
-trading wedge, is the actual play.
+28-to-62 star repos are already attempting. It is also the single highest-leverage
+item here: it is the one change that makes the breadth claim true for a reader,
+because installation is how you discover what a library contains.
 
 **Order matters.** A. first, because it costs nothing and B is wasted if the
 positioning is unclear. B second, because it multiplies whatever A already
-achieved.
+achieved. If only one of them gets done, B is the one — packaging serves the
+breadth claim, and a repo that cannot be installed is a document no matter how
+good the prompts are.
 
 ---
 
@@ -103,7 +131,7 @@ README, CI green, site live, topics set. All of that is this release.
 
 GitHub search is the highest-leverage lever and the cheapest to pull.
 
-- [x] Description set, carrying the vertical
+- [x] Description set, carrying the prompt count and the audience
 - [x] Topics set (see below)
 - [x] Pages URL set as the repository `homepage`, which is what puts the link
       in the repository header
@@ -113,11 +141,14 @@ GitHub search is the highest-leverage lever and the cheapest to pull.
       there is no API or CLI route to it
 
 Topics applied: `prompt-engineering`, `opencode`, `claude-code`,
-`agentic-ai`, `ai-prompts`, `system-prompts`, `fintech`, `trading`,
-`quant`, `golang`, `aws`, `devops`, `llm`, `rag`, `code-generation`.
+`agentic-ai`, `ai-prompts`, `system-prompts`, `ai-agents`, `coding-agents`,
+`developer-tools`, `architecture`, `fintech`, `trading`, `golang`, `aws`,
+`devops`, `llm`, `rag`.
 
-Adding a topic later is trivial; adding all of them now is better, because
-topic indexing takes time to settle.
+The set carries the agent-tooling audience first and the financial cluster
+second, matching the README. Topics indexed on `trading` and `fintech` do reach
+the vertical audience, which is the point of keeping them, but they should not
+outnumber the terms the positioning now leads with.
 
 ---
 
@@ -158,8 +189,17 @@ material the library should absorb.
 - [ ] Real failure modes are what make the anti-patterns sections worth
       reading. Generic ones are not
 
+The same loop runs for the rest of the library — 26 of the 42 — against any
+codebase worked on rather than the trading one. A prompt that has never been run
+against a real repository is a guess, and the `platform-engineering` pass
+proved it: running that prompt against real Kubernetes repositories turned up
+three anti-patterns it did not previously name. Every prompt here should get
+that treatment, and the financial prompts are simply the ones that have had it
+most often.
+
 This is the honest reason the vertical prompts are better than generic
-ones, and it is sustainable only if the loop is closed.
+ones, and it is sustainable only if the loop is closed — which is also the
+argument for extending it beyond the vertical.
 
 ---
 
@@ -172,6 +212,12 @@ audience for this library.
 **Padding the prompt count with generic material.** Every added
 `code-review.md` dilutes the one thing that makes this repository
 distinguishable. Depth over count, always.
+
+Note the tension with the breadth decision above, and the resolution: depth
+is required, but depth is not the same as narrowness. The bar for a new
+prompt is that it encodes something you learned by doing the work, not that it
+is in the financial domain. A generic prompt added for count is padding; a
+financial prompt written from a real integration is not.
 
 **A Twitter or X launch.** Wrong audience for infrastructure and regulated
 trading content.

@@ -85,7 +85,37 @@ nav:
   - Orchestration and Planning:
       - Orchestrate: orchestrate.md
       - Plan: plan.md
-  - Financial Domain:
+  - Architecture and Engineering:
+      - Architecture: architecture.md
+      - Backend Services: backend-services.md
+      - API Design: api-design.md
+      - Database Design: database-design.md
+      - Code Review: code-review.md
+      - Testing: testing.md
+      - Security: security.md
+      - Performance: performance.md
+      - DevOps: devops.md
+      - Migration: migration.md
+      - Observability and SRE: observability-sre.md
+      - Incident Response: incident-response.md
+  - Application Development:
+      - Frontend: frontend-dev.md
+      - LLM Integration: llm-integration.md
+      - Event-Driven Architecture: event-driven-architecture.md
+      - Data Engineering: data-engineering.md
+  - Platform and Infrastructure:
+      - Platform Engineering: platform-engineering.md
+      - Data Platforms: data-platforms.md
+      - JVM Backend: jvm-backend.md
+  - API Protocols:
+      - GraphQL: graphql-development.md
+      - gRPC: grpc-development.md
+  - SDK Development:
+      - SDK Build: sdk-build.md
+      - SDK Documentation: sdk-docs.md
+  - Documentation:
+      - Financial Platform Documentation: financial-docs.md
+  - Financial Engineering:
       - Broker Integration: broker-integration.md
       - Broker Certification: broker-certification.md
       - Broker SDKs:
@@ -103,36 +133,4 @@ nav:
       - Quant Backtesting: quant-backtesting.md
       - Portfolio Accounting: portfolio-accounting.md
       - Compliance and Regulatory: compliance-regulatory.md
-  - SDK Development:
-      - SDK Build: sdk-build.md
-      - SDK Documentation: sdk-docs.md
-  - Architecture and Engineering:
-      - Architecture: architecture.md
-      - Backend Services: backend-services.md
-      - API Design: api-design.md
-      - Database Design: database-design.md
-      - Code Review: code-review.md
-      - Testing: testing.md
-      - Security: security.md
-      - Performance: performance.md
-      - DevOps: devops.md
-      - Migration: migration.md
-      - Observability and SRE: observability-sre.md
-      - Incident Response: incident-response.md
-  - Platform and Infrastructure:
-      - Platform Engineering: platform-engineering.md
-  - API Protocols:
-      - GraphQL: graphql-development.md
-      - gRPC: grpc-development.md
-  - Data Platforms:
-      - Data Platforms: data-platforms.md
-  - JVM and Java:
-      - JVM Backend: jvm-backend.md
-  - Application:
-      - Frontend: frontend-dev.md
-      - LLM Integration: llm-integration.md
-      - Event-Driven Architecture: event-driven-architecture.md
-      - Data Engineering: data-engineering.md
-  - Documentation:
-      - Financial Platform Documentation: financial-docs.md
   - Tags: tags.md

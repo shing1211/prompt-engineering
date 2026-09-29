@@ -1,23 +1,17 @@
 # Prompt Engineering Library
 
-Agentic-AI prompts for software project delivery, built around **financial
-trading systems**, **Go backend development**, and **AWS cloud
-infrastructure**.
+System prompts for coding agents. **42 prompts** across architecture, data,
+platform, protocols, SDK, documentation, and financial engineering — written to
+be dropped into a harness and run against a real repository.
 
 **42 prompts. ~86,000 words. MIT licensed.**
 
 Browse the site: <https://shing1211.github.io/prompt-engineering/>
 
-> **The site is frozen.** This repository is private, and GitHub Pages is
-> only available for private repositories on a paid plan. The deployed site
-> remains online and continues serving the last published build; the build
-> workflow still runs on every push and will fail it if the site is broken,
-> but it no longer deploys. Everything below is readable directly in the
-> repository.
-
-18 of the 42 prompts are language-agnostic: they assume no language-specific
-tooling and apply as written, whichever stack you are on. The rest are written
-against a specific language, and the [language table](prompts/index.md#browse-by-language)
+Built for anyone wiring an agent into a codebase: the prompts, the anti-patterns
+they exist to prevent, and the definition of done each one enforces. 18 of the
+42 are language-agnostic and apply as written on any stack; the rest name the
+tooling they assume, and the [language table](prompts/index.md#browse-by-language)
 tells you which is which.
 
 ---
@@ -49,17 +43,28 @@ you know how the rest are organised:
 
 ## What makes this library different
 
-Most prompt collections compete on breadth. This one has a **vertical
-wedge**: 16 of the 42 prompts cover multi-broker trading systems, and no
-other public library holds that ground.
+Most prompt collections are a flat list of personas. Each prompt here is a
+**build spec**: it enumerates the work, names the failure modes it must avoid,
+and defines the contract the agent has to satisfy before it is finished. The
+anti-patterns and guardrails are the substance, not an appendix — they are
+enforced by a check in CI, so a prompt that drops them fails the build.
 
-The other 26 are the cross-cutting engineering practice that holds that domain
-work together, and they are deliberately not Go-specific. Architecture, API
-design, database design, code review, testing, security, performance, DevOps,
-migration, observability, incident response, event-driven design, and data
-engineering carry no language assumption at all.
+Coverage spans eight areas:
 
-That means material you will not find in a generic collection:
+| Area | Prompts | Examples |
+|---|---|---|
+| Architecture and engineering | 13 | service boundaries, API design, database design, testing, security, performance |
+| Application development | 4 | event-driven design, frontend, data engineering, LLM integration |
+| Protocols | 2 | gRPC, GraphQL |
+| SDK authoring | 2 | building a client library, documenting one |
+| Orchestration | 2 | multi-phase dispatch, planning |
+| Platform, data, Java, docs | 4 | Kubernetes, data platforms, JVM services, documentation |
+
+### The financial-engineering wedge
+
+16 of the 42 prompts cover multi-broker trading systems, and no other public
+library holds that ground. They are also the hardest prompts here to write,
+which makes them the best test of whether a prompt library is any good:
 
 - **Broker SDKs**, one prompt per venue — Longbridge, Tiger Trade, Webull,
   IBKR Client Portal, Futu OpenD, Hua Sing Tong vbroker, plus a generic HMAC
@@ -76,9 +81,15 @@ That means material you will not find in a generic collection:
 - **Regulation** — MiFID II best execution, trade surveillance, audit
   trails, retention across SFC, SEC, and FINRA.
 
+These are prompts for building trading software. They do not place orders, and
+nothing in this repository is investment advice.
+
 ## Using a prompt
 
-Clone and copy the file you want into your agent's configuration directory:
+These are **system prompts**, not user prompts. The distinction matters: a
+system prompt sets the agent's identity and rules for the whole session, so
+pick the one that matches the task and start a session with it, rather than
+pasting it as a one-off question.
 
 ```bash
 git clone https://github.com/shing1211/prompt-engineering.git
@@ -92,20 +103,31 @@ Then, depending on your harness:
 | Claude Code | `.claude/agents/` in the target repo |
 | Codex | `AGENTS.md` in the target repo |
 
-Start with [`orchestrate.md`](prompts/orchestrate.md) for multi-phase work
-and [`plan.md`](prompts/plan.md) for planning. Both are designed to spawn
-sub-agents so the main session stays small.
+### Choosing one
 
-## Mode
-
-Each prompt declares the mode it is meant to run in:
+Use the `mode` field to filter first — it tells you what the agent is allowed
+to do:
 
 | Mode | Count | Use |
 |---|---|---|
-| `build` | 30 | Implementation, configuration, generation |
-| `all` | 7 | Usable in any mode |
+| `build` | 32 | Implementation, configuration, generation |
+| `all` | 8 | Usable in any mode |
 | `plan` | 1 | Planning and analysis only |
 | `review` | 1 | Read and critique existing work |
+
+`plan` and `review` are non-mutating: they analyse and report without editing.
+Anything in `build` is licensed to write code.
+
+### Composing several
+
+For work that spans more than one area, [`orchestrate.md`](prompts/orchestrate.md)
+is the entry point. It is built to spawn sub-agents, one per area, so the main
+session holds a plan rather than a transcript — which is the pattern that keeps
+context small enough to finish. [`plan.md`](prompts/plan.md) does the same for
+the planning phase.
+
+The usual composition is a `plan` pass, then per-area `build` prompts, then
+[`code-review.md`](prompts/code-review.md) on the result.
 
 ## Browse
 
@@ -113,6 +135,26 @@ Each prompt declares the mode it is meant to run in:
 |---|---|
 | Start a new project | [orchestrate](prompts/orchestrate.md) |
 | Plan the next phase | [plan](prompts/plan.md) |
+| Design an API | [api-design](prompts/api-design.md) |
+| Design a service boundary | [backend-services](prompts/backend-services.md) |
+| Design a schema | [database-design](prompts/database-design.md) |
+| Review code | [code-review](prompts/code-review.md) |
+| Write tests | [testing](prompts/testing.md) |
+| Security audit | [security](prompts/security.md) |
+| Tune performance | [performance](prompts/performance.md) |
+| Set up CI/CD | [devops](prompts/devops.md) |
+| Run infrastructure on Kubernetes | [platform-engineering](prompts/platform-engineering.md) |
+| Debug an outage | [incident-response](prompts/incident-response.md) |
+| Set up tracing and alerts | [observability-sre](prompts/observability-sre.md) |
+| Move a system to a new stack | [migration](prompts/migration.md) |
+| Build a data platform | [data-platforms](prompts/data-platforms.md) |
+| Build a frontend | [frontend-dev](prompts/frontend-dev.md) |
+| Design events | [event-driven-architecture](prompts/event-driven-architecture.md) |
+| Build a gRPC service | [grpc-development](prompts/grpc-development.md) |
+| Build a GraphQL gateway | [graphql-development](prompts/graphql-development.md) |
+| Build a client library | [sdk-build](prompts/sdk-build.md) |
+| Document a library | [sdk-docs](prompts/sdk-docs.md) |
+| Build a JVM service | [jvm-backend](prompts/jvm-backend.md) |
 | Build a broker SDK | [broker-integration](prompts/broker-integration.md), then the per-broker prompts |
 | Wire up market data | [market-data-pipeline](prompts/market-data-pipeline.md) |
 | Analyse the order book | [realtime-analytics](prompts/realtime-analytics.md) |
@@ -121,18 +163,9 @@ Each prompt declares the mode it is meant to run in:
 | Backtest a strategy | [quant-backtesting](prompts/quant-backtesting.md) |
 | Track PnL and positions | [portfolio-accounting](prompts/portfolio-accounting.md) |
 | Handle compliance | [compliance-regulatory](prompts/compliance-regulatory.md) |
-| Design an API | [api-design](prompts/api-design.md) |
-| Design a service boundary | [backend-services](prompts/backend-services.md) |
-| Review code | [code-review](prompts/code-review.md) |
-| Security audit | [security](prompts/security.md) |
-| Set up CI/CD | [devops](prompts/devops.md) |
-| Run infrastructure on Kubernetes | [platform-engineering](prompts/platform-engineering.md) |
-| Build a data platform | [data-platforms](prompts/data-platforms.md) |
-| Build a JVM service | [jvm-backend](prompts/jvm-backend.md) |
-| Tune performance | [performance](prompts/performance.md) |
 
-The [full index](prompts/index.md) lists all 38 with descriptions, and the
-site has a searchable [tag index](prompts/tags.md) across 222 tags.
+The [full index](prompts/index.md) lists all 42 with descriptions, and the
+site has a searchable [tag index](prompts/tags.md) across 244 tags.
 
 ## Contributing
 
@@ -145,6 +178,3 @@ For a proposed prompt rather than a finished one, open an issue with the
 ## License
 
 [MIT](LICENSE). Use them, fork them, adapt them.
-
-Nothing in this repository is investment advice, and the trading prompts
-build software — they do not place orders.
