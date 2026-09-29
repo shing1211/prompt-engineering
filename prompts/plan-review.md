@@ -166,9 +166,13 @@ not something to have read:
    report what it actually asserted. A command nobody has run is a guess
    about this repository's tooling, and every unit above it inherits the
    guess.
-2. Take the first unit and execute it far enough to reach the first step the
-   plan leaves undecided. Report that step. The point where a plan stops
-   being executable is a finding that no amount of reading produces.
+2. Find the first step the plan leaves undecided, by reading the unit against
+   the repository and, where the plan does not say, by putting the question to
+   whoever wrote the request. Report that step. Do not execute the unit to
+   reach it. A plan stops being executable at a step, and that step is
+   reachable by reading and by asking; executing the unit to find it mutates
+   the tree the review was sent to read, which is the one thing a review does
+   not do.
 3. Recompute the units' dependencies from the repository rather than from the
    plan: the paths each writes, the migrations each creates, the fixtures each
    touches. Report every pair the plan calls independent that those contradict.
@@ -194,7 +198,7 @@ prefix of the order, and any prefix that is broken, degraded, or
 unrecognisable when it arrives; each claim about current behaviour with the
 evidence behind it, and each assumption with an owner; the units serving a
 goal the request did not ask for; the open questions, and the one whose
-answer would invalidate the most; what was executed during this review and
+answer would invalidate the most; what was run during this review and
 what was not; and a verdict of implement as written, implement with these
 changes, or do not implement, with the smallest edit that would move it.
 

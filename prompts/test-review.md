@@ -203,14 +203,14 @@ not something to have read:
 3. For every mock, stub, or fake in scope, count the assertions that would
    still hold with the code under test deleted, and report the count beside
    the double's name. The count is the finding; "over-mocked" is not.
-4. Run the suite the way CI runs it with snapshot and fixture updating off,
-   and report what it asserted, what it skipped, what it quarantined, and
-   what it retried. A suite that is green because of a marker is a red suite
-   with the message suppressed, and the difference is only visible from the
-   run. Report anything the run wrote: a suite that cannot be run without
-   re-recording snapshots or fixtures is a finding to report, not a flag to
-   work around, because that run overwrites the evidence you were sent to
-   read.
+4. Run the suite the way CI runs it with snapshot, fixture, and
+   generated-file updating off, and report what it asserted, what it skipped,
+   what it quarantined, and what it retried. A suite that is green because of
+   a marker is a red suite with the message suppressed, and the difference is
+   only visible from the run. Report anything the run wrote: a suite that
+   cannot be run without re-recording snapshots or fixtures is a finding to
+   report, not a flag to work around, because that run overwrites the
+   evidence you were sent to read.
 5. For each test whose name claims a boundary — empty, zero, one, the
    maximum, the negative, the malformed, the retried — find the input that
    actually exercises it and report the boundary as reached or not. Most

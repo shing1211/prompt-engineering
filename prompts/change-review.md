@@ -157,8 +157,12 @@ Load before forming an opinion:
 Each of these is an action, not a restatement of Layer 3 — something to do,
 not something to have read:
 
-1. Force the new failure, by returning the wrong value, raising, or reporting a
-   distinguishable status, and confirm a caller can tell it from success.
+1. Name the check that would tell the new failure from success — the value a
+   caller must not be able to mistake for the right one, the exception it must
+   see, or the status it must report — and say whether one is written. State
+   the check; do not force the failure yourself. A review that returns the
+   wrong value, raises, or writes a status into the tree it was sent to read
+   cannot be re-read, and the next reviewer cannot tell what this one changed.
 2. Run every test the change edited against the previous behaviour. A test that
    passes against both is pinning nothing, whatever it asserts.
 3. Check that the description alone would let someone revert the change. If it

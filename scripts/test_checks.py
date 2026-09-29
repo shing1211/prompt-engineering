@@ -30,6 +30,27 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 
+# The checks are read as well as run. Seeding a negative case means writing
+# down what a correct figure is, and writing it down here made this file the
+# thing that had to change every time a prompt was added: four tasks in a row
+# edited these two cases for no reason other than that the library grew. So
+# the seeds and the expected error strings are derived from the generated
+# statistics instead, through the check that reads them, and adding a prompt
+# leaves them alone. A case still asserts its specific message, because a
+# check that exits non-zero for the wrong reason is the failure this suite
+# exists to catch.
+sys.path.insert(0, str(REPO / "scripts"))
+import check_counts  # noqa: E402
+
+STATS = check_counts.generated_stats(REPO / "prompts" / "index.md")
+WANT = check_counts.expected(STATS, prompts=REPO / "prompts")
+TOTAL = WANT["total"]
+# The same delta the case has always used: the "19" that was wrong from the
+# first release, as an offset from whatever the real number now is.
+STALE_FINANCIAL = WANT["financial"] + 3
+STALE_TOTAL = TOTAL + 1
+STALE_UNVERIFIED = WANT["unverified"] - 1
+
 # The corpus project name, configured outside the repository exactly as
 # scripts/check_no_fingerprint.py expects it: the CORPUS_NAME environment
 # variable, or a gitignored .corpus-name file at the root. This suite needs
@@ -140,18 +161,51 @@ CASES: list[tuple[str, str, object, str]] = [
     (
         "check_counts: wrong total in README",
         "check_counts.py",
-        lambda r: _replace(r / "README.md", r"\*\*45 prompts\.", "**46 prompts."),
-        "total prompt count says 46",
+        lambda r: _replace(
+            r / "README.md", rf"\*\*{TOTAL} prompts\.", f"**{STALE_TOTAL} prompts."
+        ),
+        f"total prompt count says {STALE_TOTAL}",
     ),
     (
         "check_counts: wrong financial count",
         "check_counts.py",
         lambda r: _replace(
             r / "README.md",
-            r"16 of the 45 prompts cover multi-broker",
-            "19 of the 45 prompts cover multi-broker",
+            rf"{WANT['financial']} of the {TOTAL} prompts cover multi-broker",
+            f"{STALE_FINANCIAL} of the {TOTAL} prompts cover multi-broker",
         ),
-        "multi-broker trading count says 19",
+        f"multi-broker trading count says {STALE_FINANCIAL}",
+    ),
+    (
+        # prompts/index.md and docs/verification.md were not scanned at all
+        # until the gate was widened, and both drifted: the index's summary
+        # paragraph and the register's unverified tally each stated figures
+        # that moved. A check that does not scan a document cannot notice
+        # that it is stale, and these are the two documents whose staleness
+        # had to be found by hand.
+        "check_counts: wrong total in the index's hand-written summary",
+        "check_counts.py",
+        lambda r: _replace(
+            r / "prompts/index.md",
+            rf"{TOTAL} prompts: {WANT['nonfinancial']} cross-stack",
+            f"{STALE_TOTAL} prompts: {WANT['nonfinancial']} cross-stack",
+        ),
+        f"total prompt count says {STALE_TOTAL}",
+    ),
+    (
+        # The register states the tally in words. A check that reads only
+        # digits finds nothing here, and the figure that went stale is the
+        # one the whole register exists to keep honest.
+        "check_counts: wrong unverified tally in the register",
+        "check_counts.py",
+        lambda r: _replace(
+            r / "docs/verification.md",
+            rf"{check_counts.word(WANT['unverified']).capitalize()} of the "
+            rf"{check_counts.word(TOTAL)} prompts have not been run",
+            f"{check_counts.word(STALE_UNVERIFIED).capitalize()} of the "
+            f"{check_counts.word(TOTAL)} prompts have not been run",
+        ),
+        f"unverified prompt count says {STALE_UNVERIFIED}",
     ),
     (
         "check_vendor_claims: unverified vendor internals",
