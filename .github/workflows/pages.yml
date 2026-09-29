@@ -1,17 +1,5 @@
 name: Deploy site to GitHub Pages
 
-# GitHub Pages is unavailable while this repository is private on a free
-# plan, so the deploy step has nowhere to publish and fails. The already
-# deployed site keeps serving the last published build, which is the
-# intended behaviour: it stays up, and it stops moving.
-#
-# This job still runs the build and the link check, so a broken site is
-# caught here rather than discovered by a reader. The deploy step is
-# skipped, and the job reports success, so the push is not left red.
-#
-# If the repository is made public again, or moved to a plan that includes
-# Pages for private repositories, remove the guard and the deploy resumes
-# with no other change.
 on:
   push:
     branches: [main]
@@ -35,10 +23,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      # Consumed by the deploy job, which cannot read this job's step
-      # outputs directly.
-      pages_available: ${{ steps.pages.outputs.available }}
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -66,35 +50,16 @@ jobs:
       - name: Check internal links
         run: python3 scripts/check_links.py
 
-      # Nothing below this line runs while Pages is unavailable. The build
-      # and link check above have already done their job; there is simply
-      # nowhere to publish to.
-      - name: Check whether Pages is available
-        id: pages
-        run: |
-          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-            echo "Pages is available; deploying."
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Pages is not enabled for this repository."
-            echo "::notice::The previously deployed site continues to serve the"
-            echo "::notice::last published build. Skipping deploy."
-          fi
-
       - name: Configure Pages
-        if: steps.pages.outputs.available == 'true'
         uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        if: steps.pages.outputs.available == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
   deploy:
     needs: build
-    if: needs.build.outputs.pages_available == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
