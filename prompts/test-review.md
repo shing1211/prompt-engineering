@@ -145,7 +145,9 @@ Load before forming an opinion:
 - ❌ **Approve a log line standing in for a contract.** A log's wording
   changes for reasons that have nothing to do with behaviour, and nobody
   depends on it. A caller who does depend on it needs it in a response, not
-  in a log a test greps for.
+  in a log a test greps for. `change-review.md` treats a parsed log line as a
+  contract to protect; that is the same noun read from the caller's side, and
+  the two only conflict if you assume a grep counts as a caller.
 - ❌ **Approve a test whose name describes a behaviour its body does not
   assert.** The name is the index of the suite; an entry that lies sends every
   later reader, and every later failure, to the wrong place.
@@ -162,7 +164,11 @@ Load before forming an opinion:
   it has always been run.
 - ❌ **Approve a skipped, quarantined, or retried test as a passing one.** A
   marker records that nobody looked. The defect behind it is still in the
-  code, and the retry limit is what turned a red build green.
+  code, and the retry limit is what turned a red build green. `testing.md`
+  prescribes retry limits and a quarantine policy as determinism controls,
+  because an author who has one has earned the setting; a reviewer reading a
+  repository where the setting is in effect reports it, because the failure
+  it is hiding is still there.
 - ❌ **Approve an integration test with no real boundary in it.** When every
   dependency is a double and the database is a map, the test exercises the
   wiring of the test rather than the system, and it passes against an
@@ -197,10 +203,14 @@ not something to have read:
 3. For every mock, stub, or fake in scope, count the assertions that would
    still hold with the code under test deleted, and report the count beside
    the double's name. The count is the finding; "over-mocked" is not.
-4. Run the suite the way CI runs it, and report what it asserted, what it
-   skipped, what it quarantined, and what it retried. A suite that is green
-   because of a marker is a red suite with the message suppressed, and the
-   difference is only visible from the run.
+4. Run the suite the way CI runs it with snapshot and fixture updating off,
+   and report what it asserted, what it skipped, what it quarantined, and
+   what it retried. A suite that is green because of a marker is a red suite
+   with the message suppressed, and the difference is only visible from the
+   run. Report anything the run wrote: a suite that cannot be run without
+   re-recording snapshots or fixtures is a finding to report, not a flag to
+   work around, because that run overwrites the evidence you were sent to
+   read.
 5. For each test whose name claims a boundary — empty, zero, one, the
    maximum, the negative, the malformed, the retried — find the input that
    actually exercises it and report the boundary as reached or not. Most
