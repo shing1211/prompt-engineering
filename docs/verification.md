@@ -22,11 +22,12 @@ been run, because a run against one codebase is evidence about that codebase
 and about nothing else.
 
 A prompt can be verified and still have no evidence behind much of what it
-covers. One of the three runs below is in that state — half of that prompt was
-run against a system the other half does not describe. The third carries a
-different caveat again: a different kind of corpus rather than an uncovered
-half. Each says so in its own row, and the caveats are the part of this file
-worth reading.
+covers. One of the five runs below is in that state — half of that prompt was
+run against a system the other half does not describe. Two more were run
+against a corpus of a different kind rather than an uncovered half: public
+repositories of a different shape from anything else in the register, which
+is a real run and a weaker one, and each says so in its own row. The caveats
+are the part of this file worth reading.
 
 ## The register
 
@@ -46,7 +47,7 @@ One row per prompt, in alphabetical order by file name.
 | `broker-tiger` | no | Not run. | — |
 | `broker-vbroker` | no | Not run. | — |
 | `broker-webull` | no | Not run. | — |
-| `change-review` | no | Not run. | — |
+| `change-review` | yes | Run against a repository with a deep commit history. Four anti-patterns added. | 2026-09-29 |
 | `code-review` | no | Not run. | — |
 | `compliance-regulatory` | no | Not run. | — |
 | `data-engineering` | no | Not run. | — |
@@ -67,7 +68,7 @@ One row per prompt, in alphabetical order by file name.
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
 | `plan` | no | Not run. The prompt was rebuilt on the house structure in this pass: no run covers this one, and nothing carries over from the text it replaced. | — |
-| `plan-review` | no | Not run. | — |
+| `plan-review` | yes | Run against the same corpus. Four anti-patterns added. | 2026-09-29 |
 | `platform-engineering` | yes | Run against two existing Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
 | `quant-backtesting` | no | Not run. | — |
@@ -80,15 +81,18 @@ One row per prompt, in alphabetical order by file name.
 | `trading-bot` | no | Not run. | — |
 | `trading-risk` | no | Not run. | — |
 
-`platform-engineering` shipped its run in 0.3.1; the other two are in
+`platform-engineering` shipped its run in 0.3.1; the other four came out of
 0.4.0.
 
 ## Why the published findings read the way they do
 
-The two runs from this pass were read out of a private codebase, which is not
-public and cannot be made public by publishing about it. Every finding was
-therefore generalised before it was written down: the failure mode goes out,
-the evidence stays in.
+Two of the runs were read out of a private codebase, which is not public and
+cannot be made public by publishing about it. Every finding was therefore
+generalised before it was written down: the failure mode goes out, the
+evidence stays in. The later runs were read out of public repositories,
+where the reason to generalise is a different one and just as real — a prompt
+that cites one reader's repository is less useful to the next one, and the
+generalised failure mode is the part that travels.
 
 That is why the anti-patterns name a *contract*, a *shared definition* and a
 *dependency* rather than the files they were found in, and why they carry no
@@ -105,17 +109,22 @@ instead, was reading each added line.
 
 ## What this pass did not do
 
-- **Forty-two of the forty-five prompts have not been run.** The register
+- **Forty of the forty-five prompts have not been run.** The register
   records that plainly rather than rounding it up. Every row that says "not
   run" is an open item, not a verdict.
 - **`jvm-backend` was skipped for want of a corpus.** No codebase with a JVM
   service layer was available for this pass, so there was nothing to run it
   against, and the gap is not closable by editing the prompt.
-- **One prompt was verified against a corpus of a different kind.**
-  `platform-engineering` was run against two public Kubernetes repositories
-  rather than against a private codebase. That is a real run and it produced
-  real findings, but it is not the same evidence as the other two rows, which
-  is why the column above says what was run rather than only marking a tick.
+- **Three prompts were verified against a corpus of a different kind.**
+  `platform-engineering` was run against two public Kubernetes repositories,
+  and `change-review` and `plan-review` against a public command-line
+  application, none of them the private codebase the other two rows came from.
+  These are real runs and they produced real findings, but they are not the
+  same evidence as the other two rows, which is why the column above says what
+  was run rather than only marking a tick. `change-review` and `plan-review`
+  share a corpus, so neither row is independent evidence for the other — a
+  single repository behind both, and a reader should take the pair as one
+  observation rather than two.
 - **A verified prompt can still have an unverified half.** `data-platforms` was
   run against a streaming system, so everything the prompt says about columnar
   storage, file formats and query planning has no evidence behind it and

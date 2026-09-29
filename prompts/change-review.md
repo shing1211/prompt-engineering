@@ -136,6 +136,17 @@ Load before forming an opinion:
 - ❌ **Change a signature and leave the callers the compiler cannot reach.** A
   type change breaks the build and gets found. The call that still compiles and
   now means something else does not, and it is the more expensive of the two.
+- ❌ **Require something of the callers and change nothing in the callers you
+  can see.** A new credential, header, flag or precondition protects one side
+  of a boundary, and the other side is another process, another language or
+  another repository that nothing in this build can reach. The protection is
+  inert until an operator switches it on, and switched on it breaks the client
+  in the same tree, written by someone looking at the other end.
+- ❌ **Let a check reimplement the path it stands in for.** A probe that reaches
+  past the code it is probing reports on a path nothing else uses. It is the
+  one part of the change still reporting healthy when the change beside it
+  added a precondition the probe does not carry, and a green probe is the
+  evidence that keeps the fault from being found.
 - ❌ **Fix a bug without a test that fails before the fix.** A fix with no such
   test is a belief about the bug rather than a change to the code, and it
   cannot be told apart from the bug returning.
@@ -148,6 +159,19 @@ Load before forming an opinion:
   in whichever order nobody rehearsed.
 - ❌ **Carry an unrelated fix inside the change.** Two changes get one review
   pass, and the one nobody was looking for is the one that gets merged.
+- ❌ **Ship two features that cancel each other and describe them as two.** A
+  retry policy and the error classification it depends on, a cache and the
+  invalidation it needs, an auth check and the clients that must satisfy it:
+  each line matches the description and the pair is what fails. Reading the
+  units one at a time is the method that misses it, because the defect has no
+  line of its own — it is in the seam, and every line on either side of it is
+  defensible.
+- ❌ **Quote a threshold in the unit the reader pictures and implement it in the
+  unit the loop counts.** A counter shared with a retry loop counts attempts;
+  one shared with a batching loop counts batches. The description says what a
+  reader pictures, so a limit written in failures is reached after a fraction
+  of the operations it names, and the two only agree at a number nobody
+  wrote down.
 - ❌ **Approve a change you read the description of rather than the diff
   of.** The description is a summary written by the party being checked. The
   diff is the change.

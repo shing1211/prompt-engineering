@@ -126,6 +126,21 @@ Load before forming an opinion:
 - ❌ **Approve a unit whose revert boundary is wider than its claim.** Two
   changes hidden behind one objective sentence, which cannot be undone apart
   and will not be diagnosable apart when one of them is wrong.
+- ❌ **Approve a plan whose checks belong to the document rather than to a
+  unit.** Commands listed once for the whole plan look like verification and
+  belong to no unit. Nothing can be declared finished on its own evidence, and
+  when the suite goes red nobody can tell which unit to redo — which is the
+  one thing an acceptance command exists to do.
+- ❌ **Approve a unit that names what it writes and not what it leaves alone.**
+  The unit lists its files and stops. A boundary nobody stated cannot be
+  exceeded by accident and cannot be noticed when it is, so an executor who
+  also fixed the adjacent problem and one who followed the plan arrive at the
+  same document.
+- ❌ **Approve a plan with no request behind it.** The instrument this review
+  runs on is the request set beside the plan, and with none there is nothing
+  to set it against. Every statement about what was wanted becomes the
+  author's account of their own intentions, the scope sentence is falsifiable
+  against nothing, and a goal nobody stated cannot be checked for drift.
 - ❌ **Approve a plan that ends when the code lands.** No migration, no
   backfill, no flag, no order between two things that cannot both be live, and
   no account of what the system looks like before the change is complete.
@@ -138,6 +153,14 @@ Load before forming an opinion:
 - ❌ **Approve a size estimate doing the work of a decomposition.** A unit
   measured in days is a phase, and a phase cannot be reviewed, verified, or
   reverted.
+- ❌ **Approve a plan that specifies each fix as code and review it as prose.**
+  A sketch reassures the reader that the unit is understood, and it moves the
+  review that would have caught the defect past the point where it is cheap.
+  Two sketches in two units can each be sound and compose into something
+  neither of them is — one contradicting itself about which conditions are
+  retryable, one defining a failure the unit it depends on cannot recognise —
+  and a reader checking a long unit list for internal consistency is not
+  looking for a defect that only exists between the entries.
 - ❌ **Approve a plan whose units no second reader could execute.** An
   objective with no paths, no boundary, and no command is a plan that works
   only while its author still holds the analysis behind it.

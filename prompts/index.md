@@ -53,7 +53,7 @@ Cross-cutting engineering practice — 15 prompt(s).
 | [`api-design.md`](api-design.md) — API Design | all | Design REST, GraphQL, and gRPC APIs with OpenAPI specs, versioning strategies, authentication, rate limiting, pagination, filtering, and error handling | not verified |
 | [`architecture.md`](architecture.md) — Architecture Design | all | Design system architecture for scalability, reliability, and maintainability covering microservices, event-driven patterns, caching, load balancing, and data consistency | not verified |
 | [`backend-services.md`](backend-services.md) — Backend Services | all | Design backend services without a language assumption, covering boundaries, idempotency, consistency, versioning, and the failure modes of distributed systems | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
-| [`change-review.md`](change-review.md) — Change Review | review | Review a single change against what it claims to do, what the diff actually does, and what its callers depend on | not verified |
+| [`change-review.md`](change-review.md) — Change Review | review | Review a single change against what it claims to do, what the diff actually does, and what its callers depend on | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
 | [`code-review.md`](code-review.md) — Code Review | review | Conduct comprehensive code review for correctness, security, performance, maintainability, and best practices across all major languages | not verified |
 | [`database-design.md`](database-design.md) — Database Design | all | Design database schemas, migrations, indexing strategies, query optimization, and multi-tenant architecture for relational and NoSQL databases | not verified |
 | [`devops.md`](devops.md) — DevOps | all | Design and implement CI/CD pipelines, Docker/Kubernetes configurations, Infrastructure as Code, and deployment strategies (blue-green, canary, rolling) | not verified |
@@ -61,7 +61,7 @@ Cross-cutting engineering practice — 15 prompt(s).
 | [`migration.md`](migration.md) — Migration | build | Migration guide for zero-downtime database migrations with Flyway/Liquibase, monolith to microservices refactoring, language upgrades, Infrastructure as Code with Terraform, and blue-green deployments on AWS | not verified |
 | [`observability-sre.md`](observability-sre.md) — Observability and SRE | build | Design observability and SRE practices for financial platforms with OpenTelemetry, SLOs, incident response, capacity planning, and production diagnostics | not verified |
 | [`performance.md`](performance.md) — Performance | build | Performance optimization guide covering Go pprof/async-profiler, Python py-spy/cProfile, k6 load testing, PostgreSQL EXPLAIN ANALYZE, Redis caching, numba/cython optimization, and Core Web Vitals for frontend | not verified |
-| [`plan-review.md`](plan-review.md) — Plan Review | review | Decide whether a plan is worth implementing, and whether doing what it says produces the thing that was asked for | not verified |
+| [`plan-review.md`](plan-review.md) — Plan Review | review | Decide whether a plan is worth implementing, and whether doing what it says produces the thing that was asked for | [verified](https://github.com/shing1211/prompt-engineering/blob/main/docs/verification.md) |
 | [`security.md`](security.md) — Security | all | Security engineering guide covering OWASP Top 10, SAST/DAST scanning, secrets management with AWS Secrets Manager, threat modeling (STRIDE), penetration testing, and secure coding practices for Go and Python | not verified |
 | [`test-review.md`](test-review.md) — Test Review | review | Judge a suite by what it would catch — whether each test fails if the implementation were wrong, and whether a passing suite is evidence of anything | not verified |
 | [`testing.md`](testing.md) — Testing | all | Design comprehensive testing strategies covering unit tests, integration tests, e2e tests, fuzz testing, property-based testing, and test automation with coverage gates | not verified |
@@ -234,7 +234,7 @@ Prompts written against a specific language's tooling. Everything not listed her
 | **Broker SDKs** | 7 |
 | **Distinct tags** | 251 |
 | **Language-agnostic** | 21 |
-| **Verified** | 3 |
+| **Verified** | 5 |
 | **Mode: all** | 8 |
 | **Mode: build** | 32 |
 | **Mode: plan** | 1 |

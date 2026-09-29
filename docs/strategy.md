@@ -82,7 +82,7 @@ Remaining work in this lane:
 - [x] A verification register: one row per prompt recording whether it has
       been run against a real codebase, generated into a Verified column in
       the index so a reader can see the shape of the evidence without opening
-      anything. Forty-two of the forty-five rows say no, and that is the finding
+      anything. Forty of the forty-five rows say no, and that is the finding
       rather than a shortfall in it: the result of the pass is that most of this
       library is still a guess, and the register is where that is stated
 - [ ] Broaden the non-trading set. The breadth claim is currently carried by
