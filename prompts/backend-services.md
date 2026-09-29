@@ -103,6 +103,31 @@ Load before acting:
   turns a routine release into an incident.
 - ❌ **Add a circuit breaker that opens on a metric nobody watches.** It fails
   closed silently and looks like a mysterious outage.
+- ❌ **Restate the contract in every implementation instead of sharing it.** A
+  shared definition is the one place that says what cancellation, error
+  classification, and timeout budget mean for an interface; restated per
+  implementation, each of those meanings is local to one implementation and
+  the drift stays invisible until a caller depends on a difference nobody
+  wrote down. It bites hardest at high fan-out — many implementations of one
+  contract — where the shared definition is the only thing they hold in common
+  beyond the name.
+- ❌ **Adopt a shared error taxonomy in some implementations and let the rest
+  fall through to its default.** Every implementation that never joined
+  degrades to a single safe-looking classification for all failures, so a
+  caller routing on the taxonomy handles the members and silently mishandles
+  the rest. High fan-out: with few implementations, read them side by side.
+- ❌ **Integrate a dependency whose credentials expire without stating who
+  renews them.** Acquisition, refresh, rotation, and expiry are lifecycle
+  behaviour, and a contract of method signatures states none of it, so each
+  integration invents its own or inherits the nearest one, including the part
+  where nothing renews. The omission is invisible until a credential expires in
+  production, and a refresh path that exists but never fires reads as covered.
+- ❌ **Onboard a new integration by copying the nearest existing one.** With no
+  contract stating what an implementation owes, its author picks one to copy by
+  shape and inherits whatever that one happens to get wrong, none of it
+  constrained by a test. What the system does under failure then becomes a
+  property of which file was opened rather than of a decision anyone made. High
+  fan-out, and it needs an existing implementation to copy.
 
 ## Layer 5: Guardrails
 
