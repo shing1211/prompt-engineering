@@ -94,12 +94,11 @@ name that survives a generalisation is a pointer back to a codebase rather than
 a finding — and a pointer is worth keeping private. The register can honestly
 say a prompt was run and still refuse to say where.
 
-[scripts/check_no_fingerprint.py](../scripts/check_no_fingerprint.py) enforces
-the mechanical half of that — venue names, home-directory paths, the corpus
-project name, and commit-hash-shaped tokens in prompts. It does **not** catch
-counts or product names, because a count is not distinguishable from any other
-number a prompt legitimately uses. Those were caught by reading each added line,
-which is the part of the guarantee no script can make.
+What the script catches, and the two things it cannot, is stated once for
+contributors in
+[CONTRIBUTING.md](../CONTRIBUTING.md#findings-travel-generalised) rather
+than restated here. What no script could make, and what this pass did
+instead, was reading each added line.
 
 ## What this pass did not do
 

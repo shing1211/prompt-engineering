@@ -99,8 +99,9 @@ python3 scripts/check_nav.py               # every prompt is in the site nav
 python3 scripts/check_prompt_sections.py   # every prompt has both sections
 python3 scripts/check_vendor_claims.py     # vendor facts are marked unverified
 python3 scripts/check_counts.py            # prose counts match the index
-python3 scripts/check_no_fingerprint.py     # no private codebase named
+python3 scripts/check_no_fingerprint.py    # no private codebase named
 python3 scripts/check_links.py             # internal links in built/ site/
+python3 scripts/test_checks.py             # the checks still reject bad input
 ```
 
 `check_links.py` needs a built site: run `mkdocs build` first, and it skips
@@ -115,8 +116,9 @@ What each one catches:
 | `check_prompt_sections.py` | a prompt shipping without an anti-patterns or guardrails section |
 | `check_vendor_claims.py` | broker auth internals, endpoints, or capabilities stated as fact with no verification instruction; a broker-specific risk threshold presented as a universal rule |
 | `check_counts.py` | a hand-written count in `README.md` or `docs/strategy.md` that disagrees with the generated index |
-| `check_no_fingerprint.py` | a venue name, home-directory path, corpus project name or commit hash from a private codebase, in a public file |
+| `check_no_fingerprint.py` | a venue name the library already publishes, a home-directory path, the corpus project name, or a commit-hash-shaped token under `prompts/` |
 | `check_links.py` | a broken relative link in the built site |
+| `test_checks.py` | a check that has quietly stopped rejecting the input it exists to reject |
 
 **Every prompt needs both sections.** An anti-patterns section naming failures
 the subject can actually produce, and a guardrails section written as checks
@@ -189,11 +191,18 @@ threshold duplicated across the service" is reusable; "2,400 lines in one
 file" is a fingerprint and would have to be unpublished.
 
 [scripts/check_no_fingerprint.py](scripts/check_no_fingerprint.py) enforces
-the name-and-path half — venue names, home-directory paths, the corpus
-project name, commit hashes. It cannot catch a magnitude, because a count
-is not distinguishable from any other number a prompt legitimately uses;
-a check that banned counts would ban the library. **Counts are caught in
-review, so read your own diff for numbers, not only for names.**
+part of the name half: a venue name the library already publishes, a
+home-directory path, the corpus project name, and commit-hash-shaped
+tokens under `prompts/`. Its venue vocabulary is the set this library
+already names, so **a venue it does not publish passes the build** —
+naming it in order to ban it would publish it. The venue rule reads
+Markdown prose, so a name parked in a code fence or in frontmatter
+passes too.
+
+It cannot catch a magnitude, because a count is not distinguishable from
+any other number a prompt legitimately uses; a check that banned counts
+would ban the library. **Counts are caught in review, so read your own
+diff for numbers, not only for names.**
 
 ## House rules
 
