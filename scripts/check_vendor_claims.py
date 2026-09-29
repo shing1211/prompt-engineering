@@ -67,6 +67,18 @@ VERIFY_PATTERNS = [
     r"\bread .{0,30}from the vendor\b",
 ]
 
+# The host in a cited URL, as a pattern string rather than a compiled
+# object, because the flags a caller wants are not the same everywhere: this
+# check uses it exactly as written, and check_no_fingerprint.py compiles the
+# same pattern case-insensitively so an upper-cased host still counts. The
+# prefix alternation is shared rather than copied, because widening a host
+# prefix is a vendor-support change and a second copy of the prefix would
+# make that change land in one check and silently miss the other.
+CITED_HOST_PATTERN = (
+    r"https?://(?:openapi\.|open\.|api\.|developer\.|docs-en\.)?"
+    r"([a-z0-9-]+[a-z0-9.-]*\.[a-z]{2,})"
+)
+
 # Vendor domains we can cite as a source, meaning a verification instruction
 # is only useful if it points somewhere. Files matching this are exempt from
 # the "must cite a doc" expectation but still need the verify wording.
@@ -241,11 +253,7 @@ def main() -> int:
         # Match both the API host form (openapi.vbkr.com) and the docs host
         # form (open.longbridge.com), since vendors use either.
         cited_hosts = {
-            m.group(1).lower()
-            for m in re.finditer(
-                r"https?://(?:openapi\.|open\.|api\.|developer\.|docs-en\.)?([a-z0-9-]+[a-z0-9.-]*\.[a-z]{2,})",
-                body,
-            )
+            m.group(1).lower() for m in re.finditer(CITED_HOST_PATTERN, body)
         }
         for host in cited_hosts:
             expected = KNOWN_VENDOR_HOSTS.get(host)

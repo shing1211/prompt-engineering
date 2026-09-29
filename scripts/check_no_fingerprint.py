@@ -29,12 +29,30 @@ the repository root:
      the same reason: in a Python file a venue name is a slug in this
      library's own prompt inventory, not a claim about a codebase.
 
-  That vocabulary and those two allowances are imported from
-  check_vendor_claims.py rather than restated, so this check and that one
-  cannot drift into disagreeing about what a file may name. The import is
-  the coupling: if check_vendor_claims.py moves, this fails loudly at
-  import rather than quietly checking a stale list.
-  2. An absolute path under a user's home directory.
+  Every name, pattern and prefix this check matches a venue with comes
+  from check_vendor_claims.py by import: the vocabulary
+  (KNOWN_VENDOR_HOSTS), the wording that discharges a claim
+  (VERIFY_PATTERNS, DOCS_PRESENT), the documented-URL test
+  (CITED_HOST_PATTERN) and the set of prompts that check already governs
+  (CLAIM_PROMPTS). None of them is copied here, so this check and that
+  one cannot drift into disagreeing about what a file may name or about
+  what counts as citing that vendor. What is restated is only the
+  condition that combines them, in provenance_terms(), which is that
+  script's own condition and deliberately no weaker. The import is the
+  coupling: if check_vendor_claims.py moves, this fails loudly at import
+  rather than quietly checking a stale list.
+
+  The one place the two differ is a flag. The host pattern is a pattern
+  string there, used as written; here it is compiled with re.I, so an
+  upper-cased host still counts as a citation. That widens what counts
+  as a citation, and widening that can only ever let a file name a vendor
+  it has already cited, so this check stays the narrower of the two.
+
+  2. An absolute path under a home directory, whatever the platform:
+     the Linux, macOS and root directories, with or without the user
+     segment. A macOS path is exactly the fingerprint this is here to
+     catch, so the pattern follows the docstring rather than the
+     docstring following the pattern.
   3. The corpus project name, in any case. It is not in this file, and
      cannot be: a public file that carries the name in order to forbid
      it publishes the name, and an encoding of it publishes it just as
@@ -43,11 +61,14 @@ the repository root:
      variable, or a gitignored .corpus-name file at the root -- and read
      from there. Unconfigured is not a pass: this check exits non-zero
      rather than reporting success for a rule it did not run.
-  4. A commit-hash-shaped token in a prompt: seven or more consecutive
-     hex characters containing at least one of a-f, minus the identifiers
-     a prompt documents on purpose. Requiring a letter is what separates
-     a hash from the epoch timestamps, Go date layouts and loop bounds
-     that prompts are full of, every one of which is pure digits.
+  4. A commit-hash-shaped token in a prompt, at any depth under prompts/:
+     seven or more consecutive hex characters containing at least one of
+     a-f, minus the identifiers a prompt documents on purpose. Requiring a
+     letter is what separates a hash from the epoch timestamps, Go date
+     layouts and loop bounds that prompts are full of, every one of which
+     is pure digits. The scope is descent rather than "a direct child of
+     prompts/", because prompts/ is allowed to grow subdirectories and a
+     flat-file test would quietly stop covering whatever moved into one.
 
 What it cannot detect, and why:
 
@@ -68,6 +89,15 @@ What it cannot detect, and why:
   frontmatter, in a Python file, or in a historical changelog entry is
   not caught.
 
+  The home-directory rule matches the canonical spellings of the three
+  roots and is case-sensitive on purpose, so an upper-cased macOS path is
+  not caught. It has to be: prompts/api-design.md documents a lowercase
+  /users REST resource, and a case-insensitive pattern fails the build
+  over the library's own example. Two files are exempt from that rule,
+  this one and the plan that specifies the check; both are exempt for
+  reasons about this library's description of its own rule, and both are
+  named next to the pattern rather than hidden in a flag.
+
   It scans the working tree rather than asking git for tracked files,
   since a check that shells out to git cannot tell a worktree from a
   tarball. An untracked file in a scanned directory is therefore scanned
@@ -84,6 +114,7 @@ import sys
 from pathlib import Path
 
 from check_vendor_claims import (
+    CITED_HOST_PATTERN,
     CLAIM_PROMPTS,
     DOCS_PRESENT,
     KNOWN_VENDOR_HOSTS,
@@ -93,7 +124,6 @@ from check_vendor_claims import (
 PROMPTS = Path("prompts")
 SCAN_DIRS = (PROMPTS, Path("docs"), Path("scripts"))
 SUFFIXES = (".md", ".py")
-SKIP_PARTS = {"__pycache__"}
 
 # Venue terms the library already publishes, derived from the vendor hosts
 # check_vendor_claims.py knows how to cite. Derived, not listed: a second
@@ -107,19 +137,49 @@ VENDOR_TERMS = sorted(
 )
 VENUE = re.compile(r"\b(?:%s)\b" % "|".join(VENDOR_TERMS), re.I)
 
-# The host of a cited URL, matched the way check_vendor_claims.py matches
-# it, so "this file cites that vendor's documentation" means the same
-# thing in both checks.
-CITED_HOST = re.compile(
-    r"https?://(?:openapi\.|open\.|api\.|developer\.|docs-en\.)?"
-    r"([a-z0-9-]+[a-z0-9.-]*\.[a-z]{2,})",
-    re.I,
-)
+# The host of a cited URL, imported from check_vendor_claims.py as a
+# pattern string and compiled here case-insensitively, so that "this file
+# cites that vendor's documentation" means the same thing in both checks
+# even when a file upper-cases the host in the URL.
+CITED_HOST = re.compile(CITED_HOST_PATTERN, re.I)
 
-# An absolute path under somebody's home directory. The user segment is
-# required: without it the pattern matches its own documentation and any
-# sentence about the rule, which is not the leak anyone is guarding.
-HOME_PATH = re.compile(r"/home/[A-Za-z0-9._-]+")
+# An absolute path under a home directory. Three roots, because a home
+# directory has three names: the Linux one, the macOS one, and root's own.
+# The user segment is optional so the directory itself is caught too, and
+# the trailing boundary is what keeps /rootfs and /homepage out.
+#
+# Spelled case-sensitively and deliberately so. macOS filesystems are
+# case-insensitive, so /USERS/joe is a real path, but prompts/api-design.md
+# uses a lowercase /users REST resource and a case-insensitive pattern
+# would fail the build over it. Catching a stray capital is worth less
+# than not failing over the library's own examples.
+#
+# Two files are exempt, and the exemption is by identity rather than by
+# crippling the pattern, which is the failure mode this replaced: the old
+# pattern required a user segment purely so it would not match the sentence
+# describing it, which is a rule that quietly stops catching bare home
+# directories the moment someone edits the sentence.
+#
+#   - This file, which names the pattern in order to document it. Today the
+#     pattern as spelled does not match its own source, so that exemption
+#     is preventive rather than load-bearing; it is here because the first
+#     literal home path written into a comment here should not turn the
+#     build red.
+#   - The plan that specifies the check, which states the rule. That one is
+#     load-bearing and is pinned by scripts/test_checks.py: deleting the
+#     exemption fails the suite's positive phase.
+#
+# Both reasons are about this library describing its own rule, not about
+# anything in the corpus.
+HOME_PATH = re.compile(
+    r"/(?:home|Users|root)(?:/[A-Za-z0-9._-]+)?(?![0-9A-Za-z])"
+)
+SELF_NAME = Path(__file__).name
+RULE_DOCS = {
+    "docs/superpowers/plans/2026-09-29-prompt-verification.md": (
+        "the plan that specifies this check, which states the rule"
+    ),
+}
 
 # The corpus project name, configured outside the repository rather than
 # stored here. See the docstring: a public file that carries the name in
@@ -236,6 +296,16 @@ def prose_of(text: str) -> list[tuple[int, str]]:
     return kept
 
 
+def may_write_home_path(path: Path) -> bool:
+    """Whether this file is allowed to write a home-directory path shape.
+
+    Keyed by file name for the check itself and by relative path for the
+    plan, both unique. Matching on name means the exemption cannot be
+    widened by adding a file to a directory it does not list.
+    """
+    return path.name == SELF_NAME or path.as_posix() in RULE_DOCS
+
+
 def scan_files() -> list[Path]:
     """Every Markdown and Python file in the scanned scope."""
     found: list[Path] = []
@@ -243,11 +313,7 @@ def scan_files() -> list[Path]:
         if not directory.is_dir():
             continue
         for path in directory.rglob("*"):
-            if (
-                path.is_file()
-                and path.suffix in SUFFIXES
-                and not SKIP_PARTS.intersection(path.parts)
-            ):
+            if path.is_file() and path.suffix in SUFFIXES:
                 found.append(path)
     # The repository root, where the front door and the checks live. A
     # directory named after a document is not one, so this cannot pick up
@@ -265,8 +331,9 @@ def check(path: Path) -> list[str]:
     problems: list[str] = []
 
     # 2 and 3 apply to the whole file, frontmatter and examples included.
+    exempt_paths = may_write_home_path(path)
     for number, line in enumerate(lines, 1):
-        if HOME_PATH.search(line):
+        if not exempt_paths and HOME_PATH.search(line):
             problems.append(f"{path}:{number}: absolute home-directory path")
         if CORPUS_NAME_RE.search(line):
             problems.append(
@@ -300,8 +367,10 @@ def check(path: Path) -> list[str]:
                 )
 
     # 4 applies to prompts, where a commit reference has no other reason
-    # to appear.
-    if path.parent == PROMPTS:
+    # to appear, at any depth. Tested as a descendant rather than as a
+    # direct child, because prompts/ growing a subdirectory must not
+    # silently move its files out of scope.
+    if path.is_relative_to(PROMPTS):
         for number, line in enumerate(lines, 1):
             for match in HASH_TOKEN.finditer(line):
                 token = match.group(1)
