@@ -177,7 +177,7 @@ First public release. 38 prompts, a browsable site, and CI.
 - Normalized line endings to LF across all 39 files. 15 of them had been
   committed with CRLF endings, which is now prevented by `.gitattributes` and
   `.editorconfig`
-- Removed 62 `[reference:N]` citation artifacts from `financial-docs.md` and
+- Removed 62 `[reference:N]` citation artifacts from the financial documentation prompt and
   `sdk-docs.md`, artifacts of an earlier generation pass that read as broken
   citations on a rendered page
 - Replaced generic placeholder headings with real ones. Ten prompts were

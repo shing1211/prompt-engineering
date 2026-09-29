@@ -382,7 +382,7 @@ def get_broker_credentials(broker_id: str) -> dict:
 
 ```json
 {
-  "rotationLambdaARN": "arn:aws:lambda:us-east-1:123456789012:function:trading-secret-rotation",
+  "rotationLambdaARN": "arn:aws:lambda:us-east-1:123456789012:function:secret-rotation",
   "rotationRules": {
     "automaticallyAfterDays": 90
   }

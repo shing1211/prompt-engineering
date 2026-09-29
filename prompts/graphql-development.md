@@ -726,7 +726,7 @@ class MarketDataAPI extends RestDataSource {
 ## .github/workflows/graphql-schema.yml
 - name: Check GraphQL Schema
   run: |
-    npx @apollo/federation schema:check --graph=trading \
+    npx @apollo/federation schema:check --graph=trading-platform \
       --schema=./schema.graphql \
       --variant=production
   env:
@@ -739,7 +739,7 @@ class MarketDataAPI extends RestDataSource {
 ## .github/workflows/graphql-deploy.yml
 - name: Publish Schema to Apollo GraphOS
   run: |
-    npx @apollo/graph:publish --graph=trading \
+    npx @apollo/graph:publish --graph=trading-platform \
       --schema=./schema.graphql \
       --variant=production \
       --tag=production

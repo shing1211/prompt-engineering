@@ -140,7 +140,7 @@ Documentation workflows — 1 prompt(s).
 
 | Prompt | Mode | Description |
 |---|---|---|
-| [`financial-docs.md`](financial-docs.md) — Financial Platform Documentation | build | Improve all Markdown documentation in a unified financial trading and portfolio management system |
+| [`financial-docs.md`](financial-docs.md) — Financial Platform Documentation | build | Improve all Markdown documentation in a unified multi-broker trading and portfolio management system |
 
 ## Browse by Technology
 

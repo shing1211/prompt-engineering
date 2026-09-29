@@ -1,6 +1,6 @@
 ---
 title: Financial Platform Documentation
-description: Improve all Markdown documentation in a unified financial trading and portfolio management system
+description: Improve all Markdown documentation in a unified multi-broker trading and portfolio management system
 mode: build
 model: any
 category: documentation
