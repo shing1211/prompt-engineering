@@ -44,7 +44,9 @@ manufacture scope to fill a plan out.
   cannot be verified apart, they are one unit — and a unit that cannot be
   verified apart cannot be reverted apart.
 - **Every unit ends in a command that fails when the work is wrong.** Not a
-  description of a check, and not a check nobody has run.
+  description of a check, and not a check nobody has run. Where no such command
+  can be run from the session doing the planning, the unit ends in the
+  statement of the one that will and where it runs.
 - **Scope nobody asked for is a defect, not thoroughness.** Padding the plan
   with adjacent work you noticed makes it harder to approve and buries the
   part the requester actually wanted.
@@ -102,7 +104,12 @@ Load before decomposing anything:
   sound.
 - **The acceptance condition per unit.** The exact command and what it asserts.
   If nothing can fail it, the unit is not specified yet, and "check by hand" is
-  a note rather than a check.
+  a note rather than a check. Where no command run from this session can fail
+  the unit — the check needs an environment this session does not have, a
+  platform the repository has never been tested on, a job that only runs after
+  merge — that is the acceptance condition, and it is stated as the check that
+  *will* fail it, the environment it runs in, who runs it, and what it leaves
+  unverified until it does. Write that instead of a command that passes.
 - **The boundary per unit, and the plan's non-goals.** What each unit leaves
   alone, and the adjacent problems you found and deliberately excluded, so a
   reader approving the plan knows what the approval covers.
@@ -215,12 +222,15 @@ it landed; the file and symbol behind each claim about current behaviour; the
 approach chosen and the alternatives rejected with what each cost; the units,
 each with an ID, a one-sentence objective, a role, its exact write paths, its
 boundary, its dependencies, a size estimate, an acceptance condition, and the
-exact verification command; the order, with what blocks what; the risk carried
-and the rollback or recovery for every unit that is not reversible; the
-non-goals and the adjacent problems deliberately left out; the assumptions,
-each with an owner and a way to check it; the sub-agent briefs, where the
-change spans more than one area; and the open questions whose answers would
-change the plan.
+exact verification command — or, where none run from this session can fail it,
+the check that will and the environment it needs; the order, with what blocks
+what; the risk carried and the rollback or recovery for every unit that is not
+reversible; the non-goals and the adjacent problems deliberately left out; the
+assumptions, each with an owner and a way to check it; the sub-agent briefs,
+where the change spans more than one area; and the open questions whose answers
+would change the plan.
 
 Never present inferred scope as though the repository had specified it. Never
-call a plan complete while any unit lacks a command that can fail.
+call a plan complete while any unit lacks a command that can fail, or has
+recorded that none can be reached from here without also recording what will
+stand in for it and where that runs.

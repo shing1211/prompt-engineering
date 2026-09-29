@@ -68,16 +68,27 @@ The two runs in this release are the fourth and fifth against public
 repositories, and both used the same one — a public command-line application
 with a deep commit history. `change-review` and `plan-review` share it from
 0.4.0, and `plan` and `test-review` join them, so **four verified rows rest on
-two corpora.** They are not four independent observations, and the register
+one corpus.** They are not four independent observations, and the register
 says so where a reader will meet it.
 
 All four runs produced four anti-patterns each, none carrying a path, a file
-name, an identifier or a count. `plan`'s run is the case the rewrite was built
-for: a change request the repository's own plan documents do not contain, so
-the decomposition had to come from the code and the request. It surfaced that
-Layer 3's acceptance-command requirement has no answer for work that can only
-be shown wrong by running it somewhere the planning session cannot reach — the
-prompt's own rule, followed literally, produces a check nobody can fail.
+name, an identifier or a count. `plan`'s run surfaced that Layer 3's
+acceptance-command requirement has no answer for work that can only be shown
+wrong by running it somewhere the planning session cannot reach — the prompt's
+own rule, followed literally, produces a check nobody can fail. Layer 3, the
+Delivery Contract and the closing line now carry the alternative the new
+anti-pattern asks for: where no command run from here can fail the unit, the
+plan says which check would, and where it runs.
+
+That run is **not** the case the rewrite was built for, and this entry
+previously said it was. The rewrite exists to plan a change request the
+corpus's own plans do not contain, so that the decomposition has to come from
+the code rather than from a backlog. The request used was cross-platform CI
+testing, and the corpus's own plans already cover that ground. The two
+anti-patterns that exist for a request nobody has planned for were therefore
+never exercised, and whether they stay quiet on one is **unestablished**. The
+null is withdrawn rather than published, and this release does not claim the
+rewrite's central case is covered.
 
 `jvm-backend` is unchanged and still skipped for want of a corpus.
 

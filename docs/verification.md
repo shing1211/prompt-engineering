@@ -67,7 +67,7 @@ One row per prompt, in alphabetical order by file name.
 | `observability-sre` | no | Not run. | — |
 | `orchestrate` | no | Not run. | — |
 | `performance` | no | Not run. | — |
-| `plan` | yes | Run against a public command-line application, the same one `change-review` was run against, given a change request the repository's own plans do not contain. Four anti-patterns added. | 2026-09-29 |
+| `plan` | yes | Run against a public command-line application, the same one `change-review` was run against, given a change request the repository's own plans already cover. Four anti-patterns added. | 2026-09-29 |
 | `plan-review` | yes | Run against a public command-line application, the same one `change-review` was run against. Four anti-patterns added. | 2026-09-29 |
 | `platform-engineering` | yes | Run against two existing public Kubernetes repositories. Three anti-patterns and one guardrail added. | 2026-09-29 |
 | `portfolio-accounting` | no | Not run. | — |
@@ -129,6 +129,15 @@ instead, was reading each added line.
   storage, file formats and query planning has no evidence behind it and
   nothing was written about any of it. The absence of findings there is not
   coverage.
+- **`plan` is a tick, not the case the rewrite was written for.** The four
+  anti-patterns in its row are real and stand on their own. The null the run was
+  first read as producing is withdrawn: `plan` was given a cross-platform CI
+  request, and the corpus's own plan documents already cover that ground, so
+  the two anti-patterns that guard against inventing a backlog and against
+  restating the request were never exercised on a request the corpus has not
+  planned for — which is the only case they are about. That question is open,
+  and the tick is evidence about the prompt's rules, not about the rewrite's
+  central case.
 
 The register is meant to grow. Every prompt that gets a run gets a row, and
 every run that finds something the prompt missed gets an anti-pattern — which
